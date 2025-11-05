@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 20px;
+  background-color: #fff5f3;
+}
+
+.error-container {
+  text-align: center;
+  max-width: 1600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  padding-top: 10px;
+}
+
+.error-title {
+  font-size: 48px;
+  margin-bottom: 20px;
+  color: #000;
+  font-weight: 600;
+}
+
+.error-title span {
+  position: relative;
+}
+
+.error-title span::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: #ff9b7b;
+  z-index: -1;
+}
+
+.error-text {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.back-button {
+  display: inline-block;
+  background: #000;
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.back-button:hover {
+  background: orange;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 155, 123, 0.2);
+}
+
+/* Ensure no other styles override the hover */
+.back-button:hover,
+.back-button:focus,
+.back-button:active {
+  background: orange !important;
+  color: #fff !important;
+}
+
+.error-illustration {
+  width: 100%;
+  height: 650px;
+  margin-top: -160px;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .error-title {
+    font-size: 36px;
+  }
+
+  .error-text {
+    font-size: 16px;
+  }
+}

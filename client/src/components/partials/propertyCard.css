@@ -1,0 +1,340 @@
+/* Property Card Styles - Refactored */
+
+.prop-card-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.prop-card-card a,
+.prop-card-card img,
+.prop-card-card span,
+.prop-card-card button,
+.prop-card-card ion-icon {
+  display: block;
+}
+
+.prop-card-card button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font: inherit;
+}
+
+.prop-card-card address {
+  font-style: normal;
+}
+
+/* Property Card - EXACT dimensions */
+.prop-card-card {
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 573px;
+  height: 100%; /* Added to ensure cards in a grid align */
+}
+
+.prop-card-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Card Banner - EXACT image section */
+.prop-card-banner {
+  position: relative;
+  overflow: hidden;
+  height: 340px;
+}
+
+.prop-card-banner a {
+  display: block;
+}
+
+.prop-card-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.prop-card-card:hover .prop-card-banner img {
+  transform: scale(1.08);
+}
+
+.prop-card-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Banner Actions - EXACT positioning */
+.prop-card-banner-actions {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+.prop-card-banner-actions-btn {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+
+.prop-card-banner-actions-btn ion-icon {
+  font-size: 18px;
+}
+
+.prop-card-banner-actions-btn:first-child {
+  flex: 1;
+  max-width: 200px;
+}
+
+.prop-card-banner-actions-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Card Content - EXACT spacing and typography */
+.prop-card-content {
+  padding: 24px 24px 20px 24px;
+  background: #fff;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.prop-card-price {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: baseline;
+}
+
+.prop-card-price strong {
+  color: #ff5a3c;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  display: inline;
+}
+
+.prop-card-price-period {
+  color: #ff5a3c;
+  font-size: 16px;
+  font-weight: 500;
+  margin-left: 2px;
+  display: inline;
+}
+
+/* Card Title - EXACT font and spacing */
+.prop-card-title {
+  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+}
+
+.prop-card-title > a {
+  color: #000;
+  transition: color 0.3s ease;
+}
+
+.prop-card-title > a:is(:hover) {
+  color: #ff5a3c;
+}
+
+.prop-card-text {
+  color: #6c727f;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+/* Property Features - EXACT layout */
+.prop-card-list {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #e8e8e8;
+  list-style: none; /* Ensure no bullets */
+}
+
+.prop-card-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #6c727f;
+}
+
+.prop-card-item strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+}
+
+.prop-card-item:not(:last-child) {
+  padding-right: 16px;
+  margin-right: 16px;
+  border-right: 1px solid #e8e8e8;
+}
+
+.prop-card-item :is(strong, ion-icon) {
+  display: inline-block;
+}
+
+.prop-card-item ion-icon {
+  font-size: 20px;
+  color: #6c727f;
+}
+
+.prop-card-item span {
+  font-size: 14px;
+  color: #6c727f;
+  font-weight: 400;
+}
+
+/* Card Footer - EXACT agent section */
+.prop-card-footer {
+  background: #fff;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e8e8e8;
+}
+
+/* Author Section - EXACT styling */
+.prop-card-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.prop-card-author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.prop-card-author-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prop-card-author-name {
+  margin-bottom: 2px;
+}
+
+.prop-card-author-name > a {
+  color: #000;
+  font-weight: 600;
+  font-size: 15px;
+  transition: color 0.25s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+}
+
+.prop-card-author-name > a:is(:hover, :focus) {
+  color: #ff5a3c;
+}
+
+.prop-card-author-title {
+  color: #6c727f;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Card Footer Actions - EXACT icon buttons */
+.prop-card-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prop-card-footer-actions-btn {
+  background: transparent;
+  color: #6c727f;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  border: 1px solid #e8e8e8;
+}
+
+.prop-card-footer-actions-btn ion-icon {
+  font-size: 20px;
+}
+
+.prop-card-footer-actions-btn:is(:hover, :focus) {
+  background: #ff5a3c;
+  color: #fff;
+  border-color: #ff5a3c;
+}
+
+/* Property Badge - EXACT positioning and style */
+/* This now uses the 'badge' prop from JSX (e.g., green, orange) */
+.prop-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff5a3c; /* Default fallback */
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  z-index: 10;
+  letter-spacing: 0.5px;
+}
+
+.prop-card-badge.green {
+  /* For Rent */
+  background: #28a745;
+}
+
+.prop-card-badge.orange {
+  /* For Sale */
+  background: #ff6600;
+}
+
+/* Utility Classes */
+.prop-card-w-100 {
+  width: 100%;
+}
+
+.prop-card-h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}

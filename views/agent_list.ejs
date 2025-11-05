@@ -1,0 +1,663 @@
+<!-- website/views/agent_list.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agents Listing</title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/AgentList_property.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        .search-by-name {
+            position: relative;
+        }
+        .search-clear {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            font-size: 14px;
+            z-index: 10;
+        }
+        .search-clear:hover {
+            color: #333;
+        }
+    </style>
+</head>
+
+<body id="top">
+    <%- include('./partials/header') %>
+
+
+    <!-- Agent Benefits Section -->
+    <section class="agent-benefits" data-aos="fade-up" data-aos-duration="800">
+            <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-award"></i> Why Choose Our Agents</h2>
+                <p class="section-subtitle">Our real estate professionals are carefully selected to provide you with exceptional service</p>
+            </div>
+            
+            <div class="benefits-container">
+                <div class="benefit-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="benefit-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>Certified Professionals</h3>
+                    <p>All our agents are licensed and certified with years of experience in the real estate market.</p>
+                </div>
+                
+                <div class="benefit-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="benefit-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Personalized Service</h3>
+                    <p>Our agents provide tailored solutions to meet your specific real estate needs and preferences.</p>
+                </div>
+                
+                <div class="benefit-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="benefit-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3>Local Market Expertise</h3>
+                    <p>Deep knowledge of local markets, trends, and neighborhoods to help you make informed decisions.</p>
+                </div>
+                
+                <div class="benefit-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="benefit-icon">
+                        <i class="fas fa-comments-dollar"></i>
+                    </div>
+                    <h3>Negotiation Skills</h3>
+                    <p>Expert negotiators who will work to get you the best possible deal on your property.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agent Listing Section -->
+    <section class="agents" data-aos="fade-up" data-aos-duration="800">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-users"></i> Our Expert Agents</h2>
+                <p class="section-subtitle">Browse our selection of top-rated real estate professionals</p>
+            </div>
+            
+            <div class="head">
+                <p>Showing <strong><%= resultsCount.start %>-<%= resultsCount.end %></strong> of <strong><%= resultsCount.total %></strong> results</p>
+                <div class="search-by-name">
+                    <input type="text" id="agent-search" placeholder="Search by agent name...">
+                    <button type="button" id="search-clear" class="search-clear" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button type="button" id="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="filter-options" data-aos="fade-up" data-aos-duration="600">
+                <button class="filter-btn active" data-filter="all">All Agents</button>
+                <button class="filter-btn" data-filter="Verified"><i class="fas fa-check-circle"></i> Verified</button>
+                <button class="filter-btn" data-filter="Not Verified"><i class="fas fa-times-circle"></i> Not Verified</button>
+                </div>
+
+                <div class="grid">
+                <% if (agents && agents.length > 0) { %>
+                    <% agents.forEach(agent => { %>
+                        <%- include('./partials/agent_card', { 
+                            listingCount: agent.listingCount || 0,
+                            Verified: agent.verified ? 'Verified' : 'Not Verified',
+                            imageUrl: agent.image || '/assets/agent1.png',
+                            agentName: agent.name,
+                            agentRole: agent.title || 'Real Estate Agent',
+                            profileLink: `/agent/${agent._id}`
+                        }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-agents-message">
+                        <h3><i class="fas fa-info-circle"></i> No Agents Available</h3>
+                        <p>We currently don't have any agents registered. Please check back later.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pagination - Only show if we have agents -->
+    <% if (agents && agents.length > 0 && pagination.totalPages > 1) { %>
+    <div class="pagination" data-aos="fade-up">
+        <% if (pagination.hasPrev) { %>
+            <a href="/agent?page=<%= pagination.page - 1 %>" class="prev page-nav" data-page="prev">&lt;</a>
+        <% } %>
+        
+        <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+            <a href="/agent?page=<%= i %>" 
+               class="page <%= pagination.page === i ? 'active' : '' %>" 
+               data-page="<%= i %>"><%= i %></a>
+        <% } %>
+        
+        <% if (pagination.hasNext) { %>
+            <a href="/agent?page=<%= pagination.page + 1 %>" class="next page-nav" data-page="next">&gt;</a>
+        <% } %>
+    </div>
+    <% } %>
+
+    <!-- Agent Stats Section -->
+    <% if (agents && agents.length > 0) { %>
+    <section class="agent-stats" data-aos="fade-up" data-aos-duration="800">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> Our Success in Numbers</h2>
+                <p class="section-subtitle">See why thousands of clients trust our agents for their real estate needs</p>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="stat-number" data-count="2500">0</div>
+                    <div class="stat-title">Properties Sold</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" data-count="1200">0</div>
+                    <div class="stat-title">Happy Clients</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-number" data-count="500">0</div>
+                    <div class="stat-title">Million in Sales</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="stat-number" data-count="48">0</div>
+                    <div class="stat-title">Awards Won</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" data-aos="fade-up" data-aos-duration="800">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-quote-left"></i> Client Testimonials</h2>
+                <p class="section-subtitle">What our clients say about working with our agents</p>
+            </div>
+            
+            <div class="testimonial-slider">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p>Working with Agent Name 5 was an absolute pleasure. Their knowledge of the local market helped us find our dream home within our budget. Highly recommended!</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/assets/agent1.png" alt="Client" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Michael Johnson</h4>
+                            <p>Homebuyer</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p>Agent Name 10 helped us sell our property for more than we expected and in record time. Their marketing strategy and negotiation skills are exceptional.</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/uploads/agent/agent-1742550600568-280716933.jpeg" alt="Client" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Sarah Williams</h4>
+                            <p>Property Seller</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                </div>
+            </div>
+        </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p>As a first-time homebuyer, I was nervous about the process. Agent Name 3 guided me through every step with patience and expertise. I couldn't be happier with my new home!</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/assets/agent1.png" alt="Client" class="author-avatar">
+                        <div class="author-info">
+                            <h4>David Thompson</h4>
+                            <p>First-time Buyer</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+            <div class="testimonial-nav">
+                <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
+                <div class="dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
+    <% } else { %>
+    <div class="no-agents-message" data-aos="fade-up" data-aos-duration="800">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-users"></i> Become Our First Agent</h2>
+                <p class="section-subtitle">Sign up as an agent to start listing properties and helping clients find their dream homes.</p>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+        <%- include('./partials/footer') %>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" aria-label="Back to top">
+        <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+            </button>
+
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+            <script src="/js/AgentList_property.js" charset="UTF-8"></script>
+    
+    <script>
+        // Initialize AOS with settings to prevent affecting initial scroll
+        AOS.init({
+            startEvent: 'DOMContentLoaded',
+            offset: 120,
+            delay: 100,
+            once: false,
+            mirror: false,
+            disable: 'mobile'
+        });
+        
+        // Ensure page starts at the top when loaded or refreshed
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            
+            // Force scroll to top after a slight delay to override any browser behavior
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 50);
+        };
+        
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+        
+        // Pagination functionality
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        const pageNumbers = document.querySelectorAll('.page');
+        let currentPage = 1;
+        const totalPages = pageNumbers.length;
+        
+        // Function to update active page
+        function updateActivePage(pageNum) {
+            // Remove active class from all page numbers
+            pageNumbers.forEach(page => page.classList.remove('active'));
+            
+            // Add active class to current page
+            document.querySelector(`.page[data-page="${pageNum}"]`).classList.add('active');
+            
+            // Scroll to top of agents section with a slight delay
+            setTimeout(() => {
+                if (document.readyState === 'complete') {
+                    document.querySelector('.agents').scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+            
+            // Update current page
+            currentPage = pageNum;
+        }
+        
+        // Add click event to pagination links
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const pageAction = link.getAttribute('data-page');
+                
+                if (pageAction === 'prev') {
+                    if (currentPage > 1) {
+                        updateActivePage(currentPage - 1);
+                    }
+                } else if (pageAction === 'next') {
+                    if (currentPage < totalPages) {
+                        updateActivePage(currentPage + 1);
+                    }
+                } else {
+                    // Direct page number click
+                    updateActivePage(parseInt(pageAction));
+                }
+            });
+        });
+        
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const agentCards = document.querySelectorAll('.grid > div');
+        const searchInput = document.getElementById('agent-search');
+        const searchButton = document.getElementById('search-btn');
+        const searchClearButton = document.getElementById('search-clear');
+        const agentGrid = document.querySelector('.grid');
+        const resultsCountElement = document.querySelector('.head p');
+        
+        // Show/hide clear button based on search input
+        searchInput.addEventListener('input', () => {
+            searchClearButton.style.display = searchInput.value.trim() ? 'block' : 'none';
+        });
+        
+        // Clear search when clear button is clicked
+        searchClearButton.addEventListener('click', () => {
+            searchInput.value = '';
+            searchClearButton.style.display = 'none';
+            window.location.href = '/agent';
+        });
+        
+        // Function to update the grid with new agents
+        function updateAgentGrid(response) {
+            const { agents, total } = response;
+            
+            // Clear existing grid
+            agentGrid.innerHTML = '';
+            
+            // Add new agent cards with the same structure as the original cards
+            agents.forEach(agent => {
+                // Create the HTML content with the same structure as in the agent_card partial
+                const agentCardHTML = `
+                    <div class="agent-card">
+                        <div class="image-container">
+                            <span class="listing-count">
+                                ${agent.listingCount} ${agent.listingCount === 1 ? 'LISTING' : 'LISTINGS'}
+                                ${agent.verified ? 
+                                    `<div class="verified verification-badge">Verified</div>` : 
+                                    `<div class="not-verified verification-badge">Not Verified</div>`
+                                }
+                            </span>
+                            <img src="${agent.image}" alt="Agent">
+                        </div>
+                        <h3><a href="/agent/${agent._id}">${agent.name}</a></h3>
+                        <p class="role">${agent.title}</p>
+                    </div>
+                `;
+                
+                // Add the card to the grid
+                agentGrid.innerHTML += agentCardHTML;
+            });
+            
+            // Update results count
+            if (resultsCountElement) {
+                resultsCountElement.innerHTML = `Showing <strong>${agents.length}</strong> of <strong>${total}</strong> results`;
+            }
+            
+            // Hide pagination when filtering/searching with custom results
+            // Only show pagination when viewing all agents with default pagination
+            const paginationElement = document.querySelector('.pagination');
+            if (paginationElement) {
+                // Check if we're showing filtered/searched results
+                const isFiltered = document.querySelector('.filter-btn.active').getAttribute('data-filter') !== 'all' || 
+                                  searchInput.value.trim() !== '';
+                
+                paginationElement.style.display = isFiltered ? 'none' : 'flex';
+            }
+        }
+        
+        // Function to filter agents
+        async function filterAgents(filter) {
+            try {
+                let status;
+                if (filter === 'all') {
+                    status = 'all';
+                } else if (filter === 'Verified') {
+                    status = 'verified';
+                } else {
+                    status = 'unverified';
+                }
+                
+                const response = await fetch(`/agent/filter/${status}`);
+                
+                if (!response.ok) throw new Error('Failed to fetch filtered agents');
+                
+                const data = await response.json();
+                updateAgentGrid(data);
+                
+            } catch (error) {
+                console.error('Error filtering agents:', error);
+            }
+        }
+        
+        // Function to search agents by name
+        async function searchAgentsByName(searchTerm) {
+            try {
+                if (!searchTerm.trim()) {
+                    // For empty searches, show all agents
+                    filterAgents('all');
+                    return;
+                }
+                
+                const response = await fetch(`/agent/search?query=${encodeURIComponent(searchTerm.trim())}`);
+                if (!response.ok) throw new Error('Failed to search agents');
+                
+                const data = await response.json();
+                updateAgentGrid(data);
+                
+            } catch (error) {
+                console.error('Error searching agents:', error);
+            }
+        }
+        
+        // Add click event to filter buttons
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                const filter = button.getAttribute('data-filter');
+                
+                if (filter === 'all' && searchInput.value.trim() === '') {
+                    // If clicking "All Agents" with no search term, reload to get paginated view
+                    window.location.href = '/agent';
+                } else {
+                    // Otherwise use AJAX filtering
+                filterAgents(filter);
+                }
+            });
+        });
+        
+        // Add click event to search button
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                searchAgentsByName(searchTerm);
+            } else {
+                // If search is empty, reload to get paginated view
+                window.location.href = '/agent';
+            }
+        });
+        
+        // Add keyup event to search input
+        let searchTimeout;
+        searchInput.addEventListener('keyup', (e) => {
+            clearTimeout(searchTimeout);
+            
+            if (e.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    searchAgentsByName(searchTerm);
+                } else {
+                    // If search is cleared and Enter is pressed, reload to get paginated view
+                    window.location.href = '/agent';
+                }
+            } else if (e.key === 'Escape' || searchInput.value.trim() === '') {
+                // If Escape key is pressed or search is cleared, reload to get paginated view
+                if (document.querySelector('.filter-btn.active').getAttribute('data-filter') === 'all') {
+                    window.location.href = '/agent';
+                } else {
+                    // If a filter is active, keep the filter but clear the search
+                    searchInput.value = '';
+                    const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+                    filterAgents(activeFilter);
+                }
+            } else {
+                // Debounce search for other keys
+                searchTimeout = setTimeout(() => {
+                    const searchTerm = searchInput.value.trim();
+                    if (searchTerm) {
+                        searchAgentsByName(searchTerm);
+                    }
+                }, 500);
+            }
+        });
+        
+        // Testimonial slider functionality
+        const testimonialSlider = document.querySelector('.testimonial-slider');
+        const testimonialCards = document.querySelectorAll('.testimonial-card');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        let testimonialIndex = 0;
+        
+        function showTestimonial(index) {
+            // Hide all testimonials
+            testimonialCards.forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Remove active class from all dots
+            dots.forEach(dot => {
+                dot.classList.remove('active');
+            });
+            
+            // Show current testimonial and activate corresponding dot
+            testimonialCards[index].style.display = 'block';
+            dots[index].classList.add('active');
+        }
+        
+        // Initialize testimonial display
+        showTestimonial(testimonialIndex);
+        
+        // Next button click
+        nextBtn.addEventListener('click', () => {
+            testimonialIndex++;
+            if (testimonialIndex >= testimonialCards.length) {
+                testimonialIndex = 0;
+            }
+            showTestimonial(testimonialIndex);
+        });
+        
+        // Previous button click
+        prevBtn.addEventListener('click', () => {
+            testimonialIndex--;
+            if (testimonialIndex < 0) {
+                testimonialIndex = testimonialCards.length - 1;
+            }
+            showTestimonial(testimonialIndex);
+        });
+        
+        // Dot click
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                testimonialIndex = index;
+                showTestimonial(testimonialIndex);
+            });
+        });
+        
+        // Animate stats counter
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        const animateStats = () => {
+            statNumbers.forEach(stat => {
+                const target = parseFloat(stat.getAttribute('data-count'));
+                const duration = 2000; // 2 seconds
+                const step = target / (duration / 16); // 60fps
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        stat.textContent = current.toFixed(0);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        stat.textContent = target.toString();
+                    }
+                };
+                
+                updateCounter();
+            });
+        };
+        
+        // Trigger stats animation when section is in view
+        const statsSection = document.querySelector('.agent-stats');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(statsSection);
+    </script>
+</body>
+
+</html>

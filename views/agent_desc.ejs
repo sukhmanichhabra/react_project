@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Description</title>
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/Agent_desc.css">
+        <link rel="stylesheet" href="/css/base.css">
+        <link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/header.css">
+        <link rel="stylesheet" href="/css/footer.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+    <div class="upper-container">
+    <div class="agent-container">
+        <div class="agent-header">
+            <div class="agent-image-container">
+                <span class="listing-badge"><%= agent.listingCount %> LISTING</span>
+                <img src="<%= agent.image || '/images/default-avatar.png' %>" alt="<%= agent.name %>" class="agent-image">
+            </div>
+            <div class="agent-info">
+                <h1><%= agent.name %></h1>
+                <p class="agent-title"><%= agent.title %></p>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Location</span>
+                        <span class="info-value"><strong><%= agent.location %></strong></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Phone:</span>
+                        <span class="info-value"><strong><%= agent.phone %></strong></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value"><strong><%= agent.email %></strong></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Qualification:</span>
+                        <span class="info-value"><strong><%= agent.qualification %></strong></span>
+                    </div>
+                </div>
+
+                <div class="social-icons">
+                    <% if (agent.socialLinks) { %>
+                        <% if (agent.socialLinks.twitter) { %>
+                            <a href="<%= agent.socialLinks.twitter %>" target="_blank" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        <% } %>
+                        <% if (agent.socialLinks.instagram) { %>
+                            <a href="<%= agent.socialLinks.instagram %>" target="_blank" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        <% } %>
+                        <% if (agent.socialLinks.facebook) { %>
+                            <a href="<%= agent.socialLinks.facebook %>" target="_blank" title="Facebook">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                        <% } %>
+                        <% if (agent.socialLinks.linkedin) { %>
+                            <a href="<%= agent.socialLinks.linkedin %>" target="_blank" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        <% } %>
+                    <% } else { %>
+                        <i class="fab fa-whatsapp"></i>
+                        <i class="fab fa-twitter"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-viber"></i>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="overview">
+            <h2>Overview</h2>
+            <p><%= agent.overview %></p>
+        </div>
+
+        <!-- Listings section -->
+        <div class="listings">
+            <div class="listings-header">
+                <h2>Listings (<%= properties.length %> <%= properties.length === 1 ? 'Property' : 'Properties' %>)</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">ALL</button>
+                    <button class="filter-btn" data-filter="sale">SELL</button>
+                    <button class="filter-btn" data-filter="rent">RENT</button>
+                </div>
+            </div>
+
+            <div class="listings-grid">
+                <% if (properties.length > 0) { %>
+                    <% properties.forEach(property => { %>
+                        <%- include('./partials/prop_list_card', {
+                            type: property.tag,
+                            badge: property.tag.toUpperCase() === 'SALE' ? 'FOR SALE' : 'FOR RENT',
+                            imageUrl: property.images[0],
+                            price: property.price,
+                            address: property.location,
+                            link: `/property/${property._id}`
+                        }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-listings">
+                        <p>This agent currently has no property listings.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Reviews section -->
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <h2>All Reviews (<%= agent.reviews.length > 0 ? (agent.reviews.reduce((acc, rev) => acc + rev.rating, 0) / agent.reviews.length).toFixed(1) : '0.0' %> Rating)</h2>
+            </div>
+
+            <div class="reviews-list">
+                <% agent.reviews.forEach(review => { %>
+                <div class="review-item">
+                    <div class="reviewer-info">
+                            <img src="<%= review.image %>" alt="<%= review.name %>" class="reviewer-image">
+                        <div class="reviewer-details">
+                                <h3><%= review.name %></h3>
+                                <span class="review-date"><%= review.date %></span>
+                        </div>
+                        <div class="review-rating">
+                                <span class="rating-text">(<%= review.rating %> Rating)</span>
+                            <div class="stars">
+                                    <% for(let i = 1; i <= 5; i++) { %>
+                                        <i class="fas <%= i <= review.rating ? 'fa-star' : 'fa-star-o' %>"></i>
+                                    <% } %>
+                        </div>
+                            </div>
+                        </div>
+                        <p class="review-text"><%= review.text %></p>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Add this after the reviews-section div -->
+        <div class="leave-reply-section">
+            <h2>Leave A Reply</h2>
+            <% if (user) { %>
+                <form class="review-form" id="reviewForm">
+                <div class="form-feedback"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Title</label>
+                            <input type="text" name="title" value="<%= user.name %>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                            <select class="rating-select" name="rating" required>
+                                <option value="" disabled selected>Select Rating</option>
+                            <option value="5">5 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="2">2 Stars</option>
+                            <option value="1">1 Star</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                        <input type="email" name="email" value="<%= user.email %>" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Write your review here...</label>
+                        <textarea name="text" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="post-review-btn">POST REVIEW</button>
+            </form>
+            <% } else { %>
+                <p class="sign-in-text">
+                    Please <a href="/auth/signin?redirect=/agent/<%= agent._id %>" class="sign-in-link">sign in</a> to post your review or 
+                    <a href="/auth/signup?redirect=/agent/<%= agent._id %>" class="sign-in-link">signup</a> if you don't have an account.
+                </p>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="contact-container">
+        <h2>Contact Form</h2>
+        <form class="contact-form">
+            <div class="form-feedback"></div>
+            <div class="form-group">
+                <label>Your Email</label>
+                <input type="email" placeholder="Enter mail address" required>
+            </div>
+            <div class="form-group">
+                <label>Your Phone</label>
+                <input type="tel" placeholder="Your phone number" required>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea placeholder="Hello, I am interested in [California Apartments]" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">INQUIRY</button>
+            <button type="button" class="btn btn-secondary">CALL NOW</button>
+        </form>
+
+        
+    </div>
+    </div>
+    <%- include('./partials/footer') %>
+    
+    <!-- Back to Top Button -->
+    <button id="backToTop" aria-label="Back to top">
+        <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+    </button>
+
+</body>
+<script src="/js/Agent_desc.js"></script>
+
+</html>

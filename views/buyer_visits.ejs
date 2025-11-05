@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Property Visits</title>
+    <link rel="shortcut icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/buyervisit.css">
+</head>
+
+<body>
+    <!-- Include navbar partial -->
+    <%- include('partials/header') %>
+
+    <div class="container">
+        <h1 class="page-title">My Property Visits</h1>
+        
+        <div class="visits-container">
+            <div class="visit-tabs">
+                <div class="visit-tab active" data-tab="all">All Visits</div>
+                <div class="visit-tab" data-tab="upcoming">Upcoming</div>
+                <div class="visit-tab" data-tab="pending">Pending</div>
+                <div class="visit-tab" data-tab="completed">Completed</div>
+            </div>
+            
+            <% if (visits && visits.length > 0) { %>
+                <div class="visit-list">
+                    <% visits.forEach(visit => { %>
+                        <div class="visit-card" data-status="<%= visit.status %>">
+                            <img src="<%= visit.propertyId.images && visit.propertyId.images.length > 0 ? visit.propertyId.images[0] : '/assets/property-1.jpg' %>" 
+                                alt="<%= visit.propertyId.title %>" class="visit-image">
+                            
+                            <div class="visit-details">
+                                <div class="visit-property"><%= visit.propertyId.title %></div>
+                                
+                                <div class="visit-meta">
+                                    <div class="visit-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <%= visit.propertyId.location %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="far fa-calendar"></i>
+                                        <%= new Date(visit.visitDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="far fa-clock"></i>
+                                        <%= visit.timeSlot %>
+                                    </div>
+                                </div>
+                                
+                                <div class="visit-agent">
+                                    <img src="<%= visit.agentId.image || '/assets/agent1.png' %>" alt="<%= visit.agentId.name %>" class="agent-image">
+                                    <div class="agent-details">
+                                        <div class="agent-name"><%= visit.agentId.name %></div>
+                                        <div class="agent-title"><%= visit.agentId.title || 'Real Estate Agent' %></div>
+                                    </div>
+                                    <span class="visit-status <%= visit.status %>"><%= visit.status %></span>
+                                </div>
+                                
+                                <% if (visit.buyerNotes) { %>
+                                    <div class="visit-notes">
+                                        <div class="notes-title">Your Notes:</div>
+                                        <%= visit.buyerNotes %>
+                                    </div>
+                                <% } %>
+                                
+                                <% if (visit.agentNotes) { %>
+                                    <div class="visit-notes">
+                                        <div class="notes-title">Agent Notes:</div>
+                                        <%= visit.agentNotes %>
+                                    </div>
+                                <% } %>
+                                
+                                <!-- <div class="visit-actions">
+                                    <a href="/property_overview/<%= visit.propertyId._id %>" class="btn btn-outline">View Property</a>
+                                    
+                                    <% if (visit.status === 'pending' || visit.status === 'approved') { %>
+                                        <form action="/visit/cancel/<%= visit._id %>" method="POST" onsubmit="return confirm('Are you sure you want to cancel this visit?');">
+                                            <button type="submit" class="btn btn-danger">Cancel Visit</button>
+                                        </form>
+                                    <% } %>
+                                </div> -->
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="far fa-calendar-times"></i>
+                    </div>
+                    <div class="empty-state-message">
+                        You don't have any property visits scheduled yet.
+                    </div>
+                    <a href="/visit/schedule" class="schedule-btn">
+                        <i class="fas fa-plus"></i> Schedule a Visit
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <!-- Include footer partial -->
+    <%- include('partials/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.visit-tab');
+            const visitCards = document.querySelectorAll('.visit-card');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const tabType = this.dataset.tab;
+                    
+                    // Show/hide visit cards based on tab
+                    visitCards.forEach(card => {
+                        const status = card.dataset.status;
+                        
+                        if (tabType === 'all') {
+                            card.style.display = 'flex';
+                        } else if (tabType === 'upcoming' && status === 'approved') {
+                            card.style.display = 'flex';
+                        } else if (tabType === 'pending' && status === 'pending') {
+                            card.style.display = 'flex';
+                        } else if (tabType === 'completed' && (status === 'completed' || status === 'cancelled' || status === 'rejected')) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    // Check if no cards are visible and show empty message if needed
+                    const visibleCards = Array.from(visitCards).filter(card => card.style.display !== 'none');
+                    const visitList = document.querySelector('.visit-list');
+                    
+                    if (visibleCards.length === 0 && visitList) {
+                        // Remove existing empty state if it exists
+                        const existingEmpty = visitList.querySelector('.empty-tab-state');
+                        if (existingEmpty) {
+                            existingEmpty.remove();
+                        }
+                        
+                        // Create empty state message
+                        const emptyState = document.createElement('div');
+                        emptyState.className = 'empty-state empty-tab-state';
+                        emptyState.innerHTML = `
+                            <div class="empty-state-icon">
+                                <i class="far fa-calendar-times"></i>
+                            </div>
+                            <div class="empty-state-message">
+                                No ${tabType} visits found.
+                            </div>
+                        `;
+                        
+                        visitList.appendChild(emptyState);
+                    } else {
+                        // Remove empty state if cards are visible
+                        const existingEmpty = document.querySelector('.empty-tab-state');
+                        if (existingEmpty) {
+                            existingEmpty.remove();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html> 

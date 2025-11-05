@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Property</title>
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/css/base.css">
+        <link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/header.css">
+        <link rel="stylesheet" href="/css/footer.css">
+        <link rel="stylesheet" href="/css/approveproperty.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<%- include('partials/header.ejs') %>
+<%- include('partials/navbar.ejs') %>
+
+<main class="dashboard-main admin-dashboard">
+    <div class="dashboard-container">
+        <!-- Admin: Property Approval Section -->
+        <section id="property-approval" class="dashboard-section">
+            <div class="section-header">
+                <h2>Property Approvals</h2>
+                <p>Review and approve property listings before they go live</p>
+            </div>
+
+            <!-- Filter and Search -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="property-status">Filter by:</label>
+                    <select id="property-status" class="filter-select">
+                        <option value="all">All Properties</option>
+                        <option value="pending" selected>Pending Review</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="property-type">Property Type:</label>
+                    <select id="property-type" class="filter-select">
+                        <option value="all">All Types</option>
+                        <option value="house">House</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="villa">Villa</option>
+                        <option value="cottage">Cottage</option>
+                        <option value="loft">Loft</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <input type="text" placeholder="Search by title or location">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="approval-stats">
+                <div class="stat-card active" data-filter="all">
+                    <div class="stat-icon" style="background-color: #e3f2fd;">
+                        <i class="fas fa-list" style="color: #1976d2;"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>All</h3>
+                        <p class="stat-number"><%= (stats.pendingPropertiesCount || 0) + (stats.approvedPropertiesCount || 0) + (stats.rejectedPropertiesCount || 0) %></p>
+                    </div>
+                </div>
+                
+                <div class="stat-card" data-filter="pending">
+                    <div class="stat-icon" style="background-color: #fff8e1;">
+                        <i class="fas fa-clock" style="color: #ffa000;"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Pending</h3>
+                        <p class="stat-number"><%= stats.pendingPropertiesCount || 0 %></p>
+                    </div>
+                </div>
+                
+                <div class="stat-card" data-filter="approved">
+                    <div class="stat-icon" style="background-color: #e8f5e9;">
+                        <i class="fas fa-check-circle" style="color: #4caf50;"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Approved</h3>
+                        <p class="stat-number"><%= stats.approvedPropertiesCount || 0 %></p>
+                    </div>
+                </div>
+                
+                <div class="stat-card" data-filter="rejected">
+                    <div class="stat-icon" style="background-color: #ffebee;">
+                        <i class="fas fa-times-circle" style="color: #f44336;"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Rejected</h3>
+                        <p class="stat-number"><%= stats.rejectedPropertiesCount || 0 %></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Property Listings Grid -->
+            <div class="property-approvals-container" id="property-approvals-container">
+                <% if (stats.pendingProperties && stats.pendingProperties.length > 0) { %>
+                    <% stats.pendingProperties.forEach(property => { %>
+                        <div class="property-approval-item pending">
+                            <div class="property-approval-header">
+                                <div class="property-image-container">
+                                    <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-1.jpg' %>" alt="<%= property.title %>">
+                                </div>
+                                <div class="property-info">
+                                    <span class="status-badge pending">Pending Review</span>
+                                    <h3><%= property.title %></h3>
+                                    <p class="property-id">ID: <%= property._id %></p>
+                                    <p class="property-location"><i class="fas fa-map-marker-alt"></i> <%= property.location %></p>
+                                    <p class="property-price"><%= property.price %></p>
+                                    <div class="property-features">
+                                        <span><i class="fas fa-bed"></i> <%= property.features.beds %> Beds</span>
+                                        <span><i class="fas fa-bath"></i> <%= property.features.baths %> Baths</span>
+                                        <span><i class="fas fa-ruler-combined"></i> <%= property.features.sqft %> sqft</span>
+                                    </div>
+                                    <div class="property-seller">
+                                        <p><i class="fas fa-user"></i> Listed by: <strong><%= property.seller ? property.seller.name : 'Unknown' %></strong></p>
+                                        <p><i class="fas fa-calendar-alt"></i> Submitted: <strong><%= new Date(property.createdAt).toLocaleDateString() %></strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="property-approval-actions">
+                                <button class="view-property-btn" data-property-id="<%= property._id %>">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <div class="approval-buttons">
+                                    <button class="approve-property-btn" data-property-id="<%= property._id %>">
+                                        <i class="fas fa-check-circle"></i> Approve
+                                    </button>
+                                    <button class="reject-property-btn" data-property-id="<%= property._id %>">
+                                        <i class="fas fa-times-circle"></i> Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div id="no-properties-message" class="empty-state">
+                        <i class="fas fa-home empty-icon"></i>
+                        <h3>No Pending Properties</h3>
+                        <p>There are no properties requiring your approval at this time.</p>
+                        <p>Check back later for new submissions.</p>
+                    </div>
+                <% } %>
+                
+                <% if (stats.approvedProperties && stats.approvedProperties.length > 0) { %>
+                    <% stats.approvedProperties.forEach(property => { %>
+                        <div class="property-approval-item approved" style="display: none;">
+                            <div class="property-approval-header">
+                                <div class="property-image-container">
+                                    <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-1.jpg' %>" alt="<%= property.title %>">
+                                </div>
+                                <div class="property-info">
+                                    <span class="status-badge approved">Approved</span>
+                                    <h3><%= property.title %></h3>
+                                    <p class="property-id">ID: <%= property._id %></p>
+                                    <p class="property-location"><i class="fas fa-map-marker-alt"></i> <%= property.location %></p>
+                                    <p class="property-price"><%= property.price %></p>
+                                    <div class="property-features">
+                                        <span><i class="fas fa-bed"></i> <%= property.features.beds %> Beds</span>
+                                        <span><i class="fas fa-bath"></i> <%= property.features.baths %> Baths</span>
+                                        <span><i class="fas fa-ruler-combined"></i> <%= property.features.sqft %> sqft</span>
+                                    </div>
+                                    <div class="property-seller">
+                                        <p><i class="fas fa-user"></i> Listed by: <strong><%= property.seller ? property.seller.name : 'Unknown' %></strong></p>
+                                        <p><i class="fas fa-calendar-alt"></i> Submitted: <strong><%= new Date(property.createdAt).toLocaleDateString() %></strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="property-approval-actions">
+                                <button class="view-property-btn" data-property-id="<%= property._id %>">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+                
+                <% if (stats.rejectedProperties && stats.rejectedProperties.length > 0) { %>
+                    <% stats.rejectedProperties.forEach(property => { %>
+                        <div class="property-approval-item rejected" style="display: none;">
+                            <div class="property-approval-header">
+                                <div class="property-image-container">
+                                    <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-1.jpg' %>" alt="<%= property.title %>">
+                                </div>
+                                <div class="property-info">
+                                    <span class="status-badge rejected">Rejected</span>
+                                    <h3><%= property.title %></h3>
+                                    <p class="property-id">ID: <%= property._id %></p>
+                                    <p class="property-location"><i class="fas fa-map-marker-alt"></i> <%= property.location %></p>
+                                    <p class="property-price"><%= property.price %></p>
+                                    <div class="property-features">
+                                        <span><i class="fas fa-bed"></i> <%= property.features.beds %> Beds</span>
+                                        <span><i class="fas fa-bath"></i> <%= property.features.baths %> Baths</span>
+                                        <span><i class="fas fa-ruler-combined"></i> <%= property.features.sqft %> sqft</span>
+                                    </div>
+                                    <% if (property.adminNotes) { %>
+                                    <div class="rejection-notes">
+                                        <h4><i class="fas fa-exclamation-circle"></i> Rejection Reason</h4>
+                                        <p><%= property.adminNotes %></p>
+                                    </div>
+                                    <% } %>
+                                    <div class="property-seller">
+                                        <p><i class="fas fa-user"></i> Listed by: <strong><%= property.seller ? property.seller.name : 'Unknown' %></strong></p>
+                                        <p><i class="fas fa-calendar-alt"></i> Submitted: <strong><%= new Date(property.createdAt).toLocaleDateString() %></strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="property-approval-actions">
+                                <button class="view-property-btn" data-property-id="<%= property._id %>">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+            
+            <!-- Property Detail Modal -->
+            <div id="property-detail-modal" class="modal">
+                <div class="modal-content property-detail-modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div class="modal-header">
+                        <h2>Property Review</h2>
+                    </div>
+                    <div class="modal-body property-detail-body">
+                        <div class="property-images-slider">
+                            <div class="slider-images">
+                                <!-- Images will be loaded dynamically -->
+                            </div>
+                            <div class="slider-controls">
+                                <button class="prev-slide"><i class="fas fa-chevron-left"></i></button>
+                                <button class="next-slide"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div class="image-thumbnails">
+                                <!-- Thumbnails will be loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="property-detail-info">
+                            <h3 id="modal-property-title"></h3>
+                            <p class="property-id" id="modal-property-id"></p>
+                            <p class="property-location" id="modal-property-location"></p>
+                            <p class="property-price" id="modal-property-price"></p>
+                            
+                            <div class="property-detail-grid">
+                                <div class="detail-section">
+                                    <h4>Property Details</h4>
+                                    <div class="detail-rows" id="modal-property-details">
+                                        <!-- Property details will be loaded dynamically -->
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h4>Amenities</h4>
+                                    <div class="amenities-list" id="modal-property-amenities">
+                                        <!-- Amenities will be loaded dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Description</h4>
+                                <div class="property-description" id="modal-property-description">
+                                    <!-- Description will be loaded dynamically -->
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Seller Information</h4>
+                                <div class="seller-info" id="modal-seller-info">
+                                    <!-- Seller info will be loaded dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="property-approval-footer">
+                        <div class="modal-action-buttons" id="modal-action-buttons">
+                            <!-- Buttons will be added dynamically based on property status -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="/js/propertyapprove.js"></script>
+
+<%- include('partials/footer.ejs') %> 

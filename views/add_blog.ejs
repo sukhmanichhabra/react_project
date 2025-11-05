@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Blog | Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/add_blog.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+
+<body>
+    <%- include('./partials/navbar') %>
+
+        <div class="container">
+            <div class="page-header animate_animated animate_fadeIn">
+                <h1><i class="fas fa-edit"></i> Add New Blog Post</h1>
+                <p>Create engaging content for your audience</p>
+            </div>
+
+            <div class="blog-form-container animate_animated animatefadeInUp animate_delay-1s">
+                <form id="blogForm" class="blog-form" action="/blog/add" method="POST" enctype="multipart/form-data">
+                    <% if (locals.alert) { %>
+                        <div class="alert <%= locals.alertType || 'error' %>">
+                            <i
+                                class="fas <%= locals.alertType === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle' %>"></i>
+                            <%= alert %>
+                        </div>
+                        <% } %>
+
+                            <div class="form-group animate_animated animatefadeInLeft animate_delay-1s">
+                                <label for="title">
+                                    Title <span class="required">*</span>
+                                    <span class="tooltip" data-tooltip="Enter a descriptive title for your blog post">
+                                        <i class="fas fa-question-circle"></i>
+                                    </span>
+                                </label>
+                                <input type="text" id="title" name="title" required minlength="5" maxlength="100"
+                                    placeholder="Enter blog title" class="input-field">
+                                <div class="validation-message" id="title-validation"></div>
+                            </div>
+
+                            <div class="form-group animate_animated animatefadeInRight animate_delay-1s">
+                                <label for="author">
+                                    Author <span class="required">*</span>
+                                </label>
+                                <input type="text" id="author" name="author" required minlength="2" maxlength="50"
+                                    placeholder="Enter author name" class="input-field">
+                                <div class="validation-message" id="author-validation"></div>
+                            </div>
+
+                            <div class="form-row animate_animated animatefadeInLeft animate_delay-2s">
+                                <div class="form-group">
+                                    <label>
+                                        Tags <span class="required">*</span>
+                                        <span class="tooltip" data-tooltip="Select at least one category for your blog">
+                                            <i class="fas fa-question-circle"></i>
+                                        </span>
+                                    </label>
+                                    <div class="tag-container">
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="residential" name="tags" value="residential">
+                                            <label for="residential" class="tag-label">
+                                                <i class="fas fa-home"></i> Residential
+                                            </label>
+                                        </div>
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="commercial" name="tags" value="commercial">
+                                            <label for="commercial" class="tag-label">
+                                                <i class="fas fa-building"></i> Commercial
+                                            </label>
+                                        </div>
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="investment" name="tags" value="investment">
+                                            <label for="investment" class="tag-label">
+                                                <i class="fas fa-chart-line"></i> Investment
+                                            </label>
+                                        </div>
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="market-trends" name="tags" value="market-trends">
+                                            <label for="market-trends" class="tag-label">
+                                                <i class="fas fa-chart-bar"></i> Market Trends
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="validation-message" id="tags-validation"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="createdOn">
+                                        Publication Date <span class="required">*</span>
+                                    </label>
+                                    <input type="date" id="createdOn" name="createdOn" required class="input-field"
+                                        value="<%= new Date().toISOString().split('T')[0] %>">
+                                    <div class="validation-message" id="date-validation"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group animate_animated animatefadeInUp animate_delay-2s">
+                                <label for="image">
+                                    Featured Image
+                                    <span class="tooltip" data-tooltip="Upload a high-quality image for your blog post">
+                                        <i class="fas fa-question-circle"></i>
+                                    </span>
+                                </label>
+                                <div class="file-upload">
+                                    <input type="file" id="image" name="image" accept="image/*"
+                                        class="file-input">
+                                    <label for="image" class="file-label">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span class="file-text">Choose an image</span>
+                                    </label>
+                                    <div class="file-preview" id="imagePreview"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group animate_animated animatefadeInUp animate_delay-3s">
+                                <label for="content">
+                                    Content <span class="required">*</span>
+                                    <span class="tooltip"
+                                        data-tooltip="Write your blog content here. Rich text formatting is supported.">
+                                        <i class="fas fa-question-circle"></i>
+                                    </span>
+                                </label>
+                                <div id="editor-container"></div>
+                                <textarea id="content" name="content" style="display:none"></textarea>
+                                <div class="validation-message" id="content-validation"></div>
+                            </div>
+
+                            <div class="form-actions animate_animated animatefadeInUp animate_delay-3s">
+                                <button type="button" class="btn btn-secondary" onclick="window.location.href='/'">
+                                    <i class="fas fa-arrow-left"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <i class="fas fa-paper-plane"></i> Publish Blog
+                                </button>
+                            </div>
+                </form>
+            </div>
+        </div>
+
+        <%- include('./partials/footer') %>
+
+            <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+            <script src="/js/add_blog.js">
+            </script>
+</body>
+
+</html>

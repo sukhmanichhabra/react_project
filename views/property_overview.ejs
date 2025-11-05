@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Overview</title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/AgentList_property.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <link rel="stylesheet" href="/css/propertyoverview.css">
+
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+
+    <div class="overview">
+        <% if (locals.query && locals.query.error) { %>
+            <div class="alert-message <%= locals.query.error === 'insufficientFunds' ? 'error-message' : 'error-message' %>">
+                <i class="fas fa-exclamation-circle"></i>
+                <% if (locals.query.error === 'insufficientFunds') { %>
+                    <% const amountNeeded = parseFloat(locals.query.amountNeeded); %>
+                    Insufficient funds! You need $<%= !isNaN(amountNeeded) ? amountNeeded.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' %> more to purchase this property.
+                    <a href="/dashboard#account-section" class="alert-action">Add funds</a>
+                <% } else if (locals.query.error === 'notAvailable') { %>
+                    This property is no longer available for purchase.
+                <% } else if (locals.query.error === 'invalidPrice') { %>
+                    There was an issue with the property price. Please contact support.
+                <% } else if (locals.query.error === 'buyerNotFound') { %>
+                    Your buyer information could not be found. Please update your profile.
+                <% } else if (locals.query.error === 'purchaseError') { %>
+                    Error during purchase: <%= locals.query.message || 'Unknown error' %>
+                <% } else { %>
+                    An error occurred. Please try again later.
+                <% } %>
+            </div>
+        <% } %>
+
+        <div class="listing-container">
+            <div class="listing-details">
+                <h1><%= property.title %></h1>
+                <div class="listing-info">
+                    <span class="for-sale"><%= property.tag === 'rent' ? 'FOR RENT' : 'FOR SALE' %></span>
+                    <span class="location">📍 <%= property.location %></span>
+                </div>
+            </div>
+
+            <div class="listing-price">
+                <h2>Price: <%= property.price %></h2>
+                <p>Est. Payment <span><%= property.estPayment %></span></p>
+                <div class="icons-container">
+                    <span class="share-icon" id="sharePropertyBtn"><i class="fas fa-share-alt"></i> Share</span>
+                    <div class="icons">
+                        <button>❤️</button>
+                        <button>🔖</button>
+                        <button>➕</button>
+                    </div>
+                </div>
+                <% if (locals.user) { %>
+                    <% if (locals.user.role === 'buyer' && property.status === 'active') { %>
+                        <% const actionText = property.tag === 'rent' ? 'RENT NOW' : 'BUY NOW'; %>
+                        
+                        <% 
+                        // Extract numeric price from property price string
+                        const priceString = property.price;
+                        const priceValue = parseFloat(priceString.replace(/[^0-9.-]+/g, ""));
+                        
+                        // Ensure accountBalance is treated as a number with proper default
+                        const userBalance = locals.user && typeof locals.user.accountBalance === 'number' 
+                            ? locals.user.accountBalance 
+                            : 0;
+                            
+                        const hasEnoughBalance = userBalance >= priceValue;
+                        const amountNeeded = priceValue - userBalance;
+                        %>
+                        
+                        <div class="balance-info">
+                            Your Balance: $<%= userBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %>
+                        </div>
+                        
+                        <% if (!hasEnoughBalance) { %>
+                            <div class="insufficient-funds">
+                                <i class="fas fa-exclamation-circle"></i> Insufficient funds! You need $<%= amountNeeded.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %> more.
+                            </div>
+                            <a href="/dashboard#account-section" class="action-button add-funds-btn">
+                                <i class="fas fa-wallet"></i> ADD FUNDS
+                            </a>
+                        <% } else { %>
+                            <form action="/property/<%= property.id %>/purchase" method="POST">
+                                <button type="submit" class="action-button <%= property.tag === 'rent' ? 'rent-btn' : 'buy-btn' %>">
+                                    <i class="fas <%= property.tag === 'rent' ? 'fa-key' : 'fa-shopping-cart' %>"></i> <%= actionText %>
+                                </button>
+                            </form>
+                            
+                            <!-- Schedule Visit Button -->
+                            <a href="/visit/schedule/<%= property._id %>" class="action-button" style="background-color: #2c6ecb; margin-top: 10px; display: block; text-align: center;">
+                                <i class="far fa-calendar-alt"></i> SCHEDULE VISIT
+                            </a>
+                        <% } %>
+                    <% } else if (property.status !== 'active') { %>
+                        <div class="property-status <%= property.status %>">
+                            <i class="fas <%= property.status === 'sold' ? 'fa-check-circle' : 'fa-key' %>"></i>
+                            <%= property.status === 'sold' ? 'SOLD' : 'RENTED' %>
+                        </div>
+                        
+                        <% 
+                        // Check if rent information is available
+                        const rentDue = locals.rentInfo && locals.rentInfo.hasPendingRent;
+                        const rentStatus = rentDue ? 'RENT DUE' : 'RENT PAID';
+                        %>
+                        <div class="rent-status <%= rentDue ? 'rent-due' : 'rent-paid' %>">
+                            <i class="fas <%= rentDue ? 'fa-exclamation-circle' : 'fa-check-circle' %>"></i>
+                            <%= rentStatus %>
+                        </div>
+                        
+                        <% if (property.status === 'rented' && property.tag === 'rent' && 
+                               locals.user && locals.user._id && 
+                               property.buyerId && property.buyerId.toString() === locals.user._id.toString()) { %>
+                            <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                <form action="/rent" method="GET" style="width: 100%;">
+                                    <button type="submit" class="action-button" style="background-color: #4caf50; color: white; width: 100%;">
+                                        <i class="fas fa-money-bill-wave"></i> PAY RENT
+                                    </button>
+                                </form>
+                                
+                                <form action="/property/<%= property.id %>/cancel-rental" method="POST" class="cancel-rental-form js-cancel-rental-form" 
+                                      style="width: 100%;"
+                                      onsubmit="return confirm('Are you sure you want to cancel this rental agreement? This action cannot be undone.')">
+                                    <button type="submit" class="action-button cancel-rental-btn" style="width: 100%;">
+                                        <i class="fas fa-times-circle"></i> CANCEL RENTAL
+                                    </button>
+                                </form>
+                            </div>
+                        <% } else if (property.status === 'rented' && property.tag === 'rent' && 
+                                      locals.user && locals.user._id && 
+                                      property.sellerId && property.sellerId.toString() === locals.user._id.toString()) { %>
+                            <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+                                <a href="/rent/property/<%= property.id %>/manage" class="action-button" style="background-color: #2196F3; color: white; text-align: center;">
+                                    <i class="fas fa-history"></i> VIEW RENT HISTORY
+                                </a>
+                                <a href="/rent/property/<%= property.id %>/manage" class="action-button" style="background-color: #4caf50; color: white; text-align: center;">
+                                    <i class="fas fa-file-invoice-dollar"></i> MANAGE RENT
+                                </a>
+                                <form action="/rent/cancel-agreement/<%= property.id %>" method="POST" class="cancel-rental-form" 
+                                      style="width: 100%;"
+                                      onsubmit="return confirm('Are you sure you want to cancel this rental agreement? This action cannot be undone.')">
+                                    <button type="submit" class="action-button cancel-rental-btn" style="width: 100%;">
+                                        <i class="fas fa-times-circle"></i> CANCEL AGREEMENT
+                                    </button>
+                                </form>
+                            </div>
+                        <% } %>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Find the section with action buttons for the property -->
+        <div class="property-actions" style="display: flex; flex-wrap: wrap; gap: 12px; margin: 25px 0; justify-content: center;">
+            <% if (property.status === 'active') { %>
+                <% if (property.tag === 'sale') { %>
+                    <form action="/property/<%= property._id %>/buy" method="POST">
+                        <button type="submit" class="action-btn buy-btn">
+                            <i class="fas fa-shopping-cart"></i> Buy Property
+                        </button>
+                    </form>
+                <% } else if (property.tag === 'rent') { %>
+                    <form action="/property/<%= property._id %>/rent" method="POST">
+                        <button type="submit" class="action-btn rent-btn">
+                            <i class="fas fa-key"></i> Rent Property
+                        </button>
+                    </form>
+                <% } %>
+                
+                <a href="/visit/schedule/<%= property._id %>" class="action-btn schedule-btn">
+                    <i class="fas fa-calendar-alt"></i> Schedule Visit
+                </a>
+                
+                <!-- Add the compare button -->
+                <button class="action-btn compare-btn" id="addToCompareBtn" data-property-id="<%= property._id %>" data-property-title="<%= property.title %>">
+                    <i class="fas fa-exchange-alt"></i> Add to Compare
+                </button>
+                
+                <!-- Add the neighborhood info button -->
+                <a href="/property/<%= property._id %>/neighbourhood" class="action-btn neighborhood-btn">
+                    <i class="fas fa-map-marker-alt"></i> Neighbourhood Info
+                </a>
+            <% } %>
+        </div>
+
+        <div class="gallery-container">
+            <div class="main-image">
+                <img id="mainImg" src="<%= property.images[0] %>" alt="<%= property.title %>">
+            </div>
+            <div class="thumbnail-container">
+                <% for(let i=1; i<property.images.length && i<5; i++) { %>
+                    <img class="thumbnail" src="<%= property.images[i] %>" alt="Thumbnail <%= i %>">
+                <% } %>
+            </div>
+        </div>
+
+        <div class="property-overview">
+            <div class="overview-item">
+                <i class="fa-solid fa-ruler-combined"></i>
+                <p>Sqft.<span> <%= property.features.sqft %></span></p>
+            </div>
+            <div class="divider"></div>
+
+            <div class="overview-item">
+                <i class="fa-solid fa-bed"></i>
+                <p>Bed.<span> <%= property.features.beds %></span></p>
+            </div>
+            <div class="divider"></div>
+
+            <div class="overview-item">
+                <i class="fa-solid fa-bath"></i>
+                <p>Bath.<span> <%= property.features.baths %></span></p>
+            </div>
+            <div class="divider"></div>
+
+            <div class="overview-item">
+                <i class="fa-solid fa-utensils"></i>
+                <p>Kitchen.<span> <%= property.features.kitchen %></span></p>
+            </div>
+            <div class="divider"></div>
+
+            <div class="overview-item">
+                <i class="fa-solid fa-building"></i>
+                <p>Type.<span> <%= property.features.type %></span></p>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <!-- Left Side: Main Content -->
+            <div class="left-container">
+                <!-- Overview -->
+                <div class="overview-container">
+                    <h2>Overview</h2>
+                    <p><%= property.description %></p>
+                </div>
+
+                <div class="property-details-container">
+                    <!-- Property Features -->
+                    <div class="overview-container">
+                        <h2>Property Features</h2>
+                        <p>Risk management and compliance, when approached strategically, have the potential to go
+                            beyond mitigating threats.</p>
+
+                        <!-- Property Details Section -->
+                        <div class="drop">
+                            <div class="drop-header">
+                                <span><i class="fas fa-home"></i> Property Details</span>
+                                <div class="drop-icon">+</div>
+                            </div>
+                            <div class="drop-content">
+                                <div class="details-grid">
+                                    <p>Property ID: <strong>#<%= property.id %></strong></p>
+                                    <p>Property Type: <strong><%= property.features.type %></strong></p>
+                                    <p>Bedrooms: <strong><%= property.features.beds %></strong></p>
+                                    <p>Bathrooms: <strong><%= property.features.baths %></strong></p>
+                                    <p>Total Area: <strong><%= property.features.sqft %> sqft</strong></p>
+                                    <p>Year Built: <strong>2020</strong></p>
+                                    <p>Parking Spaces: <strong>2 Cars</strong></p>
+                                    <p>Property Status: <strong><%= property.tag === 'rent' ? 'For Rent' : 'For Sale' %></strong></p>
+                                    <p>Floor Level: <strong>3rd Floor</strong></p>
+                                    <p>Furnishing: <strong>Semi-Furnished</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Utility Details Section -->
+                        <div class="drop">
+                            <div class="drop-header">
+                                <span><i class="fas fa-bolt"></i> Utility Details</span>
+                                <div class="drop-icon">+</div>
+                            </div>
+                            <div class="drop-content">
+                                <div class="details-grid">
+                                    <p>Electricity: <strong>24/7 Supply</strong></p>
+                                    <p>Water Supply: <strong>Municipal + Bore</strong></p>
+                                    <p>Internet: <strong>Fiber Optic Ready</strong></p>
+                                    <p>Gas Connection: <strong>Available</strong></p>
+                                    <p>Security: <strong>24/7 CCTV</strong></p>
+                                    <p>Maintenance: <strong>Monthly</strong></p>
+                                    <p>Backup Power: <strong>100% Coverage</strong></p>
+                                    <p>Waste Management: <strong>Daily Collection</strong></p>
+                                    <p>Air Conditioning: <strong>Central System</strong></p>
+                                    <p>Heating System: <strong>Floor Heating</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Outdoor Features Section -->
+                        <div class="drop">
+                            <div class="drop-header">
+                                <span><i class="fas fa-tree"></i> Outdoor Features</span>
+                                <div class="drop-icon">+</div>
+                            </div>
+                            <div class="drop-content">
+                                <div class="details-grid">
+                                    <p>Garden Area: <strong>500 sqft</strong></p>
+                                    <p>Balcony: <strong>2 Private</strong></p>
+                                    <p>Swimming Pool: <strong>Community</strong></p>
+                                    <p>BBQ Area: <strong>Available</strong></p>
+                                    <p>Children's Play Area: <strong>Yes</strong></p>
+                                    <p>Jogging Track: <strong>1.2 km</strong></p>
+                                    <p>Outdoor Gym: <strong>Available</strong></p>
+                                    <p>Pet Area: <strong>Designated Space</strong></p>
+                                    <p>Landscape: <strong>Professional</strong></p>
+                                    <p>Parking Type: <strong>Covered</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Neighbourhood Information Section -->
+                        <div class="drop">
+                            <div class="drop-header">
+                                <span><i class="fas fa-map-marked-alt"></i> Neighbourhood Information</span>
+                                <div class="drop-icon">+</div>
+                            </div>
+                            <div class="drop-content">
+                                <div class="details-grid">
+                                    <p>Safety Rating: <strong>High</strong></p>
+                                    <p>Walkability Score: <strong>85/100</strong></p>
+                                    <p>Public Transport: <strong>Excellent</strong></p>
+                                    <p>Schools Nearby: <strong>2 within 1 km</strong></p>
+                                    <p>Hospitals: <strong>1 within 2 km</strong></p>
+                                    <p>Shopping: <strong>Mall within 3 km</strong></p>
+                                    <p>Restaurants: <strong>Multiple options</strong></p>
+                                    <p>Parks: <strong>2 within walking distance</strong></p>
+                                </div>
+                                <div style="margin-top: 15px; text-align: center;">
+                                    <a href="/property/<%= property._id %>/neighbourhood" class="btn" style="background-color: #3498db; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none;">
+                                        <i class="fas fa-info-circle"></i> View Detailed Neighbourhood Info
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <% if (property.tag === 'rent' && property.status === 'rented' && 
+                              locals.user && locals.user._id && 
+                              (property.sellerId && property.sellerId.toString() === locals.user._id.toString() || 
+                               property.buyerId && property.buyerId.toString() === locals.user._id.toString() || 
+                               locals.user.role === 'admin')) { %>
+                            <!-- Rent History Section -->
+                            <div class="drop">
+                                <div class="drop-header">
+                                    <span><i class="fas fa-money-bill-wave"></i> Rent History</span>
+                                    <div class="drop-icon">+</div>
+                                </div>
+                            
+                                <div class="drop-content">
+                                    <% if (locals.rentInfo && locals.rentInfo.rentHistory && locals.rentInfo.rentHistory.length > 0) { %>
+                                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd; background-color: #f5f5f5;">Due Date</th>
+                                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd; background-color: #f5f5f5;">Amount</th>
+                                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd; background-color: #f5f5f5;">Status</th>
+                                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd; background-color: #f5f5f5;">Paid Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% locals.rentInfo.rentHistory.forEach(rent => { %>
+                                                    <tr>
+                                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                                                            <%= new Date(rent.dueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) %>
+                                                        </td>
+                                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                                                            $<%= rent.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %>
+                                                        </td>
+                                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                                                            <span class="status-badge status-<%= rent.status %>">
+                                                                <%= rent.status.charAt(0).toUpperCase() + rent.status.slice(1) %>
+                                                            </span>
+                                                        </td>
+                                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                                                            <%= rent.paidDate ? new Date(rent.paidDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : 'Not paid yet' %>
+                                                        </td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    <% } else { %>
+                                        <p style="text-align: center; padding: 20px; color: #757575;">No rent history available for this property.</p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Amenities -->
+                    <div class="overview-container">
+                        <h2>Amenities</h2>
+                        <p id="amenity-p">Property features and amenities available at this location</p>
+                        <div class="amenities-grid">
+                            <% 
+                            // Get all possible amenities
+                            const allAmenities = [
+                                "A/C & Heating", "Swimming Pool", "Garden", "Disabled Access", 
+                                "Parking", "Wifi", "Pet Friendly", "Gym", "Security", 
+                                "Elevator", "Fireplace", "Play Ground"
+                            ];
+                            
+                            // Check if property has amenities array
+                            const propertyAmenities = property.amenities || [];
+                            
+                            // Display all amenities with check or cross
+                            allAmenities.forEach(amenity => {
+                                const hasAmenity = propertyAmenities.includes(amenity);
+                                const iconClass = hasAmenity ? "fa-check" : "fa-times";
+                                const textClass = hasAmenity ? "available" : "unavailable";
+                            %>
+                                <div class="amenity-item <%= textClass %>">
+                                    <i class="fa-solid <%= iconClass %>"></i>
+                                    <span><%= amenity %></span>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+
+                    <!-- Video Tour -->
+                    <div class="overview-container">
+                        <h2>Video Tour</h2>
+                        <div class="video-wrapper">
+                            <img src="/assets/7.jpg" alt="Video Thumbnail" class="video-thumbnail">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floor Plans -->
+                    <div class="overview-container">
+                        <h2>Floor Plan</h2>
+                        <div class="floor-plans">
+                            <img src="/assets/floor_1.jpg" alt="Floor Plan">
+                        </div>
+                    </div>
+
+                    <!-- What's Nearby -->
+                    <div class="overview-container">
+                        <h2>What's Nearby</h2>
+                        <p id="description">
+                            Risk management and compliance, when approached strategically, have the potential to go
+                            beyond mitigating threats.
+                        </p>
+                        <div class="nearby-grid">
+                            <div><span>School & College:</span> <strong>0.9km</strong></div>
+                            <div><span>Grocery Center:</span> <strong>0.2km</strong></div>
+                            <div><span>Metro Station:</span> <strong>0.7km</strong></div>
+                            <div><span>Gym:</span> <strong>2.3km</strong></div>
+                            <div><span>University:</span> <strong>2.7km</strong></div>
+                            <div><span>Hospital:</span> <strong>1.7km</strong></div>
+                            <div><span>Shopping Mall:</span> <strong>1.1km</strong></div>
+                            <div><span>Police Station:</span> <strong>1.2km</strong></div>
+                            <div><span>Bus Station:</span> <strong>1.1km</strong></div>
+                            <div><span>River:</span> <strong>3.1km</strong></div>
+                            <div><span>Market:</span> <strong>3.4km</strong></div>
+                        </div>
+                    </div>
+                    <div class="overview-container">
+                        <h2>Location</h2>
+                        <div class="map-wrapper">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3105.047504472703!2d-105.5082037846655!3d39.55005197947926!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b7f3fd2d3241b%3A0x8a6f0b7b6a9b9b9b!2sColorado!5e0!3m2!1sen!2sus!4v1675646723411!5m2!1sen!2sus"
+                                width="100%" height="450" style="border:0; border-radius: 12px;" allowfullscreen=""
+                                loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div class="overview-container">
+                        <div class="reviews-header">
+                            <h2>Reviews</h2>
+                            <% if (property.reviews && property.reviews.length > 0) { %>
+                                <div class="average-rating">
+                                    <span class="rating-value"><%= property.averageRating ? property.averageRating.toFixed(1) : '0.0' %></span>
+                                    <div class="stars">
+                                        <% for(let i = 1; i <= 5; i++) { %>
+                                            <i class="fas fa-star <%= i <= Math.round(property.averageRating) ? 'filled' : '' %>"></i>
+                                        <% } %>
+                        </div>
+                                    <span class="review-count">(<%= property.reviews.length %> reviews)</span>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <% if (property.reviews && property.reviews.length > 0) { %>
+                            <% property.reviews.forEach(review => { %>
+                        <div class="review">
+                            <div class="review-content">
+                                <div class="review-top">
+                                    <span class="review-name"><%= review.userName %></span>
+                                    <div class="review-rating">
+                                        <% for(let i = 1; i <= 5; i++) { %>
+                                            <i class="fas fa-star <%= i <= review.rating ? 'filled' : '' %>"></i>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <span class="review-date"><%= new Date(review.date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: '2-digit' }) %></span>
+                                <% if (review.title) { %>
+                                    <h4 class="review-title"><%= review.title %></h4>
+                                <% } %>
+                                <p class="review-text"><%= review.text %></p>
+                            </div>
+                            <hr>
+                        </div>
+                    <% }); %>
+                        <% } else { %>
+                            <div class="no-reviews">
+                                <p>No reviews yet. Be the first to review!</p>
+                    </div>
+                        <% } %>
+
+                    <!-- Write review -->
+                        <div class="write-review-section">
+                            <h2>Leave A Review</h2>
+                            <% if (locals.user) { %>
+                                <form class="reply-form" id="reviewForm">
+                                    <input type="hidden" id="propertyId" value="<%= property.id %>">
+                                    <input type="hidden" id="userName" value="<%= locals.user.name || locals.user.username || 'User' %>">
+                            <div class="input-group">
+                                <label for="title">Title*</label>
+                                        <input type="text" id="reviewTitle" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="email">Email*</label>
+                                            <input type="email" id="reviewEmail" value="<%= locals.user.email %>" readonly>
+                                </div>
+                                <div class="input-group">
+                                            <label for="rating">Rating*</label>
+                                            <select id="rating" name="rating" required>
+                                                <option value="">Select Rating</option>
+                                                <option value="1">1 Star</option>
+                                                <option value="2">2 Stars</option>
+                                                <option value="3">3 Stars</option>
+                                                <option value="4">4 Stars</option>
+                                                <option value="5">5 Stars</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                        <label for="reviewText">Review*</label>
+                                        <textarea id="reviewText" placeholder="Write your review here..." required></textarea>
+                            </div>
+
+                                    <button type="submit" class="post-review-btn">POST REVIEW</button>
+                        </form>
+                                <div id="reviewStatus" class="review-status" style="display: none;"></div>
+                            <% } else { %>
+                                <p><a href="/login">Sign in</a> to post your review or <a href="/signup">signup</a> if you don't have an account.</p>
+                            <% } %>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right Side: Agent Info and Contact Form -->
+            <div class="right-container">
+                <!-- Agent Info -->
+                <div class="agent-info-container">
+                    <h2>Property Agent</h2>
+                    <% if (agent) { %>
+                        <div class="agent-card">
+                            <div class="agent-image">
+                                <img src="<%= agent.image || '/images/default-avatar.png' %>" alt="<%= agent.name %>" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+                            </div>
+                            <div class="agent-details">
+                                <h3><%= agent.name %></h3>
+                                <p class="agent-title"><%= agent.title %></p>
+                                <p class="agent-location"><i class="fas fa-map-marker-alt"></i> <%= agent.location %></p>
+                                <p class="agent-listings"><i class="fas fa-list"></i> <%= agent.listingCount %> <%= agent.listingCount === 1 ? 'Listing' : 'Listings' %></p>
+                                <% if (agent.verified) { %>
+                                    <div class="agent-verified"><i class="fas fa-check-circle"></i> Verified Agent</div>
+                                <% } %>
+                                <a href="/agent/<%= agent.id %>" class="view-profile-btn">View Profile</a>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <p>No agent assigned to this property.</p>
+                    <% } %>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-container">
+                    <h2>Contact Agent</h2>
+                    <form class="contact-form" id="contactAgentForm">
+                        <div class="form-message"></div>
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your name" required 
+                                <% if (user) { %>value="<%= user.name %>"<% } %>>
+                            <div class="validation-message" id="nameError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" placeholder="Enter your email" required 
+                                <% if (user) { %>value="<%= user.email %>"<% } %>>
+                            <div class="validation-message" id="emailError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Your Phone</label>
+                            <input type="tel" id="phone" name="phone" placeholder="Enter your 10-digit phone number"
+                                <% if (user && user.phone) { %>value="<%= user.phone %>"<% } %>>
+                            <div class="validation-message" id="phoneError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="I'm interested in this property (minimum 30 characters)" required></textarea>
+                            <div class="validation-message" id="messageError"></div>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+                </div>
+
+            </div>
+        </div>                                 
+        <%- include('./partials/footer') %>
+
+        <!-- Back to Top Button -->
+        <button id="backToTop" aria-label="Back to top">
+            <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+        </button>
+
+        <!-- Share Modal -->
+        <div id="shareModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Share this Property</h3>
+                <div class="share-link-container">
+                    <input type="text" id="shareLink" readonly value="<%= `${process.env.BASE_URL || 'https://yourwebsite.com'}/property/${property.id}` %>">
+                    <button id="copyLinkBtn"><i class="fas fa-copy"></i> Copy Link</button>
+                </div>
+                
+                <div class="qr-code-container">
+                    <h4>Scan QR Code</h4>
+                    <p class="qr-subtitle">Scan this code with your phone to view the property</p>
+                    <div id="qrCode"></div>
+                    <button id="downloadQrBtn" class="qr-download-btn">
+                        <i class="fas fa-download"></i> Download QR Code
+                    </button>
+                </div>
+                
+                <div class="share-options">
+
+                    <a href="https://wa.me/?text=<%= encodeURIComponent(`Check out this property: ${property.title} - ${process.env.BASE_URL || 'https://yourwebsite.com'}/property/${property.id}`) %>" target="_blank" class="share-option whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="mailto:?subject=<%= encodeURIComponent(`Property Recommendation: ${property.title}`) %>&body=<%= encodeURIComponent(`Check out this property: ${property.title} - ${process.env.BASE_URL || 'https://yourwebsite.com'}/property/${property.id}`) %>" class="share-option email">
+                        <i class="fas fa-envelope"></i> Email
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Back to Top Button
+            const backToTopButton = document.getElementById('backToTop');
+            
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.style.display = 'flex';
+                } else {
+                    backToTopButton.style.display = 'none';
+                }
+            });
+
+        // Thumbnail image click handler
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImg = document.getElementById('mainImg');
+        
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                // Update main image with clicked thumbnail
+                mainImg.src = this.src;
+                
+                // Add active class to clicked thumbnail and remove from others
+                thumbnails.forEach(thumb => thumb.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Function to toggle dropdown sections
+        function toggleDropdown(element) {
+            const dropdownSection = element.closest('.drop');
+            const dropIcon = element.querySelector('.drop-icon');
+            const dropContent = dropdownSection.querySelector('.drop-content');
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.drop').forEach(drop => {
+                if (drop !== dropdownSection && drop.classList.contains('open')) {
+                    drop.classList.remove('open');
+                    const icon = drop.querySelector('.drop-icon');
+                    icon.textContent = '+';
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdownSection.classList.toggle('open');
+            dropIcon.textContent = dropdownSection.classList.contains('open') ? '-' : '+';
+        }
+
+        // Initialize dropdowns when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropHeaders = document.querySelectorAll('.drop-header');
+            
+            dropHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const dropContainer = this.parentElement;
+                    const dropIcon = this.querySelector('.drop-icon');
+                    const dropContent = dropContainer.querySelector('.drop-content');
+                    
+                    // Close all other dropdowns
+                    dropHeaders.forEach(otherHeader => {
+                        if (otherHeader !== this) {
+                            const otherContainer = otherHeader.parentElement;
+                            const otherIcon = otherHeader.querySelector('.drop-icon');
+                            otherContainer.classList.remove('open');
+                            otherIcon.textContent = '+';
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropContainer.classList.toggle('open');
+                    dropIcon.textContent = dropContainer.classList.contains('open') ? '-' : '+';
+                });
+            });
+        });
+
+        // Review form submission
+        const reviewForm = document.getElementById('reviewForm');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const propertyId = document.getElementById('propertyId').value;
+                const title = document.getElementById('reviewTitle').value;
+                const rating = document.getElementById('rating').value;
+                const text = document.getElementById('reviewText').value;
+                const userName = document.getElementById('userName').value;
+                const reviewStatus = document.getElementById('reviewStatus');
+                
+                if (!title.trim() || !rating || !text.trim()) {
+                    showReviewStatus('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                // Send the review data to the server
+                fetch(`/property/${propertyId}/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title,
+                        rating,
+                        text,
+                        userName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success || data.message === 'Review added successfully') {
+                        showReviewStatus('Review added successfully!', 'success');
+                        // Clear form
+                        document.getElementById('reviewTitle').value = '';
+                        document.getElementById('rating').value = '';
+                        document.getElementById('reviewText').value = '';
+                        
+                        // Add the new review to the page without refreshing
+                        const review = data.review || {
+                            userName: userName,
+                            title: title,
+                            rating: parseFloat(rating),
+                            text: text,
+                            date: new Date()
+                        };
+                        addReviewToPage(review);
+                        
+                        // Reload the page after a short delay
+                setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        showReviewStatus(data.message || 'Failed to add review', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showReviewStatus('An error occurred. Please try again.', 'error');
+                });
+            });
+        }
+        
+        function showReviewStatus(message, type) {
+            const reviewStatus = document.getElementById('reviewStatus');
+            if (reviewStatus) {
+                reviewStatus.textContent = message;
+                reviewStatus.className = 'review-status ' + type;
+                reviewStatus.style.display = 'block';
+                
+                // Hide the status message after 3 seconds
+            setTimeout(() => {
+                    reviewStatus.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        function addReviewToPage(review) {
+            const reviewsContainer = document.querySelector('.reviews-header').parentElement;
+            const noReviewsMessage = document.querySelector('.no-reviews');
+            
+            if (noReviewsMessage) {
+                noReviewsMessage.remove();
+            }
+            
+            // Create new review element
+            const reviewElement = document.createElement('div');
+            reviewElement.className = 'review';
+            
+            // Format the date
+            const date = new Date(review.date);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                day: '2-digit', 
+                month: 'short', 
+                year: '2-digit' 
+            });
+            
+            // Create star rating HTML
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<i class="fas fa-star ${i <= review.rating ? 'filled' : ''}"></i>`;
+            }
+            
+            // Set the HTML content
+            reviewElement.innerHTML = `
+                <div class="review-content">
+                    <div class="review-top">
+                        <span class="review-name">${review.userName}</span>
+                        <div class="review-rating">
+                            ${starsHtml}
+                        </div>
+                    </div>
+                    <span class="review-date">${formattedDate}</span>
+                    <h4 class="review-title">${review.title}</h4>
+                    <p class="review-text">${review.text}</p>
+                </div>
+            `;
+            
+            // Add a horizontal rule
+            const hr = document.createElement('hr');
+            
+            // Insert the new review at the top of the reviews list
+            const firstReview = reviewsContainer.querySelector('.review');
+            if (firstReview) {
+                reviewsContainer.insertBefore(hr, firstReview.nextSibling);
+                reviewsContainer.insertBefore(reviewElement, firstReview);
+            } else {
+                reviewsContainer.appendChild(reviewElement);
+                reviewsContainer.appendChild(hr);
+            }
+            
+            // Update average rating if it exists
+            const averageRatingElement = document.querySelector('.average-rating');
+            if (averageRatingElement) {
+                // You would need to fetch the new average rating from the server
+                // For now, we'll just update the review count
+                const reviewCountElement = averageRatingElement.querySelector('.review-count');
+                if (reviewCountElement) {
+                    const currentCount = parseInt(reviewCountElement.textContent.match(/\d+/)[0]) || 0;
+                    reviewCountElement.textContent = `(${currentCount + 1} reviews)`;
+                }
+            }
+        }
+
+        // Contact form validation and submission handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contactAgentForm');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const messageInput = document.getElementById('message');
+            
+            // Validation functions
+            function validateName(name) {
+                const namePattern = /^[a-zA-Z\s]{2,30}$/;
+                return namePattern.test(name.trim());
+            }
+            
+            function validateEmail(email) {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailPattern.test(email.trim());
+            }
+            
+            function validatePhone(phone) {
+                const phonePattern = /^\d{10}$/;
+                return phonePattern.test(phone.replace(/\D/g, ''));
+            }
+            
+            function validateMessage(message) {
+                return message.trim().length >= 30;
+            }
+            
+            function showValidationError(inputId, errorId, message) {
+                const input = document.getElementById(inputId);
+                const errorElement = document.getElementById(errorId);
+                
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
+                errorElement.classList.remove('success');
+            }
+            
+            function showValidationSuccess(inputId, errorId) {
+                const input = document.getElementById(inputId);
+                const errorElement = document.getElementById(errorId);
+                
+                input.classList.add('valid');
+                input.classList.remove('invalid');
+                errorElement.classList.remove('show');
+            }
+            
+            function validateField(field) {
+                switch(field) {
+                    case 'name':
+                        const name = nameInput.value;
+                        if (!name.trim()) {
+                            showValidationError('name', 'nameError', 'Name is required');
+                            return false;
+                        } else if (!validateName(name)) {
+                            showValidationError('name', 'nameError', 'Name should be 2-30 characters long and contain only letters');
+                            return false;
+                        } else {
+                            showValidationSuccess('name', 'nameError');
+                            return true;
+                        }
+                        
+                    case 'email':
+                        const email = emailInput.value;
+                        if (!email.trim()) {
+                            showValidationError('email', 'emailError', 'Email is required');
+                            return false;
+                        } else if (!validateEmail(email)) {
+                            showValidationError('email', 'emailError', 'Please enter a valid email address');
+                            return false;
+                        } else {
+                            showValidationSuccess('email', 'emailError');
+                            return true;
+                        }
+                        
+                    case 'phone':
+                        const phone = phoneInput.value;
+                        if (phone.trim() && !validatePhone(phone)) {
+                            showValidationError('phone', 'phoneError', 'Phone number must be exactly 10 digits');
+                            return false;
+                        } else {
+                            showValidationSuccess('phone', 'phoneError');
+                            return true;
+                        }
+                        
+                    case 'message':
+                        const message = messageInput.value;
+                        if (!message.trim()) {
+                            showValidationError('message', 'messageError', 'Message is required');
+                            return false;
+                        } else if (!validateMessage(message)) {
+                            showValidationError('message', 'messageError', 'Message must be at least 30 characters long');
+                            return false;
+                        } else {
+                            showValidationSuccess('message', 'messageError');
+                            return true;
+                        }
+                        
+                    default:
+                        return true;
+                }
+            }
+            
+            // Real-time validation
+            nameInput.addEventListener('blur', () => validateField('name'));
+            emailInput.addEventListener('blur', () => validateField('email'));
+            phoneInput.addEventListener('blur', () => validateField('phone'));
+            messageInput.addEventListener('blur', () => validateField('message'));
+            
+            // Input event for immediate feedback
+            nameInput.addEventListener('input', () => {
+                if (nameInput.value.length > 0) validateField('name');
+            });
+            
+            emailInput.addEventListener('input', () => {
+                if (emailInput.value.length > 0) validateField('email');
+            });
+            
+            phoneInput.addEventListener('input', () => {
+                if (phoneInput.value.length > 0) validateField('phone');
+            });
+            
+            messageInput.addEventListener('input', () => {
+                if (messageInput.value.length > 0) validateField('message');
+            });
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Validate all fields
+                    const isNameValid = validateField('name');
+                    const isEmailValid = validateField('email');
+                    const isPhoneValid = validateField('phone');
+                    const isMessageValid = validateField('message');
+                    
+                    if (!isNameValid || !isEmailValid || !isPhoneValid || !isMessageValid) {
+                        const formMessage = document.querySelector('.form-message');
+                        formMessage.innerHTML = `
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Please fix the validation errors above.
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Get form data
+                    const formData = {
+                        name: nameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        phone: phoneInput.value.trim(),
+                        message: messageInput.value.trim()
+                    };
+                    
+                    // Message container for feedback
+                    const formMessage = document.querySelector('.form-message');
+                    formMessage.innerHTML = '<div class="sending-message"><i class="fas fa-spinner fa-pulse"></i> Sending your message...</div>';
+                    
+                    // Disable submit button
+                    const submitBtn = contactForm.querySelector('.submit-btn');
+                    submitBtn.disabled = true;
+                    
+                    // Create XMLHttpRequest
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/property/<%= property.id %>/contact', true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            submitBtn.disabled = false;
+                            
+                            if (xhr.status === 201 || xhr.status === 200) {
+                                try {
+                                    const data = JSON.parse(xhr.responseText);
+                                    if (data.success) {
+                                        // Show success message
+                                        formMessage.innerHTML = `
+                                            <div class="success-message">
+                                                <i class="fas fa-check-circle"></i>
+                                                ${data.message}
+                                            </div>
+                                        `;
+                                        
+                                        // Clear message field only
+                                        messageInput.value = '';
+                                        showValidationSuccess('message', 'messageError');
+                                        
+                                        // Disable submit button temporarily
+                                        submitBtn.disabled = true;
+                                        setTimeout(() => {
+                                            submitBtn.disabled = false;
+                                        }, 5000);
+                                    } else {
+                                        // Show error message
+                                        formMessage.innerHTML = `
+                                            <div class="error-message">
+                                                <i class="fas fa-exclamation-circle"></i>
+                                                ${data.message}
+                                            </div>
+                                        `;
+                                    }
+                                } catch (error) {
+                                    console.error('Error parsing response:', error);
+                                    formMessage.innerHTML = `
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            Invalid response from server. Please try again.
+                                        </div>
+                                    `;
+                                }
+                            } else if (xhr.status === 404) {
+                                formMessage.innerHTML = `
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        Service not found. Please contact support.
+                                    </div>
+                                `;
+                            } else if (xhr.status === 500) {
+                                formMessage.innerHTML = `
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        Server error. Please try again later.
+                                    </div>
+                                `;
+                            } else {
+                                formMessage.innerHTML = `
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        Network error (${xhr.status}). Please check your connection and try again.
+                                    </div>
+                                `;
+                            }
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        submitBtn.disabled = false;
+                        formMessage.innerHTML = `
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Network error. Please check your connection and try again.
+                            </div>
+                        `;
+                    };
+                    
+                    xhr.ontimeout = function() {
+                        submitBtn.disabled = false;
+                        formMessage.innerHTML = `
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Request timeout. Please try again.
+                            </div>
+                        `;
+                    };
+                    
+                    // Set timeout
+                    xhr.timeout = 30000; // 30 seconds
+                    
+                    // Send the request
+                    xhr.send(JSON.stringify(formData));
+                });
+            }
+        });
+
+        // Add to Compare functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const addToCompareBtn = document.getElementById('addToCompareBtn');
+            
+            if (addToCompareBtn) {
+                addToCompareBtn.addEventListener('click', function() {
+                    const propertyId = this.getAttribute('data-property-id');
+                    const propertyTitle = this.getAttribute('data-property-title');
+                    
+                    // Get existing compareList from localStorage or initialize new array
+                    let compareList = JSON.parse(localStorage.getItem('compareList')) || [];
+                    
+                    // Check if already in compare list
+                    if (compareList.some(item => item.id === propertyId)) {
+                        alert('This property is already in your comparison list');
+                        return;
+                    }
+                    
+                    // Maximum 4 properties can be compared
+                    if (compareList.length >= 4) {
+                        alert('You can compare up to 4 properties at a time. Please remove a property from your comparison list first.');
+                        return;
+                    }
+                    
+                    // Add to compare list
+                    compareList.push({
+                        id: propertyId,
+                        title: propertyTitle
+                    });
+                    
+                    // Save to localStorage
+                    localStorage.setItem('compareList', JSON.stringify(compareList));
+                    
+                    // Show success message
+                    alert('Property added to comparison list');
+                    
+                    // Option to go to compare page
+                    if (confirm('Do you want to go to the comparison page now?')) {
+                        window.location.href = '/property/compare?propertyIds=' + compareList.map(item => item.id).join(',');
+                    }
+                });
+            }
+        });
+
+        // Share functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const shareBtn = document.getElementById('sharePropertyBtn');
+            const shareModal = document.getElementById('shareModal');
+            const closeModal = document.querySelector('.close-modal');
+            const copyLinkBtn = document.getElementById('copyLinkBtn');
+            const shareLinkInput = document.getElementById('shareLink');
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+            
+            // QR code generation function
+            function generateQRCode() {
+                const qrCodeDiv = document.getElementById('qrCode');
+                if (!qrCodeDiv) return;
+                
+                const propertyUrl = shareLinkInput.value;
+                console.log("Generating QR code for URL:", propertyUrl); // Debug log
+                
+                // Clear previous QR code
+                qrCodeDiv.innerHTML = '';
+                
+                // Show loading indicator
+                qrCodeDiv.innerHTML = '<div style="text-align:center;"><i class="fas fa-spinner fa-pulse"></i><br>Generating...</div>';
+                
+                // Method 1: Try client-side generation with qrcode-generator
+                try {
+                    if (typeof qrcode !== 'undefined') {
+                        console.log("Using client-side QR code generation"); // Debug log
+                        
+                        // Generate QR code
+                        const qr = qrcode(0, 'L');
+                        qr.addData(propertyUrl);
+                        qr.make();
+                        
+                        // Create QR code as SVG
+                        const qrImage = qr.createImgTag(4);
+                        qrCodeDiv.innerHTML = qrImage;
+                        
+                        // Store the data URL for download
+                        const qrDataUrl = qrCodeDiv.querySelector('img').src;
+                        setupDownloadButton(qrDataUrl);
+                        
+                        return;
+                    }
+                } catch (error) {
+                    console.error("Error with client-side QR generation:", error);
+                    // Fall back to other methods
+                }
+                
+                // Method 2: Try using Google Chart API
+                const googleChartsImg = new Image();
+                googleChartsImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${encodeURIComponent(propertyUrl)}&chs=150x150&choe=UTF-8&chld=L|0`;
+                
+                googleChartsImg.onload = function() {
+                    qrCodeDiv.innerHTML = '';
+                    qrCodeDiv.appendChild(googleChartsImg);
+                    console.log("QR code loaded successfully with Google Charts API"); // Debug log
+                    setupDownloadButton(googleChartsImg.src);
+                };
+                
+                googleChartsImg.onerror = function() {
+                    console.error("Failed to load QR code from Google Charts API"); // Debug log
+                    
+                    // Method 3: Use QR Server API as final fallback
+                    const qrServerImg = new Image();
+                    qrServerImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(propertyUrl)}`;
+                    
+                    qrServerImg.onload = function() {
+                        qrCodeDiv.innerHTML = '';
+                        qrCodeDiv.appendChild(qrServerImg);
+                        console.log("QR code loaded successfully with QR Server API"); // Debug log
+                        setupDownloadButton(qrServerImg.src);
+                    };
+                    
+                    qrServerImg.onerror = function() {
+                        console.error("All QR code generation methods failed"); // Debug log
+                        qrCodeDiv.innerHTML = `
+                            <div style="color:red;text-align:center;">
+                                <i class="fas fa-exclamation-circle"></i><br>
+                                Failed to generate QR code<br>
+                                <button id="retryQrBtn" class="retry-btn">
+                                    <i class="fas fa-redo"></i> Retry
+                                </button>
+                            </div>
+                        `;
+                        
+                        // Add retry button functionality
+                        const retryBtn = document.getElementById('retryQrBtn');
+                        if (retryBtn) {
+                            retryBtn.addEventListener('click', function() {
+                                generateQRCode();
+                            });
+                        }
+                    };
+                };
+            }
+            
+            function setupDownloadButton(qrCodeUrl) {
+                // Add download functionality
+                const downloadQrBtn = document.getElementById('downloadQrBtn');
+                if (downloadQrBtn) {
+                    // Remove any existing event listeners to prevent duplicates
+                    const newBtn = downloadQrBtn.cloneNode(true);
+                    downloadQrBtn.parentNode.replaceChild(newBtn, downloadQrBtn);
+                    
+                    newBtn.addEventListener('click', function() {
+                        // Create a temporary link
+                        const tempLink = document.createElement('a');
+                        tempLink.href = qrCodeUrl;
+                        tempLink.download = 'property-qrcode.png';
+                        document.body.appendChild(tempLink);
+                        tempLink.click();
+                        document.body.removeChild(tempLink);
+                        
+                        showToast('<i class="fas fa-check-circle"></i> QR Code downloaded');
+                    });
+                }
+            }
+            
+            // Show modal when share button is clicked
+            if (shareBtn) {
+                shareBtn.addEventListener('click', function() {
+                    shareModal.style.display = 'block';
+                    // Select the link text for easy copying
+                    shareLinkInput.select();
+                    // Generate QR code
+                    generateQRCode();
+                });
+            }
+            
+            // Close modal when X is clicked
+            if (closeModal) {
+                closeModal.addEventListener('click', function() {
+                    shareModal.style.display = 'none';
+                });
+            }
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === shareModal) {
+                    shareModal.style.display = 'none';
+                }
+            });
+            
+            // Copy link functionality
+            if (copyLinkBtn) {
+                copyLinkBtn.addEventListener('click', function() {
+                    // Select the text
+                    shareLinkInput.select();
+                    shareLinkInput.setSelectionRange(0, 99999); // For mobile devices
+                    
+                    // Copy to clipboard
+                    try {
+                        navigator.clipboard.writeText(shareLinkInput.value)
+                            .then(() => {
+                                showToast('<i class="fas fa-check-circle"></i> Link copied to clipboard!');
+                            })
+                            .catch(err => {
+                                // Fallback for older browsers
+                                document.execCommand('copy');
+                                showToast('<i class="fas fa-check-circle"></i> Link copied to clipboard!');
+                            });
+                    } catch (err) {
+                        // If clipboard API not available
+                        document.execCommand('copy');
+                        showToast('<i class="fas fa-check-circle"></i> Link copied to clipboard!');
+                    }
+                });
+            }
+            
+            // Function to show toast notification
+            function showToast(message) {
+                toast.innerHTML = message;
+                toast.classList.add('show');
+                
+                // Hide toast after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        });
+        </script>
+        <script src="/js/AgentList_property.js" charset="UTF-8"></script>
+</body>
+
+</html>

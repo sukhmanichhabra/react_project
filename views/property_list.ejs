@@ -1,0 +1,1057 @@
+</html>
+
+<!-- website/views/property_list.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Listings</title>    <link rel="stylesheet" href="/css/AgentList_property.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/enhanced-property-card.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Add CSS for approval status badges -->
+    <style>
+        /* Removed approval status styles */
+    </style>
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <aside class="filter-sidebar">
+                <h3>I'm looking to...</h3>
+            <select id="propertyStatus">
+                <option value="all">All Properties</option>
+                <option value="rent">Rent Apartments</option>
+                <option value="sale">Buy Apartments</option>
+                </select><br>
+                
+                <h3>Location</h3>
+                <div class="location-container">
+            <input type="text" id="locationFilter" placeholder="Enter city or area" class="location-input">
+                    <div id="locationSuggestions" class="location-suggestions"></div>
+                </div>
+                
+                <div class="price-range">
+                    <label for="price">Price Range:</label>
+                    <div class="price-slider-container">
+                        <input type="range" id="minPriceRange" min="500" max="30000000" step="500" value="500" 
+                            oninput="updatePriceValues()">
+                        <input type="range" id="maxPriceRange" min="500" max="30000000" step="500" value="10000" 
+                            oninput="updatePriceValues()">
+                        <div class="price-slider-track"></div>
+                        <div class="price-slider-labels">
+                            <span class="min-price-label"></span>
+                            <span class="max-price-label"></span>
+                        </div>
+                    </div>
+                    <span id="price-value">$500 - $10,000</span>
+                </div>
+                
+                <h3>Bedrooms</h3>
+            <select id="bedroomFilter">
+                <option value="all">Any</option>
+                <option value="1">1 Bedroom</option>
+                <option value="2">2 Bedrooms</option>
+                <option value="3">3 Bedrooms</option>
+                <option value="4">4+ Bedrooms</option>
+                </select>
+                
+                <div class="amenities-grid">
+                    <h3>Amenities</h3>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="A/C & Heating" class="amenity-checkbox">
+                        <span class="checkmark"></span> A/C & Heating
+                    </label>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="Garden" class="amenity-checkbox">
+                        <span class="checkmark"></span> Garden
+                    </label>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="Swimming Pool" class="amenity-checkbox">
+                        <span class="checkmark"></span> Swimming Pool
+                    </label>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="Parking" class="amenity-checkbox">
+                        <span class="checkmark"></span> Parking
+                    </label>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="Gym" class="amenity-checkbox">
+                        <span class="checkmark"></span> Gym
+                    </label>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="Security" class="amenity-checkbox">
+                        <span class="checkmark"></span> Security
+                    </label>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="Wifi" class="amenity-checkbox">
+                        <span class="checkmark"></span> Wifi
+                    </label>
+                    <label class="custom-checkbox">
+                    <input type="checkbox" value="Pet Friendly" class="amenity-checkbox">
+                        <span class="checkmark"></span> Pet Friendly
+                    </label>
+                </div>
+
+                <h3>Property Type</h3>
+            <select id="propertyType">
+                <option value="all">All Types</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Villa">Villa</option>
+                <option value="Condo">Condo</option>
+                <option value="House">House</option>
+                </select>
+                
+            <button id="filterButton" class="search-btn" style="margin-top: 15px; padding: 10px; color: white; background-color: #ff6600; border: none; cursor: pointer; border-radius: 5px; width: 100%; font-weight: 600;">
+                    <i class="fas fa-search" style="margin-right: 5px;"></i> Search Properties
+                </button>
+                
+            <button id="showAllButton" class="show-all-btn" style="margin-top: 10px; padding: 10px; width: 100%; border: 1px solid #ddd; background-color: white; color: #333; cursor: pointer; border-radius: 5px; font-weight: 500; transition: all 0.3s ease;">
+                Show All Properties
+                </button>
+            
+            <a href="/property/compare" class="compare-properties-btn" style="display: block; margin-top: 15px; padding: 10px; width: 100%; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; font-weight: 500; transition: all 0.3s ease;">
+                <i class="fas fa-exchange-alt" style="margin-right: 5px;"></i> Compare Properties
+            </a>
+            </aside>            <div class="listing" style="width: 100%;">
+                <div class="property-grid">
+                <% if (properties && properties.length > 0) { %>
+                    <% properties.forEach(property => { %>
+                        <%- include('partials/enhanced_property_card', { property: property }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-properties-found">
+                        <div class="no-results-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>No properties available</h3>
+                        <p>We don't have any properties listed at the moment. Please check back later.</p>
+                    </div>
+                <% } %>
+                </div>
+                
+                <!-- No Results Message -->
+                <div id="noResultsMessage" style="display: none;">
+                    <div class="no-results-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No properties match your search criteria</h3>
+                    <p>We couldn't find any properties that match all your selected filters.</p>
+                    <div class="filter-suggestions">
+                        <p>Try these suggestions:</p>
+                        <ul>
+                            <li>
+                                <i class="fas fa-check-circle"></i> 
+                                Expand your price range
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i> 
+                                Try a different location
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i> 
+                                Select fewer amenities
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="resetFilters" class="reset-filters-btn">
+                            <i class="fas fa-redo-alt"></i> Reset All Filters
+                        </button>
+                        <button id="modifyFiltersBtn" class="modify-filters-btn">
+                            <i class="fas fa-sliders-h"></i> Modify Filters
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Debug Info (hidden in production) -->
+                <div id="debugInfo" style="display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px;">
+                    <h4>Debug Information</h4>
+                    <div class="debug-controls">
+                        <button id="debugPriceFilter" class="btn btn-sm btn-secondary">Debug Price Filter</button>
+                        <button id="debugStatusFilter" class="btn btn-sm btn-primary">Debug Status Filter</button>
+                        <button id="clearDebug" class="btn btn-sm btn-danger">Clear Debug</button>
+            </div>
+                    <div id="debugOutput" style="max-height: 300px; overflow-y: auto; margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #eee;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Section -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Properties</h2>
+                <p>Explore our handpicked selection of premium properties</p>
+            </div>
+            <div class="featured-stats">
+                <div class="stat-item">
+                    <i class="fas fa-home"></i>
+                    <h3>1200+</h3>
+                    <p>Properties Listed</p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <h3>500+</h3>
+                    <p>Happy Clients</p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-star"></i>
+                    <h3>4.8</h3>
+                    <p>Average Rating</p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>50+</h3>
+                    <p>Cities Covered</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <div>
+            <%- include('./partials/footer') %>
+        </div>
+        <script src="/js/AgentList_property.js" charset="UTF-8"></script>
+        <button id="backToTop" aria-label="Back to top">
+            <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+        </button>
+        <script>
+            function updatePriceValues() {
+                const minPrice = parseInt(document.getElementById('minPriceRange').value);
+                const maxPrice = parseInt(document.getElementById('maxPriceRange').value);
+                const propertyStatus = document.getElementById('propertyStatus');
+                const propertyStatusValue = propertyStatus ? propertyStatus.value : 'all';
+                
+                // Format the price values with commas
+                const formattedMinPrice = minPrice.toLocaleString('en-US');
+                const formattedMaxPrice = maxPrice.toLocaleString('en-US');
+                
+                // Ensure min doesn't exceed max
+                if (minPrice > maxPrice) {
+                    document.getElementById('minPriceRange').value = maxPrice;
+                    document.getElementById('price-value').innerHTML = 
+                        `<span style="color: #ff6600;">$${formattedMaxPrice}</span>${propertyStatusValue === 'rent' ? '<span style="color: #666;"> /month</span>' : ''}`;
+                } else {
+                    document.getElementById('price-value').innerHTML = 
+                        `<span style="color: #ff6600;">$${formattedMinPrice} - $${formattedMaxPrice}</span>${propertyStatusValue === 'rent' ? '<span style="color: #666;"> /month</span>' : ''}`;
+                }
+                
+                // Update the track visually
+                updatePriceTrack();
+                
+                // Update the slider labels
+                updateSliderLabels();
+            }
+            
+            function updateSliderLabels() {
+                const minRange = document.getElementById('minPriceRange');
+                const maxRange = document.getElementById('maxPriceRange');
+                const minLabel = document.querySelector('.min-price-label');
+                const maxLabel = document.querySelector('.max-price-label');
+                
+                if (minLabel && maxLabel) {
+                    // Show the current value range rather than min/max
+                    const minValue = parseInt(minRange.value).toLocaleString('en-US');
+                    const maxValue = parseInt(maxRange.value).toLocaleString('en-US');
+                    
+                    minLabel.textContent = `$${minValue}`;
+                    maxLabel.textContent = `$${maxValue}`;
+                }
+            }
+
+            // Extract price from string (e.g., "$1,500/month" -> 1500)
+            function extractPrice(priceString) {
+                if (!priceString) return 0;
+                
+                try {
+                    // Remove currency symbol, commas, and anything after a slash
+                    const numericPart = priceString.replace(/[$,]/g, '').split('/')[0].trim();
+                    const price = parseInt(numericPart) || 0;
+                    
+                    // Log the extracted price for debugging
+                    if (window.debugMode) {
+                        console.log(`Extracted price: ${price} from "${priceString}"`);
+                    }
+                    
+                    return price;
+                } catch (error) {
+                    console.error("Error extracting price from:", priceString, error);
+                    return 0;
+                }
+            }
+            
+            // Update price range when property status changes
+            // This listener moved inside DOMContentLoaded below
+            
+            function updatePriceTrack() {
+                const minVal = document.getElementById('minPriceRange').value;
+                const maxVal = document.getElementById('maxPriceRange').value;
+                const minRange = document.getElementById('minPriceRange');
+                const maxRange = document.getElementById('maxPriceRange');
+                
+                const minPercent = ((minVal - minRange.min) / (minRange.max - minRange.min)) * 100;
+                const maxPercent = ((maxVal - minRange.min) / (minRange.max - minRange.min)) * 100;
+                
+                const track = document.querySelector('.price-slider-track');
+                if (track) {
+                    track.style.left = minPercent + '%';
+                    track.style.width = (maxPercent - minPercent) + '%';
+                }
+        }
+
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        // Ensure page starts at the top when loaded or refreshed
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            
+            // Force scroll to top after a slight delay to override any browser behavior
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 50);
+            
+            // Initialize back to top button
+            backToTopButton.style.display = 'none';
+                
+                // Initialize price range slider
+                updatePriceTrack();
+                updateSliderLabels();
+                
+                // Enable debug mode with URL parameter ?debug=true
+                const urlParams = new URLSearchParams(window.location.search);
+            window.debugMode = urlParams.get('debug') === 'true';
+            
+            // Set initial price range based on property status
+            const propertyStatus = document.getElementById('propertyStatus');
+            if (propertyStatus && propertyStatus.value !== 'all') {
+                // Trigger change event manually - filterProperties will be called inside this event
+                const event = new Event('change');
+                propertyStatus.dispatchEvent(event);
+            }
+            
+            // Show debug info if debug mode is enabled
+            if (window.debugMode) {
+                    const debugInfo = document.getElementById('debugInfo');
+                    if (debugInfo) {
+                        debugInfo.style.display = 'block';
+                    }
+                }
+        };        // Filtering functionality
+        document.addEventListener('DOMContentLoaded', function() {
+                const propertyCards = document.querySelectorAll('.enhanced-property-card');
+                const propertyStatusSelect = document.getElementById('propertyStatus');
+                const propertyTypeSelect = document.getElementById('propertyType');
+                const amenityCheckboxes = document.querySelectorAll('.amenity-checkbox');
+                const locationFilter = document.getElementById('locationFilter');
+                const locationSuggestions = document.getElementById('locationSuggestions');
+                const minPriceRangeSlider = document.getElementById('minPriceRange');
+                const maxPriceRangeSlider = document.getElementById('maxPriceRange');
+            const filterButton = document.getElementById('filterButton');
+            const showAllButton = document.getElementById('showAllButton');
+                const debugInfo = document.getElementById('debugInfo');
+                const debugOutput = document.getElementById('debugOutput');
+                
+                // Initialize debugMode globally if not already set
+                if (typeof window.debugMode === 'undefined') {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    window.debugMode = urlParams.get('debug') === 'true';
+                }
+                
+                // Get all unique locations from property cards
+                const allLocations = [];
+                propertyCards.forEach(card => {
+                    const location = card.querySelector('address')?.textContent.trim();
+                    if (location && !allLocations.includes(location)) {
+                        allLocations.push(location);
+                    }
+                });
+                
+                // Location autocomplete functionality
+                locationFilter.addEventListener('input', function() {
+                    const inputValue = this.value.toLowerCase().trim();
+                    locationSuggestions.innerHTML = '';
+                    
+                    if (inputValue.length < 2) {
+                        locationSuggestions.style.display = 'none';
+                        return;
+                    }
+                    
+                    const matchingLocations = allLocations.filter(location => 
+                        location.toLowerCase().includes(inputValue)
+                    );
+                    
+                    if (matchingLocations.length > 0) {
+                        matchingLocations.forEach(location => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.className = 'suggestion-item';
+                            suggestionItem.textContent = location;
+                            suggestionItem.addEventListener('click', function() {
+                                locationFilter.value = location;
+                                locationSuggestions.style.display = 'none';
+                            });
+                            locationSuggestions.appendChild(suggestionItem);
+                        });
+                        locationSuggestions.style.display = 'block';
+                    } else {
+                        locationSuggestions.style.display = 'none';
+                    }
+                });
+                
+                // Hide suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (e.target !== locationFilter && e.target !== locationSuggestions) {
+                        locationSuggestions.style.display = 'none';
+                    }
+                });
+                
+                // Enable debug mode with URL parameter ?debug=true
+                if (window.debugMode) {
+                    debugInfo.style.display = 'block';
+                    logDebug('Debug mode enabled');
+                    
+                    // Log all property cards and their attributes
+                    logDebug('Property cards found: ' + propertyCards.length);
+                    propertyCards.forEach((card, index) => {
+                        const cardType = card.getAttribute('data-property-type');
+                        const cardTag = card.getAttribute('data-tag');
+                        logDebug(`Card ${index + 1}: Type=${cardType}, Tag=${cardTag}`);
+                    });
+                }
+                
+                function logDebug(message) {
+                    if (window.debugMode) {
+                        console.log(message);
+                        const logEntry = document.createElement('div');
+                        logEntry.textContent = message;
+                        debugOutput.appendChild(logEntry);
+                    }
+                }
+                
+                // Set initial active tag if provided
+                if (propertyStatusSelect && '<%= activeTag %>' !== 'all') {
+                    propertyStatusSelect.value = '<%= activeTag %>';
+                    logDebug(`Setting initial active tag: ${propertyStatusSelect.value}`);
+                }
+                
+                // Filter function
+                function filterProperties() {
+                    try {
+                        // Add visual feedback that filtering is in progress
+                        const filterButton = document.getElementById('filterButton');
+                        if (filterButton) {
+                            filterButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Filtering...';
+                            filterButton.style.backgroundColor = '#ccc';
+                        }
+                        
+                        // Since propertyStatus is commented out in HTML, set default value
+                        const selectedStatus = propertyStatusSelect ? propertyStatusSelect.value : 'all';
+                    const selectedType = propertyTypeSelect.value;
+                    const selectedBedrooms = document.getElementById('bedroomFilter').value;
+                    const locationText = locationFilter.value.toLowerCase().trim();
+                    const minPrice = parseInt(minPriceRangeSlider.value);
+                    const maxPrice = parseInt(maxPriceRangeSlider.value);
+                        
+                        // Force console logging for debugging regardless of debug mode
+                        console.log(`Filtering - Status: ${selectedStatus}, Type: ${selectedType}, Bedrooms: ${selectedBedrooms}, Location: ${locationText}, Price Range: $${minPrice}-$${maxPrice}`);
+                    
+                    // Get selected amenities
+                    const selectedAmenities = [];
+                    amenityCheckboxes.forEach(checkbox => {
+                        if (checkbox.checked) {
+                            selectedAmenities.push(checkbox.value);
+                        }
+                    });
+                    
+                    logDebug(`Filtering - Status: ${selectedStatus}, Type: ${selectedType}, Bedrooms: ${selectedBedrooms}, Location: ${locationText}, Price Range: $${minPrice.toLocaleString()}-$${maxPrice.toLocaleString()}, Amenities: ${selectedAmenities.join(', ')}`);
+                    
+                    let visibleCount = 0;
+                    let priceOutOfRangeCount = 0;
+                        let statusMismatchCount = 0;
+                        let totalCards = 0;
+                        
+                        // Count total cards before filtering
+                        propertyCards.forEach(() => {
+                            totalCards++;
+                        });
+                        console.log(`Total property cards before filtering: ${totalCards}`);
+                        
+                        // Debug first property card
+                        if (propertyCards.length > 0) {
+                            const firstCard = propertyCards[0];
+                            console.log("First property card data attributes:", {
+                                type: firstCard.getAttribute('data-property-type'),
+                                tag: firstCard.getAttribute('data-tag'),
+                                amenities: firstCard.getAttribute('data-amenities'),
+                                status: firstCard.getAttribute('data-status')
+                            });
+                        }
+                        
+                        // For Firefox compatibility, need to make a real array
+                        const propertyCardsArray = Array.from(propertyCards);
+                        
+                        // Clear any previous results - make all property cards hidden first
+                        propertyCardsArray.forEach(card => {
+                            if (card.parentElement) {
+                                console.log(`Setting card parent element (${card.parentElement.tagName}) to display: none`);
+                                card.parentElement.style.display = 'none';
+                            }
+                        });
+                        
+                        propertyCardsArray.forEach((card, index) => {
+                            try {
+                        const cardType = card.getAttribute('data-property-type');
+                        const cardTag = card.getAttribute('data-tag');
+                        const cardLocation = card.querySelector('address')?.textContent.toLowerCase().trim() || '';
+                        const cardPriceElement = card.querySelector('.card-price strong');
+                        const cardPriceText = cardPriceElement?.textContent || '0';
+                        const cardPrice = extractPrice(cardPriceText);
+                                
+                                console.log(`Property ${index + 1}: Type=${cardType}, Tag=${cardTag}, Price=${cardPrice}`);
+                        
+                        // Get property bedrooms from the card
+                        const bedroomsElement = card.querySelector('.card-item:first-child strong');
+                        const cardBedrooms = bedroomsElement ? parseInt(bedroomsElement.textContent) : 0;
+                        
+                        // Get property amenities from data attribute
+                        const cardAmenities = card.getAttribute('data-amenities') ?
+                            card.getAttribute('data-amenities').split(',') : [];
+                        
+                        logDebug(`Card ${index + 1} - Type: ${cardType}, Tag: ${cardTag}, Bedrooms: ${cardBedrooms}, Location: ${cardLocation}, Price: $${cardPrice.toLocaleString()} (from "${cardPriceText}"), Amenities: ${cardAmenities.join(', ')}`);
+                        
+                        const statusMatch = selectedStatus === 'all' || cardTag === selectedStatus;
+                                if (!statusMatch) {
+                                    statusMismatchCount++;
+                                    logDebug(`Card ${index + 1} - Status mismatch: Selected=${selectedStatus}, Card=${cardTag}`);
+                                }
+                                
+                        const typeMatch = selectedType === 'all' || cardType === selectedType;
+                        const locationMatch = !locationText || cardLocation.includes(locationText);
+                        
+                        // Bedroom filter match
+                        let bedroomsMatch = true;
+                        if (selectedBedrooms !== 'all') {
+                            const selectedBedroomsNum = parseInt(selectedBedrooms);
+                            if (selectedBedroomsNum === 4) {
+                                // 4+ bedrooms
+                                bedroomsMatch = cardBedrooms >= 4;
+                            } else {
+                                // Exact match for 1, 2, or 3 bedrooms
+                                bedroomsMatch = cardBedrooms === selectedBedroomsNum;
+                            }
+                        }
+                        
+                        // Strict price range check
+                        const priceMatch = cardPrice >= minPrice && cardPrice <= maxPrice;
+                        
+                        if (!priceMatch && statusMatch && typeMatch && locationMatch && bedroomsMatch) {
+                            priceOutOfRangeCount++;
+                            logDebug(`Card ${index + 1} - Price out of range: $${cardPrice.toLocaleString()} not in $${minPrice.toLocaleString()}-$${maxPrice.toLocaleString()}`);
+                            
+                            if (cardPrice < minPrice) {
+                                logDebug(`  - Price too low: $${cardPrice.toLocaleString()} < $${minPrice.toLocaleString()}`);
+                            }
+                            if (cardPrice > maxPrice) {
+                                logDebug(`  - Price too high: $${cardPrice.toLocaleString()} > $${maxPrice.toLocaleString()}`);
+                            }
+                        }
+                        
+                        // Check if property has all selected amenities
+                        let amenitiesMatch = true;
+                        if (selectedAmenities.length > 0) {
+                            amenitiesMatch = selectedAmenities.every(amenity =>
+                                cardAmenities.includes(amenity)
+                            );
+                        }
+                                
+                                const allCriteriaMatch = statusMatch && typeMatch && bedroomsMatch && locationMatch && priceMatch && amenitiesMatch;
+                                
+                                // Log the match result for each property
+                                console.log(`Property ${index + 1} match result: ${allCriteriaMatch ? 'MATCH' : 'NO MATCH'} (statusMatch: ${statusMatch}, typeMatch: ${typeMatch}, bedroomsMatch: ${bedroomsMatch}, locationMatch: ${locationMatch}, priceMatch: ${priceMatch}, amenitiesMatch: ${amenitiesMatch})`);
+                        
+                        logDebug(`Card ${index + 1} - Status match: ${statusMatch}, Type match: ${typeMatch}, Bedrooms match: ${bedroomsMatch}, Location match: ${locationMatch}, Price match: ${priceMatch}, Amenities match: ${amenitiesMatch}`);
+                        
+                                if (allCriteriaMatch) {
+                                    console.log(`Setting card ${index + 1} parent element to display: block`);
+                                    if (card.parentElement) {
+                            card.parentElement.style.display = 'block';
+                            visibleCount++;
+                                    }
+                                }
+                            } catch (cardError) {
+                                console.error(`Error processing card ${index}:`, cardError);
+                            }
+                        });
+                        
+                        console.log(`Filtering complete. Visible properties: ${visibleCount} out of ${totalCards}`);
+                        
+            logDebug(`Total visible properties: ${visibleCount}`);
+            if (priceOutOfRangeCount > 0) {
+                logDebug(`Properties filtered out due to price range: ${priceOutOfRangeCount}`);
+            }
+                        if (statusMismatchCount > 0) {
+                            logDebug(`Properties filtered out due to status mismatch: ${statusMismatchCount}`);
+                        }
+                        
+                        // Additional debug for current filter settings
+                        logDebug(`Current price range: $${minPrice.toLocaleString()} - $${maxPrice.toLocaleString()}`);
+                        logDebug(`Current property status: ${selectedStatus}`);
+            
+            // Check if any properties are visible
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            
+            if (visibleCount === 0 && noResultsMessage) {
+                noResultsMessage.style.display = 'block';
+                
+                // If properties were filtered out due to price, highlight that suggestion
+                if (priceOutOfRangeCount > 0) {
+                    const priceRangeSuggestion = noResultsMessage.querySelector('li:first-child');
+                    if (priceRangeSuggestion) {
+                        priceRangeSuggestion.style.fontWeight = 'bold';
+                        priceRangeSuggestion.style.color = '#ff6600';
+                    }
+                }
+                
+                logDebug('No results message shown');
+            } else if (noResultsMessage) {
+                noResultsMessage.style.display = 'none';
+                logDebug('No results message hidden');
+            }
+                        
+                        // Restore button state
+                        if (filterButton) {
+                            filterButton.innerHTML = '<i class="fas fa-search" style="margin-right: 5px;"></i> Search Properties';
+                            filterButton.style.backgroundColor = '#ff6600';
+                        }
+                    } catch (error) {
+                        console.error("Error in filterProperties function:", error);
+                        
+                        // Try to restore the button state even if there's an error
+                        const filterButton = document.getElementById('filterButton');
+                        if (filterButton) {
+                            filterButton.innerHTML = '<i class="fas fa-search" style="margin-right: 5px;"></i> Search Properties';
+                            filterButton.style.backgroundColor = '#ff6600';
+                        }
+                        
+                        // Show all properties in case of an error
+                        propertyCards.forEach(card => {
+                            if (card.parentElement) {
+                                card.parentElement.style.display = 'block';
+                            }
+                        });
+                    }
+        }
+        
+        // Apply filters when button is clicked
+                filterButton.addEventListener('click', function() {
+                    console.log("Filter button clicked!");
+                    console.log("Current filter state:", {
+                        status: propertyStatusSelect ? propertyStatusSelect.value : 'all',
+                        type: propertyTypeSelect.value,
+                        bedrooms: document.getElementById('bedroomFilter').value,
+                        location: locationFilter.value,
+                        minPrice: minPriceRangeSlider.value,
+                        maxPrice: maxPriceRangeSlider.value
+                    });
+                    
+                    // Count total and visible cards before filtering
+                    let totalBefore = 0;
+                    let visibleBefore = 0;
+                    propertyCards.forEach(card => {
+                        totalBefore++;
+                        if (card.parentElement.style.display !== 'none') {
+                            visibleBefore++;
+                        }
+                    });
+                    console.log(`Before filtering: ${visibleBefore} visible out of ${totalBefore} total cards`);
+                    
+                    // Check if we're filtering for sale properties and adjust price range if needed
+                    if (propertyStatusSelect && propertyStatusSelect.value === 'sale') {
+                        const minPrice = parseInt(minPriceRangeSlider.value);
+                        // If the price range is too low for sale properties, adjust it
+                        if (minPrice < 50000) {
+                            minPriceRangeSlider.min = '50000';
+                            minPriceRangeSlider.value = '50000';
+                            maxPriceRangeSlider.min = '50000';
+                            if (parseInt(maxPriceRangeSlider.value) < 50000) {
+                                maxPriceRangeSlider.value = '500000';
+                            }
+                            updatePriceValues();
+                            updateSliderLabels();
+                        }
+                    }
+                    
+                    filterProperties();
+                    
+                    // Count visible cards after filtering
+                    let visibleAfter = 0;
+                    propertyCards.forEach(card => {
+                        if (card.parentElement.style.display !== 'none') {
+                            visibleAfter++;
+                        }
+                    });
+                    console.log(`After filtering: ${visibleAfter} visible out of ${totalBefore} total cards`);
+                });
+        
+        // Show all properties
+        showAllButton.addEventListener('click', function() {
+                    if (propertyStatusSelect) propertyStatusSelect.value = 'all';
+            propertyTypeSelect.value = 'all';
+            document.getElementById('bedroomFilter').value = 'all';
+            locationFilter.value = '';
+            
+            // Reset to current range based on property status
+            const status = 'all'; // Force to 'all' since we're showing all properties
+                    if (status === 'rent') {
+            minPriceRangeSlider.min = '500';
+                        minPriceRangeSlider.max = '10000';
+                        minPriceRangeSlider.step = '100';
+            minPriceRangeSlider.value = '500';
+            
+            maxPriceRangeSlider.min = '500';
+                        maxPriceRangeSlider.max = '10000';
+                        maxPriceRangeSlider.step = '100';
+                        maxPriceRangeSlider.value = '5000';
+                    } else if (status === 'sale') {
+                        minPriceRangeSlider.min = '50000';
+                        minPriceRangeSlider.max = '30000000';
+                        minPriceRangeSlider.step = '10000';
+                        minPriceRangeSlider.value = '50000';
+                        
+                        maxPriceRangeSlider.min = '50000';
+                        maxPriceRangeSlider.max = '30000000';
+                        maxPriceRangeSlider.step = '10000';
+                        maxPriceRangeSlider.value = '30000000';
+                    } else {
+                        // For 'all' status, use wider range as default
+                        minPriceRangeSlider.min = '500';
+                        minPriceRangeSlider.max = '30000000';
+                        minPriceRangeSlider.step = '1000';
+                        minPriceRangeSlider.value = '500';
+                        
+                        maxPriceRangeSlider.min = '500';
+                        maxPriceRangeSlider.max = '30000000';
+                        maxPriceRangeSlider.step = '1000';
+                        maxPriceRangeSlider.value = '30000000';
+                    }
+            
+            updatePriceValues();
+            updateSliderLabels();
+            
+            // Uncheck all amenity checkboxes
+            amenityCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Apply the filters to show all properties
+            filterProperties();
+            
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            if (noResultsMessage) {
+                noResultsMessage.style.display = 'none';
+            }
+            
+            // Log the action
+            logDebug('Show All Properties button clicked - All filters reset');
+        });
+        
+        // Reset filters button in no results message
+        const resetFiltersButton = document.getElementById('resetFilters');
+        if (resetFiltersButton) {
+            resetFiltersButton.addEventListener('click', function() {
+                        if (propertyStatusSelect) propertyStatusSelect.value = 'all';
+                propertyTypeSelect.value = 'all';
+                document.getElementById('bedroomFilter').value = 'all';
+                locationFilter.value = '';
+                
+                // Reset to current range based on property status
+                const status = 'all'; // Force to 'all' since we're resetting all filters
+                        if (status === 'rent') {
+                minPriceRangeSlider.min = '500';
+                            minPriceRangeSlider.max = '10000';
+                            minPriceRangeSlider.step = '100';
+                minPriceRangeSlider.value = '500';
+                
+                maxPriceRangeSlider.min = '500';
+                            maxPriceRangeSlider.max = '10000';
+                            maxPriceRangeSlider.step = '100';
+                            maxPriceRangeSlider.value = '5000';
+                        } else if (status === 'sale') {
+                            minPriceRangeSlider.min = '50000';
+                            minPriceRangeSlider.max = '30000000';
+                            minPriceRangeSlider.step = '10000';
+                            minPriceRangeSlider.value = '50000';
+                            
+                            maxPriceRangeSlider.min = '50000';
+                            maxPriceRangeSlider.max = '30000000';
+                            maxPriceRangeSlider.step = '10000';
+                            maxPriceRangeSlider.value = '30000000';
+                        } else {
+                            // For 'all' status, use wider range as default
+                            minPriceRangeSlider.min = '500';
+                            minPriceRangeSlider.max = '30000000';
+                            minPriceRangeSlider.step = '1000';
+                            minPriceRangeSlider.value = '500';
+                            
+                            maxPriceRangeSlider.min = '500';
+                            maxPriceRangeSlider.max = '30000000';
+                            maxPriceRangeSlider.step = '1000';
+                            maxPriceRangeSlider.value = '30000000';
+                        }
+                
+                updatePriceValues();
+                updateSliderLabels();
+                
+                // Uncheck all amenity checkboxes
+                amenityCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Apply the filters to show all properties
+                filterProperties();
+                
+                const noResultsMessage = document.getElementById('noResultsMessage');
+                if (noResultsMessage) {
+                    noResultsMessage.style.display = 'none';
+                }
+                
+                // Log the action
+                logDebug('Reset Filters button clicked - All filters reset');
+            });
+        }
+        
+        // Modify filters button in no results message
+        const modifyFiltersBtn = document.getElementById('modifyFiltersBtn');
+        if (modifyFiltersBtn) {
+            modifyFiltersBtn.addEventListener('click', function() {
+                // Scroll to the filter sidebar
+                const filterSidebar = document.querySelector('.filter-sidebar');
+                if (filterSidebar) {
+                    filterSidebar.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Add a highlight effect to the sidebar
+                    filterSidebar.style.boxShadow = '0 0 0 2px #ff6600';
+                    setTimeout(() => {
+                        filterSidebar.style.boxShadow = '';
+                    }, 2000);
+                }
+                
+                // Hide the no results message
+                const noResultsMessage = document.getElementById('noResultsMessage');
+                if (noResultsMessage) {
+                    noResultsMessage.style.display = 'none';
+                }
+            });
+            
+            // Add hover effects for the buttons
+            modifyFiltersBtn.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#f3f4f6';
+                this.style.borderColor = '#9ca3af';
+            });
+            
+            modifyFiltersBtn.addEventListener('mouseout', function() {
+                this.style.backgroundColor = 'white';
+                this.style.borderColor = '#d1d5db';
+            });
+        }
+        
+        // Add hover effect for reset filters button
+        if (resetFiltersButton) {
+            resetFiltersButton.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#e74c00';
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            resetFiltersButton.addEventListener('mouseout', function() {
+                this.style.backgroundColor = '#ff6600';
+                this.style.transform = 'translateY(0)';
+            });
+        }
+        
+        // Apply initial filtering if needed
+        if ('<%= activeTag %>' !== 'all') {
+                    if (propertyStatusSelect) {
+                        propertyStatusSelect.value = '<%= activeTag %>';
+                    }
+            filterProperties();
+        }
+    });
+
+    // Add debug button functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const debugPriceFilterBtn = document.getElementById('debugPriceFilter');
+        const debugStatusFilterBtn = document.getElementById('debugStatusFilter');
+        const clearDebugBtn = document.getElementById('clearDebug');
+        
+        if (debugPriceFilterBtn) {
+            debugPriceFilterBtn.addEventListener('click', function() {
+                const debugOutput = document.getElementById('debugOutput');
+                debugOutput.innerHTML = '<h5>Price Filter Debug:</h5>';
+                
+                const minPrice = parseInt(document.getElementById('minPriceRange').value);
+                const maxPrice = parseInt(document.getElementById('maxPriceRange').value);
+                
+                debugOutput.innerHTML += `<p>Current price range: $${minPrice.toLocaleString()} - $${maxPrice.toLocaleString()}</p>`;
+
+                const propertyCards = document.querySelectorAll('.property-card');
+                propertyCards.forEach((card, index) => {
+                    const cardPriceElement = card.querySelector('.card-price strong');
+                    const cardPriceText = cardPriceElement?.textContent || '0';
+                    
+                    // Extract price using the same logic as the filter function
+                    const numericPart = cardPriceText.replace(/[$,]/g, '').split('/')[0].trim();
+                    const cardPrice = parseInt(numericPart) || 0;
+                    
+                    const priceMatch = cardPrice >= minPrice && cardPrice <= maxPrice;
+                    
+                    const debugEntry = document.createElement('div');
+                    debugEntry.style.padding = '5px';
+                    debugEntry.style.margin = '5px 0';
+                    debugEntry.style.borderLeft = '3px solid ' + (priceMatch ? '#4CAF50' : '#F44336');
+                    debugEntry.style.paddingLeft = '10px';
+                    
+                    debugEntry.innerHTML = `
+                        <strong>Property ${index + 1}:</strong> ${card.querySelector('.card-title a')?.textContent || 'Unknown'}<br>
+                        <strong>Price Text:</strong> "${cardPriceText}"<br>
+                        <strong>Extracted Price:</strong> $${cardPrice.toLocaleString()}<br>
+                        <strong>In Range:</strong> ${priceMatch ? 'Yes' : 'No'} (${minPrice.toLocaleString()} ≤ ${cardPrice.toLocaleString()} ≤ ${maxPrice.toLocaleString()})
+                    `;
+                    
+                    debugOutput.appendChild(debugEntry);
+                });
+            });
+        }
+        
+        if (debugStatusFilterBtn) {
+            debugStatusFilterBtn.addEventListener('click', function() {
+                const debugOutput = document.getElementById('debugOutput');
+                debugOutput.innerHTML = '<h5>Status Filter Debug:</h5>';
+                
+                const propertyStatus = document.getElementById('propertyStatus');
+                const selectedStatus = propertyStatus ? propertyStatus.value : 'all';
+                
+                debugOutput.innerHTML += `<p>Current status filter: ${selectedStatus}</p>`;
+                
+                const propertyCards = document.querySelectorAll('.property-card');
+                let countByStatus = {
+                    'sale': 0,
+                    'rent': 0,
+                    'unknown': 0
+                };
+                
+                propertyCards.forEach((card, index) => {
+                    const cardTag = card.getAttribute('data-tag');
+                    const statusMatch = selectedStatus === 'all' || cardTag === selectedStatus;
+                    
+                    if (cardTag) {
+                        countByStatus[cardTag] = (countByStatus[cardTag] || 0) + 1;
+                    } else {
+                        countByStatus['unknown']++;
+                    }
+                    
+                    const debugEntry = document.createElement('div');
+                    debugEntry.style.padding = '5px';
+                    debugEntry.style.margin = '5px 0';
+                    debugEntry.style.borderLeft = '3px solid ' + (statusMatch ? '#4CAF50' : '#F44336');
+                    debugEntry.style.paddingLeft = '10px';
+                    
+                    debugEntry.innerHTML = `
+                        <strong>Property ${index + 1}:</strong> ${card.querySelector('.card-title a')?.textContent || 'Unknown'}<br>
+                        <strong>Status:</strong> ${cardTag || 'Unknown'}<br>
+                        <strong>Matches Filter:</strong> ${statusMatch ? 'Yes' : 'No'} (Selected: ${selectedStatus})
+                    `;
+                    
+                    debugOutput.appendChild(debugEntry);
+                });
+                
+                const summaryEntry = document.createElement('div');
+                summaryEntry.style.marginTop = '15px';
+                summaryEntry.style.padding = '10px';
+                summaryEntry.style.backgroundColor = '#eef';
+                summaryEntry.innerHTML = `
+                    <strong>Status Summary:</strong><br>
+                    - For Sale: ${countByStatus['sale'] || 0} properties<br>
+                    - For Rent: ${countByStatus['rent'] || 0} properties<br>
+                    - Unknown: ${countByStatus['unknown'] || 0} properties
+                `;
+                
+                debugOutput.appendChild(summaryEntry);
+            });
+        }
+        
+        if (clearDebugBtn) {
+            clearDebugBtn.addEventListener('click', function() {
+                const debugOutput = document.getElementById('debugOutput');
+                debugOutput.innerHTML = '';
+            });
+        }
+        
+        // Make debug mode accessible by clicking a button instead of requiring URL parameter
+        const debugToggleBtn = document.createElement('button');
+        debugToggleBtn.textContent = 'Toggle Debug Mode';
+        debugToggleBtn.style.position = 'fixed';
+        debugToggleBtn.style.bottom = '10px';
+        debugToggleBtn.style.right = '10px';
+        debugToggleBtn.style.zIndex = '9999';
+        debugToggleBtn.style.padding = '5px 10px';
+        debugToggleBtn.style.backgroundColor = '#f8f9fa';
+        debugToggleBtn.style.border = '1px solid #ddd';
+        debugToggleBtn.style.borderRadius = '3px';
+        debugToggleBtn.style.cursor = 'pointer';
+        debugToggleBtn.style.fontSize = '12px';
+        debugToggleBtn.style.opacity = '0.7';
+        
+        debugToggleBtn.addEventListener('click', function() {
+            const debugInfo = document.getElementById('debugInfo');
+            if (debugInfo) {
+                debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
+            }
+        });        
+        document.body.appendChild(debugToggleBtn);
+        });
+        </script>
+        
+        <!-- Enhanced Property Card JavaScript -->
+        <script src="/js/enhanced-property-card.js"></script>
+</body>
+
+</html>

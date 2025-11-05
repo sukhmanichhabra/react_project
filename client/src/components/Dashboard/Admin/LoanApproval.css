@@ -1,0 +1,240 @@
+@import url("./DashboardTable.css");
+
+.dash-section-header {
+  margin-bottom: 1.5rem; /* 24px */
+}
+.dash-section-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+.dash-section-header p {
+  color: #6b7280; /* text-gray-500 */
+}
+/* Loan Approval Page */
+.la-section {
+  width: 100%;
+}
+
+/* Header with filters */
+.la-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  margin-bottom: 1.5rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+.la-filters,
+.la-search {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.la-filters label,
+.la-search label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+.la-filters select,
+.la-search input {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+.la-search input {
+  width: 250px;
+}
+.la-search button {
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  margin-bottom: 1.6rem;
+}
+.la-search button:hover {
+  background-color: #16a34a;
+}
+
+/* Loan Card List */
+.la-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.la-card {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid #e5e7eb;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+/* Card Header */
+.la-card-header {
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.2fr;
+  align-items: center;
+  padding: 1.5rem;
+  cursor: pointer;
+  border-left: 4px solid #f59e0b; /* Pending orange */
+}
+.la-card-header.approved {
+  border-left-color: #22c55e;
+}
+.la-card-header.rejected {
+  border-left-color: #ef4444;
+}
+
+.la-header-item h4 {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+.la-header-item p,
+.la-header-item .la-status-badge {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+.la-header-item .la-status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+.la-header-item .la-status-badge.pending {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+.la-header-item .la-status-badge.approved {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+.la-header-item .la-status-badge.rejected {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.la-card-toggle {
+  justify-self: end;
+  font-size: 1.25rem;
+  color: #9ca3af;
+  transition: transform 0.2s ease-in-out;
+}
+.la-card-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+/* Card Body */
+.la-card-body {
+  border-top: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+}
+
+.la-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.la-detail-group h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+.la-detail-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+.la-detail-item-label {
+  color: #6b7280;
+}
+.la-detail-item-value {
+  color: #1f2937;
+  font-weight: 500;
+  text-align: right;
+}
+
+.la-docs-section {
+  margin-bottom: 2rem;
+}
+.la-docs-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+.la-doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.la-doc-item {
+  background-color: #eef2ff; /* bg-indigo-50 */
+  border: 1px solid #c7d2fe; /* border-indigo-200 */
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4338ca; /* text-indigo-700 */
+  font-weight: 500;
+  text-decoration: none;
+}
+.la-doc-item:hover {
+  background-color: #e0e7ff; /* hover:bg-indigo-100 */
+}
+
+.la-remarks-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+.la-remarks-section textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  min-height: 100px;
+}
+
+.la-card-actions {
+  border-top: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+/* Re-use button styles from AgentVerification */
+.av-action-btn {
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/signin_signup.css">
+    <script src="https://kit.fontawesome.com/21a1c82f31.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="left">
+            <h1>Search better with an account</h1>
+
+            <div class="feature">
+                <img src="/assets/save.svg" alt="Save Listings">
+                <div>
+                    <h3>Save listings you love</h3>
+                    <p>Keep an eye on your favorite homes.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <img src="/assets/search.svg" alt="Save Searches">
+                <div>
+                    <h3>Save your searches</h3>
+                    <p>Get alerts for homes that are perfect for you.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <img src="/assets/access.svg" alt="Search Anywhere">
+                <div>
+                    <h3>Search from anywhere</h3>
+                    <p>Access your search across all your devices.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="right">
+            <% if (typeof alert !== 'undefined' && alert) { %>
+                <div class="alert-message">
+                    <%= alert %>
+                </div>
+            <% } %>
+            
+            <form id="signup-form" action="/auth/signup" method="POST">
+                <h2>Sign up</h2>
+
+                <label for="name">Name*</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your name">
+                <div class="error-message" id="name-error"></div>
+
+                <label for="email">Email address*</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+                <div class="error-message" id="email-error"></div>
+
+                <label for="role">Select role*</label>
+                <div class="select-wrapper">
+                    <select id="role" name="role" required>
+                        <option value="" disabled selected>Choose your role</option>
+                        <option value="buyer">Buyer</option>
+                        <option value="seller">Seller</option>
+                        <option value="agent">Agent</option>
+                    </select>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="error-message" id="role-error"></div>
+
+                <label for="password">Create password*</label>
+                <input type="password" id="password" name="password" required placeholder="Create a password">
+                <div class="error-message" id="password-error"></div>
+
+                <button type="submit">Sign up</button>
+
+                <p>Already have an account? <a href="/auth/signin">Log in</a></p>
+
+                <div class="or">OR</div>
+
+                <button type="button" class="google">
+                    <i class="fab fa-google"></i> Continue with Google
+                </button>
+                <button type="button" class="facebook">
+                    <i class="fab fa-facebook"></i> Continue with Facebook
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>By creating an account, you agree to Realtor.com's <a href="#">Privacy notice</a> and <a href="#">Terms of
+                use</a>.</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('signup-form');
+        const fields = {
+            name: document.getElementById('name'),
+            email: document.getElementById('email'),
+            role: document.getElementById('role'),
+            password: document.getElementById('password')
+        };
+
+        // Validation rules
+        const validators = {
+            name: (value) => {
+                if (!value.trim()) return 'Name is required';
+                if (value.trim().length < 2) return 'Name must be at least 2 characters';
+                if (!/^[a-zA-Z\s]+$/.test(value)) return 'Name can only contain letters and spaces';
+                return null;
+            },
+            email: (value) => {
+                if (!value.trim()) return 'Email is required';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address';
+                return null;
+            },
+            role: (value) => {
+                if (!value) return 'Please select a role';
+                return null;
+            },
+            password: (value) => {
+                if (!value) return 'Password is required';
+                if (value.length < 8) return 'Password must be at least 8 characters';
+                if (!/(?=.*[a-z])/.test(value)) return 'Password must contain at least one lowercase letter';
+                if (!/(?=.*[A-Z])/.test(value)) return 'Password must contain at least one uppercase letter';
+                if (!/(?=.*\d)/.test(value)) return 'Password must contain at least one number';
+                return null;
+            }
+        };
+
+        // Show error message
+        function showError(field, message) {
+            const errorDiv = document.getElementById(`${field}-error`);
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            fields[field].classList.add('error');
+        }
+
+        // Clear error message
+        function clearError(field) {
+            const errorDiv = document.getElementById(`${field}-error`);
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
+            fields[field].classList.remove('error');
+        }
+
+        // Validate field
+        function validateField(field) {
+            const value = fields[field].value;
+            const error = validators[field](value);
+            
+            if (error) {
+                showError(field, error);
+                return false;
+            } else {
+                clearError(field);
+                return true;
+            }
+        }
+
+        // Real-time validation
+        Object.keys(fields).forEach(field => {
+            fields[field].addEventListener('blur', () => validateField(field));
+            fields[field].addEventListener('input', () => {
+                if (fields[field].classList.contains('error')) {
+                    validateField(field);
+                }
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isValid = true;
+            Object.keys(fields).forEach(field => {
+                if (!validateField(field)) {
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                this.submit();
+            }
+        });
+    </script>
+
+    <style>
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+            display: none;
+        }
+
+        .error {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2) !important;
+        }
+    </style>
+
+</body>
+
+</html>

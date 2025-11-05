@@ -1,0 +1,155 @@
+<!-- Enhanced Property Card Component -->
+<!-- This replaces the existing property card structure with a more systematic design -->
+
+<li class="property-item">
+    <div class="enhanced-property-card" 
+         data-property-type="<%= property.features.type %>"
+         data-tag="<%= property.tag %>"
+         data-amenities="<%= property.amenities ? property.amenities.join(',') : '' %>"
+         data-status="<%= property.status %>">
+        
+        <!-- Property Image Section -->
+        <div class="property-image-container">
+            <div class="property-badge <%= property.tag %>">
+                <%= property.tag === 'rent' ? 'FOR RENT' : 'FOR SALE' %>
+            </div>
+            
+            <!-- Property Status Overlay -->
+            <% if (property.status !== 'active') { %>
+                <div class="property-status-overlay <%= property.status %>">
+                    <span class="status-text">
+                        <%= property.status === 'sold' ? 'SOLD' : 'RENTED' %>
+                    </span>
+                </div>
+            <% } %>
+            
+            <!-- Image with overlay actions -->
+            <div class="property-image-wrapper">
+                <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/default-property.jpg' %>" 
+                     alt="<%= property.title %>" 
+                     class="property-image"
+                     onerror="this.onerror=null; this.src='/assets/default-property.jpg';">
+                
+                <!-- Image overlay info -->
+                <div class="image-overlay">
+                    <div class="overlay-item location-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span><%= property.location %></span>
+                    </div>
+                    <div class="overlay-item image-count">
+                        <i class="fas fa-camera"></i>
+                        <span><%= property.images ? property.images.length : 0 %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Property Content Section -->
+        <div class="property-content">
+            <!-- Price Section -->
+            <div class="property-price-section">
+                <div class="price-main">
+                    <%= property.price %>
+                </div>
+                <% if (property.estPayment) { %>
+                    <div class="price-estimate">
+                        Est. <%= property.estPayment %>
+                    </div>
+                <% } %>
+            </div>
+            
+            <!-- Title and Description -->
+            <div class="property-details">
+                <h3 class="property-title">
+                    <a href="/property/<%= property._id %>" class="title-link">
+                        <%= property.title %>
+                    </a>
+                </h3>
+                
+                <p class="property-description">
+                    <%= property.description.length > 120 ? property.description.substring(0, 120) + '...' : property.description %>
+                </p>
+            </div>
+            
+            <!-- Property Features Grid -->
+            <div class="property-features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <div class="feature-info">
+                        <span class="feature-number"><%= property.features.beds %></span>
+                        <span class="feature-label">Bedrooms</span>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bath"></i>
+                    </div>
+                    <div class="feature-info">
+                        <span class="feature-number"><%= property.features.baths %></span>
+                        <span class="feature-label">Bathrooms</span>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-ruler-combined"></i>
+                    </div>
+                    <div class="feature-info">
+                        <span class="feature-number"><%= property.features.sqft %></span>
+                        <span class="feature-label">Sq Ft</span>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="feature-info">
+                        <span class="feature-number"><%= property.features.type %></span>
+                        <span class="feature-label">Type</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Agent Information Section -->
+        <div class="property-agent-section">
+            <div class="agent-info">
+                <div class="agent-avatar">
+                    <img src="<%= property.agent.image || '/assets/default-avatar.png' %>" 
+                         alt="<%= property.agent.name %>" 
+                         class="agent-image"
+                         onerror="this.onerror=null; this.src='/assets/default-avatar.png';">
+                </div>
+                <div class="agent-details">
+                    <div class="agent-name">
+                        <a href="/agent/<%= property.agent.id || '#' %>" class="agent-link">
+                            <%= property.agent.name %>
+                        </a>
+                    </div>
+                    <div class="agent-title">
+                        <%= property.agent.title || 'Real Estate Agent' %>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="property-actions">
+                <button class="action-btn primary" onclick="viewProperty('<%= property._id %>')">
+                    <i class="fas fa-eye"></i>
+                    <span>View Details</span>
+                </button>
+                <button class="action-btn secondary" onclick="contactAgent('<%= property.agent.id %>')">
+                    <i class="fas fa-phone"></i>
+                    <span>Contact</span>
+                </button>
+                <button class="action-btn wishlist" onclick="toggleWishlist('<%= property._id %>')">
+                    <i class="far fa-heart"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</li>

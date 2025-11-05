@@ -1,0 +1,59 @@
+<header class="header">
+    <%- include('./navbar') %>
+        <div class="header-content">
+            <h1 class="header-title">Homespace</h1>
+            <div id="dynamic-text" class="dynamic-text"></div>
+        </div>
+        <div class="header-illustration"></div>
+
+        <!-- Dynamic Text Section -->
+        
+</header>
+
+<style>
+    /* Optional: Style for dynamic text */
+    .dynamic-text {
+        margin-top: 10px;
+        font-size: 18px;
+        color: #dfac45;
+        z-index: 3; /* Ensure it is clickable */
+        position: relative; /* Ensure it layers above */
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .header-illustration {
+        pointer-events: none; /* Allows clicks to pass through */
+    }
+    .dynamic-text a:hover {
+    text-decoration: underline; /* Add underline on hover */
+    color: #ed7f09;
+}
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const dynamicText = document.getElementById("dynamic-text");
+
+        // Function to update and make breadcrumbs clickable
+        const updateDynamicText = () => {
+            const path = window.location.pathname;
+            const pathSegments = path.split('/').filter(Boolean);
+
+            if (pathSegments.length === 0) {
+                dynamicText.innerHTML = '<a href="/"></a>';
+            } else {
+                let breadcrumbHTML = `<a href="/"></a>`;
+
+                pathSegments.forEach((segment, index) => {
+                    const href = "/" + pathSegments.slice(0, index + 1).join("/");
+                    breadcrumbHTML += ` / <a href="${href}">${segment}</a>`;
+                });
+
+                dynamicText.innerHTML = breadcrumbHTML;
+            }
+        };
+
+        window.addEventListener('popstate', updateDynamicText);
+        updateDynamicText(); // Initial load
+    });
+</script>

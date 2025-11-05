@@ -1,0 +1,148 @@
+.seller-my-properties-section {
+  width: 100%;
+  padding: 2rem;
+}
+
+.seller-my-properties-header {
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.seller-my-properties-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+
+.seller-my-properties-header p {
+  color: #6b7280; /* text-gray-500 */
+}
+
+.seller-my-properties-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+@media (min-width: 768px) {
+  .seller-my-properties-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .seller-my-properties-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Empty state styling */
+.dash-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+.dash-empty-state i {
+  font-size: 2.25rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+.dash-empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+.dash-empty-state p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+.dash-empty-state .dash-cta-button {
+  background-color: #dc2626;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease-in-out;
+}
+.dash-empty-state .dash-cta-button:hover {
+  background-color: #b91c1c;
+}
+
+/* Loading State */
+.dash-loading {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.dash-loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Enhanced Property Cards in Dashboard */
+.enhanced-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 2rem; /* 32px */
+}
+
+@media (min-width: 768px) {
+  .enhanced-dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .enhanced-dashboard-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.enhanced-dashboard-grid .enhanced-property-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.enhanced-dashboard-grid .enhanced-property-card {
+  height: 100%;
+  max-width: none; /* Remove max-width constraint in dashboard */
+}
+
+/* Adjust enhanced property cards for dashboard context */
+.seller-my-properties-section .enhanced-property-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.seller-my-properties-section .enhanced-property-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Dashboard specific adjustments */
+.seller-my-properties-section .enhanced-agent-info {
+  display: none; /* Hide agent info in dashboard since it's user's own properties */
+}
+
+.seller-my-properties-section .enhanced-property-actions {
+  gap: 8px;
+}
+
+.seller-my-properties-section .enhanced-btn {
+  font-size: 13px;
+  padding: 12px 16px;
+}

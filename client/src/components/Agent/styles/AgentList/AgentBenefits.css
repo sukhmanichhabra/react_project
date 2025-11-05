@@ -1,0 +1,108 @@
+/* Agent Benefits Section */
+.agt-list-benefits-section {
+  margin-bottom: 10px;
+  margin-top: 30px;
+}
+
+.agt-list-benefits-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.agt-list-benefits-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.agt-list-benefits-title i {
+  color: #ff6f61;
+  margin-right: 15px;
+  font-size: 2.5rem;
+}
+
+.agt-list-benefits-subtitle {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.agt-list-benefits-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+.agt-list-benefits-card {
+  background: #fff;
+  padding: 30px 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.agt-list-benefits-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  background: #fff;
+}
+
+.agt-list-benefits-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2.5rem;
+  color: #ff6f61;
+}
+
+.agt-list-benefits-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.agt-list-benefits-card p {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  line-height: 1.7;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .agt-list-benefits-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  .agt-list-benefits-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .agt-list-benefits-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 20px;
+  }
+
+  .agt-list-benefits-title {
+    font-size: 1.8rem;
+  }
+
+  .agt-list-benefits-subtitle {
+    font-size: 1rem;
+  }
+}

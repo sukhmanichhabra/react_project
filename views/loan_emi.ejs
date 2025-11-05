@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan and EMI</title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="/css/loan.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+
+
+    <div class="container">
+        <h1>Home Loan EMI Calculator</h1>
+        <p class="description">
+            Home Loan EMI Calculator provides an instant estimate of your EMI by requiring the loan amount, interest
+            rate, and loan tenure. This ensures manageable debt repayment and aids in budget planning.
+        </p>
+
+        <div class="calculator-container">
+            <div class="calculator-section">
+                <!-- <img src="magicloans-logo.png" alt="MagicLoans" class="logo"> -->
+
+                <div class="input-group">
+                    <label>Loan Amount</label>
+                    <div class="input-wrapper">
+                        <span class="currency">₹</span>
+                        <input type="number" id="loanAmount" value="8000000">
+                    </div>
+                </div>
+
+                <div class="input-row">
+
+                    <div class="input-group">
+                        <label for="loanTenure">Loan Tenure: <span id="tenureValue">30</span> yrs</label>
+                        <input type="range" id="loanTenure" min="1" max="50" step="1" value="30"
+                            oninput="updateTenureValue(this.value)">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Interest Rate % (p.a.)</label>
+                        <input type="number" id="interestRate" value="8.5" step="0.1">
+                    </div>
+                </div>
+
+                <button onclick="calculateEMI()" class="recalculate-btn">Recalculate Your EMI</button>
+            </div>
+
+            <div class="result-section">
+                <div class="emi-result">
+                    <h2>You are Eligible for EMI Amount</h2>
+                    <h1 class="emi-amount">₹<span id="emi">61,513</span></h1>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="emiChart"></canvas>
+                </div>
+
+                <div class="amount-details">
+                    <div class="principal">
+                        <span class="dot principal-dot"></span>
+                        Principal Amount
+                        <span class="amount" id="principalAmount">₹80,00,000</span>
+                    </div>
+                    <div class="interest">
+                        <span class="dot interest-dot"></span>
+                        Interest Amount
+                        <span class="amount" id="interestAmount">₹1,41,44,709</span>
+                    </div>
+                </div>
+
+                <div class="bank-offers">
+                    <h3>Top Banks home loan Offers</h3>
+                    <div class="bank-cards">
+                        <div class="bank-card">
+                            <img src="/assets/bob-logo.png" alt="Bank of Baroda">
+                            <div class="bank-info">
+                                <h4>Bank of Baroda</h4>
+                                <p>Rate 8.4% | Max Term 30yrs</p>
+                            </div>
+                            <button class="view-btn">View</button>
+                        </div>
+                        <div class="bank-card">
+                            <img src="/assets/sbi-logo.png" alt="State Bank of India">
+                            <div class="bank-info">
+                                <h4>State Bank of India</h4>
+                                <p>Rate 8.5% | Max Term 30yrs</p>
+                            </div>
+                            <button class="view-btn">View</button>
+                        </div>
+                    </div>
+                    <button class="check-offers-btn">Check Bank Offers</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Add this after the calculator-container div -->
+    <div class="amortization-table-container">
+        <h2>Your Repayment Details</h2>
+        <div class="year-navigation">
+            <button id="prevYear" onclick="changeYear(-1)">←</button>
+            <span id="currentYear">2024</span>
+            <button id="nextYear" onclick="changeYear(1)">→</button>
+        </div>
+        <div class="table-wrapper">
+            <table id="amortizationTable">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Beginning Loan Balance</th>
+                        <th>EMI</th>
+                        <th>Principal</th>
+                        <th>Monthly Interest</th>
+                        <th>Outstanding Balances</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add this content after amortization-table-container -->
+    <div class="loan-info-container">
+        <h1>Home Loan EMI Calculator</h1>
+
+        <div class="info-section">
+            <p class="description">
+                A home loan EMI calculator is a tool that helps you calculate your monthly instalments (EMIs) with just
+                one click. Home loan calculator is really helpful and can be used easily by any individual who wants to
+                know their Home Loan EMIs in advance.
+            </p>
+
+            <p class="instruction">
+                To calculate your Home loan EMI, you need to enter the loan amount, interest rate, and the tenure of the
+                loan.
+            </p>
+        </div>
+
+        <div class="info-section">
+            <h2>What is Home Loan EMI?</h2>
+            <p>
+                The fixed monthly payment that you make to the lender during the loan term to repay a Home Loan is the
+                EMI. The main amount and the loan interest are its two constituent parts. It is easier for borrowers to
+                plan their budget because the EMI stays the same throughout the loan. However, with time, the principal
+                and interest ratio varies, with the interest component being larger in the early years.
+            </p>
+        </div>
+
+        <div class="info-section">
+            <h2>Apply for a Home Loan and Calculate Your Home Loan EMI</h2>
+            <p>
+                It's essential to know how much EMI you can pay before applying for a house loan. To obtain an estimate
+                based on your preferred loan amount, interest rate, and tenure, utilize the Home Loan EMI Calculator.
+                Knowing that your repayment plan will fit into your budget after you have a clear understanding of your
+                EMI will give you the confidence to apply for a house loan.
+            </p>
+        </div>
+    </div>
+
+    <!-- Add this after loan-info-container -->
+    <div class="bank-offers-container">
+        <div class="offers-header">
+            <h2>Home Loan Offers <span class="new-tag">New Schemes</span></h2>
+            <p class="offers-subtitle">Get personalised home loan offers from top banks in <strong>just 2
+                    mins...</strong></p>
+        </div>
+
+        <div class="loan-stats">
+            <div class="stat-pill">Loan req. - ₹50,00,000</div>
+            <div class="stat-pill">Credit Score - 820</div>
+            <div class="stat-pill">Ongoing EMI. - ₹10,000</div>
+            <div class="stat-pill">Monthly Income - ₹1,00,000</div>
+        </div>
+
+        <div class="banks-carousel">
+            <div class="bank-card">
+                <div class="bank-header">
+                    <img src="/assets/sbi-logo.png" alt="SBI" class="bank-logo">
+                    <h3>State Bank of India</h3>
+                    <!-- <span class="recommended-tag">Recommended</span> -->
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <span class="value">8.5%</span>
+                        <span class="label">Interest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹50L</span>
+                        <span class="label">Loan Amount</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">30 Yr</span>
+                        <span class="label">Tenure</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹38.4K</span>
+                        <span class="label">Monthly EMI</span>
+                    </div>
+                </div>
+                <div class="disbursement-info">
+                    Get Loan disbursed under <strong>18 Days</strong>
+                </div>
+                <div class="reward-section">
+                    <div class="reward-amount">
+                        <span class="upto">UPTO</span>
+                        <span class="amount">₹10,000</span>
+                        <span class="text">Cash Reward</span>
+                    </div>
+                    <button class="claim-btn">Claim Now</button>
+                </div>
+            </div>
+
+            <!-- Bank of Maharashtra -->
+            <div class="bank-card">
+                <div class="bank-header">
+                    <img src="/assets/bom-logo.png" alt="Bank of Maharashtra" class="bank-logo">
+                    <h3>Bank of Maharashtra</h3>
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <span class="value">8.3%</span>
+                        <span class="label">Interest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹1Cr</span>
+                        <span class="label">Loan Amount</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">30 Yr</span>
+                        <span class="label">Tenure</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹75.5K</span>
+                        <span class="label">Monthly EMI</span>
+                    </div>
+                </div>
+                <div class="disbursement-info">
+                    Get Loan disbursed under <strong>18 Days</strong>
+                </div>
+                <div class="reward-section">
+                    <div class="reward-amount">
+                        <span class="upto">UPTO</span>
+                        <span class="amount">₹20,000</span>
+                        <span class="text">Cash Reward</span>
+                    </div>
+                    <button class="claim-btn">Claim Now</button>
+                </div>
+            </div>
+
+            <!-- HDFC Bank -->
+            <div class="bank-card">
+                <div class="bank-header">
+                    <img src="/assets/hdfc-logo.png" alt="HDFC Bank" class="bank-logo">
+                    <h3>HDFC Bank</h3>
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <span class="value">8.4%</span>
+                        <span class="label">Interest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹75L</span>
+                        <span class="label">Loan Amount</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">25 Yr</span>
+                        <span class="label">Tenure</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹58.2K</span>
+                        <span class="label">Monthly EMI</span>
+                    </div>
+                </div>
+                <div class="disbursement-info">
+                    Get Loan disbursed under <strong>15 Days</strong>
+                </div>
+                <div class="reward-section">
+                    <div class="reward-amount">
+                        <span class="upto">UPTO</span>
+                        <span class="amount">₹14,000</span>
+                        <span class="text">Cash Reward</span>
+                    </div>
+                    <button class="claim-btn">Claim Now</button>
+                </div>
+            </div>
+
+            <!-- ICICI Bank -->
+            <div class="bank-card">
+                <div class="bank-header">
+                    <img src="/assets/icici-logo.png" alt="ICICI Bank" class="bank-logo">
+                    <h3>ICICI Bank</h3>
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <span class="value">8.6%</span>
+                        <span class="label">Interest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹60L</span>
+                        <span class="label">Loan Amount</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">30 Yr</span>
+                        <span class="label">Tenure</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹46.5K</span>
+                        <span class="label">Monthly EMI</span>
+                    </div>
+                </div>
+                <div class="disbursement-info">
+                    Get Loan disbursed under <strong>20 Days</strong>
+                </div>
+                <div class="reward-section">
+                    <div class="reward-amount">
+                        <span class="upto">UPTO</span>
+                        <span class="amount">₹15,000</span>
+                        <span class="text">Cash Reward</span>
+                    </div>
+                    <button class="claim-btn">Claim Now</button>
+                </div>
+            </div>
+
+            <!-- Axis Bank -->
+            <div class="bank-card">
+                <div class="bank-header">
+                    <img src="/assets/axis-logo.png" alt="Axis Bank" class="bank-logo">
+                    <h3>Axis Bank</h3>
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <span class="value">8.7%</span>
+                        <span class="label">Interest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹80L</span>
+                        <span class="label">Loan Amount</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">28 Yr</span>
+                        <span class="label">Tenure</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹63.2K</span>
+                        <span class="label">Monthly EMI</span>
+                    </div>
+                </div>
+                <div class="disbursement-info">
+                    Get Loan disbursed under <strong>21 Days</strong>
+                </div>
+                <div class="reward-section">
+                    <div class="reward-amount">
+                        <span class="upto">UPTO</span>
+                        <span class="amount">₹12,000</span>
+                        <span class="text">Cash Reward</span>
+                    </div>
+                    <button class="claim-btn">Claim Now</button>
+                </div>
+            </div>
+
+            <!-- Punjab National Bank -->
+            <div class="bank-card">
+                <div class="bank-header">
+                    <img src="/assets/pnb-logo.png" alt="Punjab National Bank" class="bank-logo">
+                    <h3>Punjab National Bank</h3>
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <span class="value">8.5%</span>
+                        <span class="label">Interest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹45L</span>
+                        <span class="label">Loan Amount</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">25 Yr</span>
+                        <span class="label">Tenure</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹35.1K</span>
+                        <span class="label">Monthly EMI</span>
+                    </div>
+                </div>
+                <div class="disbursement-info">
+                    Get Loan disbursed under <strong>22 Days</strong>
+                </div>
+                <div class="reward-section">
+                    <div class="reward-amount">
+                        <span class="upto">UPTO</span>
+                        <span class="amount">₹8,000</span>
+                        <span class="text">Cash Reward</span>
+                    </div>
+                    <button class="claim-btn">Claim Now</button>
+                </div>
+            </div>
+
+            <!-- Bank of Baroda -->
+            <div class="bank-card">
+                <div class="bank-header">
+                    <img src="/assets/bob-logo.png" alt="Bank of Baroda" class="bank-logo">
+                    <h3>Bank of Baroda</h3>
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <span class="value">8.4%</span>
+                        <span class="label">Interest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹65L</span>
+                        <span class="label">Loan Amount</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">30 Yr</span>
+                        <span class="label">Tenure</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="value">₹49.8K</span>
+                        <span class="label">Monthly EMI</span>
+                    </div>
+                </div>
+                <div class="disbursement-info">
+                    Get Loan disbursed under <strong>19 Days</strong>
+                </div>
+                <div class="reward-section">
+                    <div class="reward-amount">
+                        <span class="upto">UPTO</span>
+                        <span class="amount">₹11,000</span>
+                        <span class="text">Cash Reward</span>
+                    </div>
+                    <button class="claim-btn">Claim Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="explore-more">
+            <button class="explore-btn">Explore More Offers</button>
+        </div>
+    </div>
+
+    <!-- Loan Category Cards -->
+        <div class="pricing-header">
+            <h1 class="pricing-title">Choose Us</h1>
+            <div class="title-highlight">
+                <span class="highlight-tag">No Collateral Required</span>
+                <h2 class="subtitle">Get Your Dream Home Loan Without Pledging Assets</h2>
+                <p class="title-description">Join thousands of happy homeowners who trusted us for hassle-free home
+                    loans with competitive interest rates</p>
+            </div>
+        </div>
+    <div class="loan-categories-container">
+        <h2 class="categories-title">Loan Categories & Interest Rates</h2>
+        <p class="categories-subtitle">Choose the right loan amount category for your needs</p>
+        
+        <div class="loan-category-cards">
+            <div class="category-card affordable">
+                <div class="card-header">
+                    <div class="loan-amount">
+                        <h3>Affordable Home Loan</h3>
+                        <div class="amount-range">< ₹50 Lakhs</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-home"></i>
+            </div>
+        </div>
+
+                <div class="card-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Interest Rate</div>
+                        <div class="detail-value">8.2% - 8.5%</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Processing Fee</div>
+                        <div class="detail-value">0.5% of loan amount</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Max Tenure</div>
+                        <div class="detail-value">30 Years</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Loan to Value</div>
+                        <div class="detail-value">Up to 90%</div>
+                    </div>
+                </div>
+                
+                <div class="card-features">
+                    <h4>Key Features</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Minimal documentation</li>
+                        <li><i class="fas fa-check-circle"></i> Quick approval within 3 days</li>
+                        <li><i class="fas fa-check-circle"></i> No prepayment charges</li>
+                </ul>
+                </div>
+                
+                <button class="apply-now-btn" id="affordableApplyBtn">Apply Now</button>
+            </div>
+
+            <div class="category-card premium">
+                <div class="card-header">
+                    <div class="loan-amount">
+                        <h3>Premium Home Loan</h3>
+                        <div class="amount-range">₹50 Lakhs - ₹1 Crore</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                </div>
+                
+                <div class="card-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Interest Rate</div>
+                        <div class="detail-value">8.5% - 8.8%</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Processing Fee</div>
+                        <div class="detail-value">0.4% of loan amount</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Max Tenure</div>
+                        <div class="detail-value">30 Years</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Loan to Value</div>
+                        <div class="detail-value">Up to 85%</div>
+                    </div>
+                </div>
+                
+                <div class="card-features">
+                    <h4>Key Features</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Dedicated relationship manager</li>
+                        <li><i class="fas fa-check-circle"></i> Flexible repayment options</li>
+                        <li><i class="fas fa-check-circle"></i> Special rates for women borrowers</li>
+                </ul>
+                </div>
+                
+                <button class="apply-now-btn" id="premiumApplyBtn">Apply Now</button>
+            </div>
+
+            <div class="category-card luxury">
+                <div class="card-header">
+                    <div class="loan-amount">
+                        <h3>Luxury Home Loan</h3>
+                        <div class="amount-range">> ₹1 Crore</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                </div>
+                
+                <div class="card-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Interest Rate</div>
+                        <div class="detail-value">8.7% - 9.2%</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Processing Fee</div>
+                        <div class="detail-value">0.3% of loan amount</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Max Tenure</div>
+                        <div class="detail-value">30 Years</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Loan to Value</div>
+                        <div class="detail-value">Up to 75%</div>
+                    </div>
+                </div>
+                
+                <div class="card-features">
+                    <h4>Key Features</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Premium concierge services</li>
+                        <li><i class="fas fa-check-circle"></i> Customized repayment plans</li>
+                        <li><i class="fas fa-check-circle"></i> Exclusive wealth management services</li>
+                </ul>
+                </div>
+                
+                <button class="apply-now-btn" id="luxuryApplyBtn">Apply Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Application Form Section -->
+    <div class="loan-application-container" id="loanApplicationSection">
+        <div class="application-header">
+            <h2>Apply for Home Loan</h2>
+            <p>Fill in your details and get instant approval</p>
+        </div>
+
+        <% if (user) { %>
+            <form id="loanApplicationForm" class="loan-form" enctype="multipart/form-data" onsubmit="submitLoanApplication(event)">
+                <div class="form-grid">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3>Personal Information</h3>
+                        <div class="input-group">
+                            <input type="text" id="fullName" name="fullName" value="<%= user.name %>" required>
+                            <label for="fullName">Full Name</label>
+                            <span class="error-message"></span>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <input type="email" id="email" name="email" value="<%= user.email %>" required>
+                                <label for="email">Email Address</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>" required>
+                                <label for="phone">Phone Number</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <input type="date" id="dob" name="dob" required>
+                                <label for="dob">Date of Birth</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <select id="maritalStatus" name="maritalStatus" required>
+                                    <option value="">Select Status</option>
+                                    <option value="single">Single</option>
+                                    <option value="married">Married</option>
+                                    <option value="divorced">Divorced</option>
+                                </select>
+                                <label for="maritalStatus">Marital Status</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Employment Details -->
+                    <div class="form-section">
+                        <h3>Employment Details</h3>
+                        <div class="input-group">
+                            <select id="employmentType" name="employmentType" required>
+                                <option value="">Select Type</option>
+                                <option value="salaried">Salaried</option>
+                                <option value="self-employed">Self Employed</option>
+                                <option value="business">Business Owner</option>
+                            </select>
+                            <label for="employmentType">Employment Type</label>
+                            <span class="error-message"></span>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <input type="number" id="monthlyIncome" name="monthlyIncome" required>
+                                <label for="monthlyIncome">Monthly Income (₹)</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <input type="number" id="workExperience" name="workExperience" required>
+                                <label for="workExperience">Work Experience (Years)</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <input type="text" id="employerName" name="employerName">
+                                <label for="employerName">Employer/Company Name</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="designation" name="designation">
+                                <label for="designation">Designation/Role</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan Requirements -->
+                    <div class="form-section">
+                        <h3>Loan Requirements</h3>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <input type="number" id="loanAmount" name="loanAmount" required>
+                                <label for="loanAmount">Loan Amount (₹)</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <input type="number" id="loanTenure" name="loanTenure" required>
+                                <label for="loanTenure">Loan Tenure (Years)</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <select id="propertyType" name="propertyType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="independent">Independent House</option>
+                                    <option value="villa">Villa</option>
+                                    <option value="plot">Plot</option>
+                                </select>
+                                <label for="propertyType">Property Type</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <select id="loanType" name="loanType" required>
+                                    <option value="">Select Loan Type</option>
+                                    <option value="affordable">Affordable Home Loan (< ₹50L)</option>
+                                    <option value="premium">Premium Home Loan (₹50L - ₹1Cr)</option>
+                                    <option value="luxury">Luxury Home Loan (> ₹1Cr)</option>
+                                    <option value="construction">Home Construction Loan</option>
+                                    <option value="renovation">Home Renovation Loan</option>
+                                </select>
+                                <label for="loanType">Home Loan Type</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <input type="number" id="propertyValue" name="propertyValue">
+                                <label for="propertyValue">Property Value (₹)</label>
+                                <span class="error-message"></span>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="propertyAddress" name="propertyAddress">
+                                <label for="propertyAddress">Property Address</label>
+                                <span class="error-message"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Document Uploads -->
+                    <div class="form-section">
+                        <h3>Document Uploads</h3>
+                        <p class="upload-info">Please upload clear scans or photos of your documents (PDF or JPG/PNG format, max 5MB each)</p>
+                        
+                        <div class="document-group">
+                            <div class="document-row">
+                                <div class="document-item">
+                                    <label class="document-label">Identity Proof (Aadhar/PAN)*</label>
+                                    <input type="file" id="identityProof" name="identityProof" accept=".pdf,image/*" required>
+                                    <div class="file-info">No file chosen</div>
+                                </div>
+                                <div class="document-item">
+                                    <label class="document-label">Address Proof*</label>
+                                    <input type="file" id="addressProof" name="addressProof" accept=".pdf,image/*" required>
+                                    <div class="file-info">No file chosen</div>
+                                </div>
+                            </div>
+
+                            <div class="document-row">
+                                <div class="document-item">
+                                    <label class="document-label">Income Proof (Salary Slips/ITR)*</label>
+                                    <input type="file" id="incomeProof" name="incomeProof" accept=".pdf,image/*" required>
+                                    <div class="file-info">No file chosen</div>
+                                </div>
+                                <div class="document-item">
+                                    <label class="document-label">Bank Statements (Last 6 months)*</label>
+                                    <input type="file" id="bankStatements" name="bankStatements" accept=".pdf,image/*" required>
+                                    <div class="file-info">No file chosen</div>
+                                </div>
+                            </div>
+
+                            <div class="document-row">
+                                <div class="document-item">
+                                    <label class="document-label">Property Documents</label>
+                                    <input type="file" id="propertyDocuments" name="propertyDocuments" accept=".pdf,image/*">
+                                    <div class="file-info">No file chosen</div>
+                                </div>
+                                <div class="document-item">
+                                    <label class="document-label">Additional Documents</label>
+                                    <input type="file" id="additionalDocs" name="additionalDocs" accept=".pdf,image/*" multiple>
+                                    <div class="file-info">No file chosen</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <span class="checkmark"></span>
+                        I agree to the terms and conditions
+                    </label>
+                    <button type="submit" class="submit-btn">Submit Application</button>
+                </div>
+
+                <!-- Application Status Feedback -->
+                <div id="application-status" class="application-status" style="display: none;"></div>
+            </form>
+        <% } else { %>
+            <div class="login-required">
+                <i class="fas fa-lock"></i>
+                <h3>Please Login to Apply for a Loan</h3>
+                <p>You need to be logged in to submit a loan application and track your application status.</p>
+                <a href="/auth/signin?redirect=/loan" class="login-link">Login Now</a>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Add this after pricing-container -->
+    <div class="faq-container">
+        <div class="faq-left">
+            <h2>Home Loan FAQs</h2>
+            <img src="/assets/faq-illustration.png" alt="FAQ Illustration" class="faq-image">
+        </div>
+
+        <div class="faq-right">
+            <div class="faq-item">
+                <button class="faq-question">
+                    Q. What is the formula for calculating Home Loan EMI?
+                    <span class="arrow">&#9662;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>The Home Loan EMI is calculated using the formula:</p>
+                    <p class="formula">EMI = P × r × (1 + r)^n / ((1 + r)^n - 1)</p>
+                    <p>Where:</p>
+                    <ul>
+                        <li>P = Principal loan amount</li>
+                        <li>r = Interest rate per month [Annual rate/12/100]</li>
+                        <li>n = Total number of months</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Q. What is Home Loan Pre-EMI?
+                    <span class="arrow">&#9662;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Pre-EMI is the interest paid on the loan amount disbursed before the full disbursement of the
+                        loan. During the under-construction period, you only pay the interest on the amount disbursed,
+                        and not the principal amount. Regular EMIs start after complete disbursement.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Q. Are there any tax benefits on paying Home loan EMIs?
+                    <span class="arrow">&#9662;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, there are tax benefits available under:</p>
+                    <ul>
+                        <li>Section 24: Interest paid up to ₹2 lakhs can be claimed as deduction</li>
+                        <li>Section 80C: Principal repayment up to ₹1.5 lakhs can be claimed as deduction</li>
+                        <li>Additional benefits for first-time homebuyers under Section 80EE</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Q. What if I fail to pay my Home Loan EMI on time?
+                    <span class="arrow">&#9662;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Missing EMI payments can have several consequences:</p>
+                    <ul>
+                        <li>Late payment charges will be levied</li>
+                        <li>Negative impact on your credit score</li>
+                        <li>Additional interest charges</li>
+                        <li>Legal action in case of continued default</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('./partials/footer') %>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" aria-label="Back to top">
+        <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+    </button>
+
+    <script src="/js/loan.js"></script>
+    <script>
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        // Ensure page starts at the top when loaded or refreshed
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            
+            // Force scroll to top after a slight delay to override any browser behavior
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 50);
+            
+            // Initialize back to top button
+            backToTopButton.style.display = 'none';
+        };
+    </script>
+</body>
+
+</html>

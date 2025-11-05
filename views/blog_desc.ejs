@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+    <%= blog.title %> | Home Scape
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/blog_desc.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for search icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+        <div class="container">
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div class="blog-header">
+                    <div class="author-info">
+                        <span class="author">
+                            <%= blog.author %>
+                        </span>
+                        <span class="read-time">6 min</span>
+                    </div>
+                    <h1 class="blog-title">
+                        <%= blog.title %>
+                    </h1>
+                    <% if (locals.user && locals.user.role==='admin' ) { %>
+                        <div class="admin-controls">
+                            <a href="/blog/update/<%= blog._id %>" class="admin-btn edit-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button class="admin-btn delete-btn" onclick="confirmDelete('<%= blog._id %>')">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                            <% if (!blog.featured) { %>
+                                <button class="admin-btn feature-btn" onclick="setFeatured('<%= blog._id %>')">
+                                    <i class="fas fa-star"></i> Set as Featured
+                                </button>
+                                <% } %>
+                        </div>
+                        <% } %>
+                </div>
+
+                <div class="blog-image">
+                    <span class="date-badge">
+                        <%= new Date(blog.createdOn).toLocaleDateString('en-US', { day: '2-digit' , month: 'short'
+                            }).toUpperCase() %>
+                    </span>
+                    <img src="<%= blog.imageUrl %>" alt="<%= blog.title %>" onerror="this.src='/assets/house.jpg';">
+                </div>
+
+                <div class="blog-content">
+                    <%- blog.content %>
+                </div>
+
+                <!-- Inside main-content div, after the blog-content -->
+                <div class="testimonial">
+                    <div class="quote-icon">❝</div>
+                    <blockquote>
+                        Quick solutions coupled with extraordinary nice performance—a recommendation that's great.
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <span class="author-name">James Bond.</span>
+                        <span class="author-location">USA</span>
+                    </div>
+                </div>
+
+                <div class="process-section">
+                    <h2 class="process-title">Easy Process for Buy an Apartments</h2>
+                    <div class="process-checklist">
+                        <div class="checklist-item">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Find the problem first</span>
+                        </div>
+                        <div class="checklist-item">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Make research and find out the solution</span>
+                        </div>
+                        <div class="checklist-item">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Finalize the solution & apply.</span>
+                        </div>
+                    </div>
+
+                    <p class="process-description">
+                        One touch of a red-hot stove is usually all we need to avoid that kind of discomfort in quis
+                        future.
+                        The same Duis aute irure dolor in reprehenderit, sunt in culpa qui official deserunt mollit anim
+                        id
+                        avoid est laborum.
+                    </p>
+
+                    <div class="blog-image">
+                        <img src="/assets/team-meeting.jpg" alt="Team meeting around laptop">
+                    </div>
+                    <p class="image-caption">Buy or rent properties with no commission</p>
+
+                    <p class="process-description">
+                        Tomfoolery crikey bits and bobs brilliant bamboozled down the pub amongst brolly hanky panky,
+                        cack
+                        bonnet arse over tit burke bugger all mate bodge, cillum dolore fugiat pariatur. Excepteur sint
+                        occaecat cupidatat non proident, sunt in culpa qui official deserunt mollit anim Tempus
+                        imperdiet
+                        nulla malesuada pellentesque elit eget gravida cum. Sit amet ris nullam eget felis.
+                    </p>
+
+                    <!-- Add tags and social sharing -->
+                    <div class="blog-footer">
+                        <div class="tags">
+                            <span>Tag:</span>
+                            <a href="#">Apartments,</a>
+                            <a href="#">loan,</a>
+                            <a href="#">Sale</a>
+                        </div>
+                        <div class="social-share">
+                            <span>Share:</span>
+                            <a href="#"><i class="fab fa-whatsapp"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-skype"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="comments-section">
+                        <h2 class="comments-title">
+                            <%= blog.comments.length %> Comments
+                        </h2>
+
+                        <% if (blog.comments && blog.comments.length> 0) { %>
+                            <% blog.comments.forEach(comment=> { %>
+                                <div class="comment">
+                                    <div class="comment-avatar">
+                                        <img src="/assets/agent.png" alt="User">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <!-- <h3 class="comment-author">
+                                                Anonymous User
+                                            </h3> -->
+                                            <span class="comment-date">
+                                                <%= new Date(comment.createdAt).toLocaleDateString('en-US', {
+                                                    month: 'long' , day: 'numeric' , year: 'numeric' , hour: '2-digit' ,
+                                                    minute: '2-digit' }) %>
+                                            </span>
+                                            <button class="reply-btn">REPLY</button>
+                                        </div>
+                                        <p class="comment-text">
+                                            <%= comment.text %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <% }); %>
+                                    <% } else { %>
+                                        <p class="no-comments">No comments yet. Be the first to comment!</p>
+                                        <% } %>
+                    </div>
+
+                    <!-- Leave a Comment Section -->
+                    <div class="leave-comment">
+                        <h2>Leave A Comment</h2>
+
+                        <% if (locals.user) { %>
+                            <form id="commentForm" class="comment-form">
+                                <div class="form-group">
+                                    <label for="comment">Your Comment</label>
+                                    <textarea id="comment" name="comment" rows="6" required></textarea>
+                                    <div id="comment-validation" class="validation-message"></div>
+                                </div>
+
+                                <button type="submit" class="post-comment-btn">Post Comment</button>
+                            </form>
+                            <% } else { %>
+                                <p class="signin-text">
+                                    Please <a href="/auth/signin"
+                                        class="sign-in">sign in</a> to post your comment or <a href="/auth/signup"
+                                        class="sign-in">sign up</a> if you don't have an account.
+                                </p>
+                                <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="sidebar">
+                <!-- Search Box -->
+                <div class="search-box">
+                    <input type="text" placeholder="Search...">
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                </div>
+
+                <!-- Categories -->
+                <%- include('./partials/blog_sidebar', { tagCounts, activeTag: null }) %>
+
+                <!-- Related Articles -->
+                <div class="recent-news">
+                    <h2>Related Articles</h2>
+                    <% if (relatedBlogs && relatedBlogs.length> 0) { %>
+                        <% relatedBlogs.forEach(relatedBlog=> { %>
+                            <div class="news-item">
+                                <img src="<%= relatedBlog.imageUrl %>" alt="<%= relatedBlog.title %>" onerror="this.src='/assets/house.jpg';">
+                                <div class="news-content">
+                                    <h3><a href="/blog_desc/<%= relatedBlog._id %>">
+                                            <%= relatedBlog.title %>
+                                        </a></h3>
+                                    <span class="date">
+                                        <%= new Date(relatedBlog.createdOn).toLocaleDateString('en-US', { month: 'long'
+                                            , day: 'numeric' , year: 'numeric' }) %>
+                                    </span>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% } else { %>
+                                    <p>No related articles found.</p>
+                                    <% } %>
+                </div>
+
+                <!-- Add Keywords section after Recent News -->
+                <div class="keywords-section">
+                    <h2>Tags</h2>
+                    <div class="keywords-list">
+                        <% blog.tags.forEach(tag=> { %>
+                            <a href="/blog/tag/<%= tag %>" class="keyword">
+                                <%= tag %>
+                            </a>
+                            <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include('./partials/footer') %>
+
+            <!-- Back to Top Button -->
+            <button id="backToTop" aria-label="Back to top">
+                <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+            </button>
+
+            <script>
+                // Back to Top Button
+                const backToTopButton = document.getElementById('backToTop');
+
+                backToTopButton.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                window.addEventListener('scroll', () => {
+                    if (window.pageYOffset > 300) {
+                        backToTopButton.style.display = 'flex';
+                    } else {
+                        backToTopButton.style.display = 'none';
+                    }
+                });
+
+                // Ensure page starts at the top when loaded or refreshed
+                window.onload = function () {
+                    window.scrollTo(0, 0);
+
+                    // Force scroll to top after a slight delay to override any browser behavior
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                    }, 50);
+
+                    // Initialize back to top button
+                    backToTopButton.style.display = 'none';
+
+                    // Initialize comment form
+                    const commentForm = document.getElementById('commentForm');
+                    if (commentForm) {
+                        commentForm.addEventListener('submit', handleCommentSubmit);
+                    }
+                };
+
+                // Set blog as featured
+                async function setFeatured(blogId) {
+                    if (confirm('Are you sure you want to set this blog as featured? This will unset any currently featured blog.')) {
+                        try {
+                            const response = await fetch(`/blog/featured/${blogId}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert('Error: ' + (data.error || 'Failed to set blog as featured'));
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('An error occurred while setting the blog as featured');
+                        }
+                    }
+                }
+
+                // Confirm and handle blog deletion
+                async function confirmDelete(blogId) {
+                    if (confirm('Are you sure you want to delete this blog? This action cannot be undone.')) {
+                        try {
+                            const response = await fetch(`/blog/delete/${blogId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                window.location.href = '/blog_list';
+                            } else {
+                                alert('Error: ' + (data.error || 'Failed to delete blog'));
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('An error occurred while deleting the blog');
+                        }
+                    }
+                }
+
+                // Handle comment form submission
+                async function handleCommentSubmit(event) {
+                    event.preventDefault();
+
+                    const commentTextarea = document.getElementById('comment');
+                    const commentText = commentTextarea.value.trim();
+                    const commentValidation = document.getElementById('comment-validation');
+
+                    // Validate comment
+                    if (!commentText) {
+                        commentValidation.textContent = 'Please enter a comment';
+                        return;
+                    }
+
+                    // Clear validation message
+                    commentValidation.textContent = '';
+
+                    // Disable submit button to prevent multiple submissions
+                    const submitButton = event.target.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Posting...';
+
+                    try {
+                        // Add delay before posting comment
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+
+                        // Send comment to server
+                        const response = await fetch(`/blog/comment/<%= blog._id %>`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ text: commentText })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Reload page to show new comment
+                            window.location.reload();
+                        } else if (data.redirectUrl) {
+                            // Redirect to login if not authenticated
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            // Show error
+                            commentValidation.textContent = data.error || 'Failed to post comment';
+                            submitButton.disabled = false;
+                            submitButton.textContent = originalButtonText;
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        commentValidation.textContent = 'An error occurred while posting your comment';
+                        submitButton.disabled = false;
+                        submitButton.textContent = originalButtonText;
+                    }
+                }
+            </script>
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+/* Container for the whole overview page */
+.buyer-overview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* 32px, this is space-y-8 */
+  padding: 1rem; /* 24px */
+}
+
+/* Header for "Financial Overview" */
+.dash-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dash-section-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+
+.dash-section-header p {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem;
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* Grid for "Account Balance" and "Loan Requests" */
+.dash-financial-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+@media (min-width: 768px) {
+  .dash-financial-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Styling for the cards in that grid */
+.dash-financial-card {
+  background-color: #fff;
+  padding: 1.5rem; /* 24px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  display: flex;
+  align-items: flex-start; /* items-start */
+  gap: 1rem; /* 16px */
+}
+
+.dash-financial-card-icon {
+  padding: 0.75rem; /* 12px */
+  border-radius: 0.5rem; /* 8px */
+}
+
+.dash-financial-card-icon.green {
+  background-color: #dcfce7; /* bg-green-100 */
+  color: #16a34a; /* text-green-600 */
+}
+.dash-financial-card-icon.blue {
+  background-color: #dbeafe; /* bg-blue-100 */
+  color: #2563eb; /* text-blue-600 */
+}
+
+.dash-financial-card-icon i {
+  font-size: 1.25rem; /* 20px */
+}
+
+.dash-financial-card-details {
+  flex: 1;
+}
+
+.dash-financial-card-details h3 {
+  color: #6b7280; /* text-gray-500 */
+  font-weight: 500;
+  margin-bottom: 0.25rem; /* 4px */
+}
+
+.dash-financial-card-details .balance-amount {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: #111827; /* text-gray-900 */
+  margin-bottom: 0.75rem; /* 12px */
+}
+
+/* "Add Funds" button */
+.dash-financial-card-details .dash-action-btn {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #2563eb; /* text-blue-600 */
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.dash-financial-card-details .dash-action-btn:hover {
+  text-decoration: underline;
+}
+
+/* Loan status badge (e.g., "Loan approved!") */
+.dash-loan-status-badge {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0.75rem; /* 12px */
+  padding: 0.25rem 0.75rem; /* 4px 12px */
+  border-radius: 9999px; /* rounded-full */
+}
+.dash-loan-status-badge.approved {
+  background-color: #dcfce7; /* bg-green-100 */
+  color: #15803d; /* text-green-700 */
+}
+.dash-loan-status-badge.pending {
+  background-color: #fef9c3; /* bg-yellow-100 */
+  color: #a16207; /* text-yellow-700 */
+}
+.dash-loan-status-badge.rejected {
+  background-color: #fee2e2; /* bg-red-100 */
+  color: #b91c1c; /* text-red-700 */
+}
+.dash-loan-status-badge.default {
+  background-color: #f3f4f6; /* bg-gray-100 */
+  color: #4b5563; /* text-gray-500 */
+}
+
+/* Loan history table */
+.dash-table-container {
+  background-color: #fff;
+  padding: 1.5rem; /* 24px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dash-table-container h3 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 1rem; /* 16px */
+}
+
+.dash-table-wrapper {
+  overflow-x: auto;
+}
+
+.dash-table {
+  width: 100%;
+  text-align: left;
+}
+
+.dash-table thead {
+  border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+}
+
+.dash-table th {
+  padding: 0.75rem; /* 12px */
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  color: #4b5563; /* text-gray-600 */
+}
+
+.dash-table tbody tr {
+  border-bottom: 1px solid #f3f4f6; /* border-gray-100 */
+}
+
+.dash-table tbody tr:hover {
+  background-color: #f9fafb; /* hover:bg-gray-50 */
+}
+
+.dash-table td {
+  padding: 0.75rem; /* 12px */
+  color: #1f2937; /* text-gray-800 */
+}
+
+/* Status badge in table */
+.dash-status-badge {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  border-radius: 9999px;
+}
+.dash-status-badge.approved {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+.dash-status-badge.pending {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+.dash-status-badge.rejected {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}

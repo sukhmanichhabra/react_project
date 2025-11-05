@@ -1,0 +1,96 @@
+/* Grid container for all stat cards */
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+/* Responsive grid layout */
+@media (min-width: 640px) {
+  .dash-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .dash-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .dash-stats-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Individual stat card styling */
+.dash-stat-card {
+  background-color: #fff;
+  padding: 1.5rem; /* 24px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 16px */
+}
+
+.dash-stat-icon {
+  width: 3rem; /* 48px */
+  height: 3rem; /* 48px */
+  border-radius: 9999px; /* rounded-full */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-stat-icon i {
+  font-size: 1.25rem; /* 20px */
+}
+
+.dash-stat-details h3 {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #6b7280; /* text-gray-500 */
+}
+
+.dash-stat-details .dash-stat-number {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 700;
+  color: #111827; /* text-gray-900 */
+}
+
+/* "Add Funds" link in the balance card */
+.dash-stat-details .dash-finance-action {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #2563eb; /* text-blue-600 */
+  text-decoration: none;
+}
+
+.dash-stat-details .dash-finance-action:hover {
+  text-decoration: underline;
+}
+
+.dash-stat-details .dash-finance-action i {
+  margin-right: 0.25rem;
+}
+
+/* Trend (e.g., +8.3%) */
+.dash-stat-trend {
+  font-size: 0.875rem; /* 14px */
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+}
+
+.dash-stat-trend.positive {
+  color: #22c55e; /* text-green-500 */
+}
+
+.dash-stat-trend.negative {
+  color: #ef4444; /* text-red-500 */
+}
+
+.dash-stat-trend i {
+  font-size: 0.75rem; /* 12px */
+}

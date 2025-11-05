@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Real Estate</title>
+    <link rel="shortcut icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/payrent.css">
+</head>
+<body>
+    <%- include('./partials/header') %>
+    
+    <div class="rent-dashboard">
+        <% if (locals.query && locals.query.success) { %>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <%= locals.query.success %>
+            </div>
+        <% } %>
+        
+        <h1 class="section-title">My Rent Dashboard</h1>
+        
+        <div class="rent-summary">
+            <div class="summary-card total-paid">
+                <h3>Total Paid</h3>
+                <div class="amount">$<%= totalPaid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></div>
+            </div>
+            
+            <div class="summary-card total-due">
+                <h3>Total Due</h3>
+                <div class="amount">$<%= totalDue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></div>
+            </div>
+            
+            <div class="summary-card overdue">
+                <h3>Overdue Payments</h3>
+                <div class="amount"><%= overdueRents.length %></div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">My Rental Properties</h2>
+        
+        <% if (properties && properties.length > 0) { %>
+            <div class="property-cards">
+                <% properties.forEach(property => { %>
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/default-property.jpg' %>" alt="<%= property.title %>">
+                            <% if (property.hasPendingRent) { %>
+                                <div class="rent-due-badge">Rent Due</div>
+                            <% } %>
+                        </div>
+                        <div class="property-details">
+                            <h3 class="property-title"><%= property.title %></h3>
+                            <p class="property-location"><i class="fas fa-map-marker-alt"></i> <%= property.location %></p>
+                            <div class="property-rent"><%= property.price %></div>
+                            <div class="property-action">
+                                <a href="/property/<%= property._id %>" class="view-details-btn">View Details</a>
+                                <% 
+                                // Find pending rent for this property
+                                const pendingRent = property.rentHistory && property.rentHistory.length > 0 
+                                    ? property.rentHistory.find(rent => rent.status === 'pending' || rent.status === 'overdue')
+                                    : null;
+                                %>
+                                <% if (pendingRent) { %>
+                                    <button class="pay-rent-btn" onclick="openPaymentModal('<%= pendingRent._id %>', '<%= property.title %>', '<%= pendingRent.amount %>', '<%= pendingRent.dueDate %>')">Pay Rent</button>
+                                <% } else { %>
+                                    <button class="pay-rent-btn" disabled style="background-color: #a5d6a7; cursor: not-allowed;">No Rent Due</button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="fas fa-home"></i>
+                <h3>No Rental Properties Found</h3>
+                <p>You haven't rented any properties yet. Browse our listings to find your perfect rental home.</p>
+            </div>
+        <% } %>
+        
+        <h2 class="section-title">Upcoming Payments</h2>
+        
+        <% if (upcomingRents && upcomingRents.length > 0) { %>
+            <div class="rent-history">
+                <table class="rent-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% upcomingRents.forEach(rent => { %>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="<%= rent.propertyImage || '/assets/default-property.jpg' %>" alt="<%= rent.propertyTitle %>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                        <span><%= rent.propertyTitle %></span>
+                                    </div>
+                                </td>
+                                <td>$<%= rent.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></td>
+                                <td><%= new Date(rent.dueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) %></td>
+                                <td>
+                                    <span class="status-badge status-pending">Pending</span>
+                                </td>
+                                <td>
+                                    <button class="pay-rent-btn" style="padding: 5px 10px;" onclick="openPaymentModal('<%= rent._id %>', '<%= rent.propertyTitle %>', '<%= rent.amount %>', '<%= rent.dueDate %>')">Pay Now</button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="fas fa-calendar-check"></i>
+                <h3>No Upcoming Payments</h3>
+                <p>You don't have any upcoming rent payments due at this time.</p>
+            </div>
+        <% } %>
+        
+        <% if (overdueRents && overdueRents.length > 0) { %>
+            <h2 class="section-title">Overdue Payments</h2>
+            <div class="rent-history">
+                <table class="rent-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% overdueRents.forEach(rent => { %>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="<%= rent.propertyImage || '/assets/default-property.jpg' %>" alt="<%= rent.propertyTitle %>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                        <span><%= rent.propertyTitle %></span>
+                                    </div>
+                                </td>
+                                <td>$<%= rent.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></td>
+                                <td><%= new Date(rent.dueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) %></td>
+                                <td>
+                                    <span class="status-badge status-overdue">Overdue</span>
+                                </td>
+                                <td>
+                                    <button class="pay-rent-btn" style="padding: 5px 10px; background-color: #f44336;" onclick="openPaymentModal('<%= rent._id %>', '<%= rent.propertyTitle %>', '<%= rent.amount %>', '<%= rent.dueDate %>')">Pay Now</button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        
+        <h2 class="section-title">Payment History</h2>
+        
+        <% if (paidRents && paidRents.length > 0) { %>
+            <div class="rent-history">
+                <table class="rent-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Paid Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% paidRents.forEach(rent => { %>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="<%= rent.propertyImage || '/assets/default-property.jpg' %>" alt="<%= rent.propertyTitle %>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                        <span><%= rent.propertyTitle %></span>
+                                    </div>
+                                </td>
+                                <td>$<%= rent.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></td>
+                                <td><%= new Date(rent.dueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) %></td>
+                                <td><%= rent.paidDate ? new Date(rent.paidDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A' %></td>
+                                <td>
+                                    <span class="status-badge status-paid">Paid</span>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="fas fa-receipt"></i>
+                <h3>No Payment History</h3>
+                <p>You haven't made any rent payments yet.</p>
+            </div>
+        <% } %>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Pay Rent</h3>
+                <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+            </div>
+            
+            <div class="payment-details">
+                <div class="payment-detail">
+                    <span class="detail-label">Property:</span>
+                    <span class="detail-value" id="modalPropertyName"></span>
+                </div>
+                <div class="payment-detail">
+                    <span class="detail-label">Amount Due:</span>
+                    <span class="detail-value" id="modalRentAmount"></span>
+                </div>
+                <div class="payment-detail">
+                    <span class="detail-label">Due Date:</span>
+                    <span class="detail-value" id="modalDueDate"></span>
+                </div>
+            </div>
+            
+            <% if (locals.user) { %>
+                <div class="balance-warning">
+                    Your Account Balance: $<%= locals.user.accountBalance ? locals.user.accountBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' %>
+                </div>
+            <% } %>
+            
+            <form class="payment-form" id="payRentForm" method="POST">
+                <div class="form-group">
+                    <label class="form-label">Payment Method</label>
+                    <select class="form-select" name="paymentMethod">
+                        <option value="account">Account Balance</option>
+                        <option value="credit_card">Credit/Debit Card</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="confirm-payment-btn">Confirm Payment</button>
+            </form>
+        </div>
+    </div>
+    
+    <%- include('./partials/footer') %>
+    
+    <script>
+        // Payment modal functionality
+        const paymentModal = document.getElementById('paymentModal');
+        const payRentForm = document.getElementById('payRentForm');
+        let currentRentId;
+        
+        function openPaymentModal(rentId, propertyName, amount, dueDate) {
+            currentRentId = rentId;
+            
+            // Update form action
+            payRentForm.action = `/rent/pay/${rentId}`;
+            
+            // Update modal content
+            document.getElementById('modalPropertyName').textContent = propertyName;
+            document.getElementById('modalRentAmount').textContent = `$${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            
+            // Format due date
+            const formattedDate = new Date(dueDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('modalDueDate').textContent = formattedDate;
+            
+            // Show modal
+            paymentModal.style.display = 'flex';
+        }
+        
+        function closePaymentModal() {
+            paymentModal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target === paymentModal) {
+                closePaymentModal();
+            }
+        };
+        
+        function openPaymentModal(rentId, propertyTitle, amount, dueDate) {
+            // Format the date
+            const dueDateFormatted = new Date(dueDate).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            // Parse amount to ensure it's a number for comparison
+            const amountValue = parseFloat(amount);
+            
+            // Get the current user's balance via XMLHttpRequest
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/dashboard/debug-user', true);
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            
+                            if (!data.success) {
+                                console.error('Failed to get user balance');
+                                return;
+                            }
+                            
+                            // Use the latest user balance from the server
+                            const userBalance = data.user.accountBalance || 0;
+                            
+                            // Format balance and amount for display
+                            const formattedBalance = userBalance.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                            
+                            const formattedAmount = amountValue.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                            
+                            // Create the modal HTML with the current balance
+                            const modalHTML = `
+                                <div class="modal-overlay">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h2>Pay Rent</h2>
+                                            <button class="close-modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="payment-detail">
+                                                <div class="detail-label">Property:</div>
+                                                <div class="detail-value">${propertyTitle}</div>
+                                            </div>
+                                            <div class="payment-detail">
+                                                <div class="detail-label">Amount Due:</div>
+                                                <div class="detail-value">$${formattedAmount}</div>
+                                            </div>
+                                            <div class="payment-detail">
+                                                <div class="detail-label">Due Date:</div>
+                                                <div class="detail-value">${dueDateFormatted}</div>
+                                            </div>
+                                            
+                                            <div class="balance-alert ${userBalance < amountValue ? 'insufficient' : 'sufficient'}">
+                                                <i class="fas ${userBalance < amountValue ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                                                Your Account Balance: $${formattedBalance}
+                                            </div>
+                                            
+                                            <form id="paymentForm" action="/rent/pay/${rentId}" method="POST">
+                                                <div class="form-group">
+                                                    <label for="paymentMethod">Payment Method</label>
+                                                    <select id="paymentMethod" name="paymentMethod">
+                                                        <option value="account">Account Balance</option>
+                                                        <option value="credit_card">Credit Card</option>
+                                                        <option value="bank_transfer">Bank Transfer</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <button type="submit" class="pay-now-btn" ${userBalance < amountValue ? 'disabled' : ''}>
+                                                    ${userBalance < amountValue ? 'Insufficient Funds' : 'Confirm Payment'}
+                                                </button>
+                                            </form>
+                                            
+                                            ${userBalance < amountValue ? `
+                                                <div class="add-funds-message">
+                                                    <p>You need to add $${(amountValue - userBalance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} more to your account.</p>
+                                                    <a href="/dashboard?section=add-funds" class="add-funds-btn">Add Funds</a>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Add the modal to the DOM
+                            document.body.insertAdjacentHTML('beforeend', modalHTML);
+                            
+                            // Add event listeners for close button and overlay
+                            document.querySelector('.close-modal').addEventListener('click', closeModal);
+                            document.querySelector('.modal-overlay').addEventListener('click', function(e) {
+                                if (e.target === this) {
+                                    closeModal();
+                                }
+                            });
+                        } catch (error) {
+                            console.error('Error parsing response:', error);
+                            alert('Could not load your account balance. Please try again.');
+                        }
+                    } else {
+                        console.error('HTTP Error:', xhr.status, xhr.statusText);
+                        alert('Could not load your account balance. Please try again.');
+                    }
+                }
+            };
+            
+            xhr.onerror = function() {
+                console.error('Network error occurred');
+                alert('Network error. Please check your connection and try again.');
+            };
+            
+            xhr.ontimeout = function() {
+                console.error('Request timeout');
+                alert('Request timeout. Please try again.');
+            };
+            
+            // Set timeout
+            xhr.timeout = 10000; // 10 seconds
+            
+            // Send the request
+            xhr.send();
+        }
+        
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+    </script>
+</body>
+</html> 

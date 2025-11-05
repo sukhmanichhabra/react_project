@@ -1,0 +1,31 @@
+<li>
+    <div class="blog-card">
+        <figure class="card-banner">
+            <img src="<%= imageUrl %>" alt="<%= title %>">
+        </figure>
+        <div class="blog-content">
+            <div class="card-meta-list">
+                <span class="card-meta-link">
+                    <ion-icon name="person"></ion-icon>
+                    by: <%= author %>
+                </span>
+                <span class="card-meta-link">
+                    <ion-icon name="pricetags"></ion-icon>
+                    <%= category %>
+                </span>
+            </div>
+            <h3 class="blog-title">
+                <%= title %>
+            </h3>
+            <div class="blog-content-bottom">
+                <div class="publish-date">
+                    <ion-icon name="calendar"></ion-icon>
+                    <time datetime="<%= publishDateISO %>">
+                        <%= publishDate %>
+                    </time>
+                </div>
+                <a href="<%= link %>" class="read-more-btn">Read More</a>
+            </div>
+        </div>
+    </div>
+</li>

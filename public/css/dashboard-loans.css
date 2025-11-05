@@ -1,0 +1,464 @@
+/* Dashboard Loan Applications CSS */
+
+/* Loan Applications Container */
+.loan-applications {
+    margin-top: 1.5rem;
+}
+
+/* Loading and Empty States */
+.loading-state,
+.empty-state,
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    color: #555;
+}
+
+.loading-state i,
+.empty-state i,
+.error-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.loading-state i {
+    color: #2196F3;
+}
+
+.empty-state i {
+    color: #607D8B;
+}
+
+.error-state i {
+    color: #F44336;
+}
+
+/* Loan Item Card */
+.loan-item {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 5px solid #e0e0e0;
+}
+
+.loan-item:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Status-based borders */
+.loan-item.pending {
+    border-left-color: #FFC107;
+}
+
+.loan-item.under_review {
+    border-left-color: #2196F3;
+}
+
+.loan-item.approved {
+    border-left-color: #4CAF50;
+}
+
+.loan-item.rejected {
+    border-left-color: #F44336;
+}
+
+.loan-item.disbursed {
+    border-left-color: #9C27B0;
+}
+
+/* Loan Header */
+.loan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    position: relative;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Applicant Info */
+.applicant-info {
+    flex-grow: 1;
+}
+
+.applicant-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: #333;
+}
+
+.applicant-info p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0 0 0.5rem 0;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #c79100;
+}
+
+.status-badge.under_review {
+    background-color: rgba(33, 150, 243, 0.15);
+    color: #0069c0;
+}
+
+.status-badge.approved {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #2e7d32;
+}
+
+.status-badge.rejected {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #c62828;
+}
+
+.status-badge.disbursed {
+    background-color: rgba(156, 39, 176, 0.15);
+    color: #6a1b9a;
+}
+
+/* Loan Summary */
+.loan-summary {
+    display: flex;
+    gap: 1.5rem;
+    margin-left: 1rem;
+}
+
+.loan-summary > div {
+    text-align: center;
+    min-width: 100px;
+}
+
+.loan-summary span {
+    display: block;
+    font-size: 0.7rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.loan-summary p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* Toggle Details Button */
+.toggle-details {
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.2s ease;
+    margin-left: 1rem;
+}
+
+.toggle-details:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Loan Details Section */
+.loan-details {
+    padding: 0;
+    overflow: hidden;
+    background-color: #fafafa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.detail-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.detail-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.detail-row span {
+    color: #666;
+}
+
+.detail-row p {
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+}
+
+/* Document Links */
+.document-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.document-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #2196F3;
+    padding: 0.5rem 0.75rem;
+    background-color: rgba(33, 150, 243, 0.05);
+    border-radius: 5px;
+    transition: all 0.2s ease;
+}
+
+.document-link:hover {
+    background-color: rgba(33, 150, 243, 0.1);
+}
+
+.document-link i {
+    margin-right: 0.5rem;
+}
+
+.missing-doc {
+    display: flex;
+    align-items: center;
+    color: #9e9e9e;
+    padding: 0.5rem 0.75rem;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.missing-doc::before {
+    content: "\f057";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-right: 0.5rem;
+}
+
+/* Admin Section */
+.admin-section {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.admin-remarks {
+    margin-bottom: 1.5rem;
+}
+
+.admin-remarks label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.admin-remarks textarea {
+    width: 100%;
+    height: 80px;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border 0.2s ease;
+}
+
+.admin-remarks textarea:focus {
+    border-color: #2196F3;
+    outline: none;
+}
+
+/* Action Buttons */
+.loan-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.action-buttons button {
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.action-buttons button i {
+    margin-right: 0.5rem;
+}
+
+.approve-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.approve-btn:hover {
+    background-color: #3d8b40;
+}
+
+.reject-btn {
+    background-color: #F44336;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #d32f2f;
+}
+
+.request-info-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+.request-info-btn:hover {
+    background-color: #1976D2;
+}
+
+/* Alerts */
+.alert {
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.alert i {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.alert-success {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #2e7d32;
+    border-left: 4px solid #4CAF50;
+}
+
+.alert-error {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #c62828;
+    border-left: 4px solid #F44336;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .loan-summary {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .loan-summary > div {
+        min-width: 80px;
+    }
+}
+
+@media (max-width: 992px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .loan-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .loan-summary {
+        margin-left: 0;
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .toggle-details {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .action-buttons button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .loan-summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .loan-summary > div {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .loan-summary span {
+        margin-bottom: 0;
+    }
+} 

@@ -1,0 +1,155 @@
+.agt-desc-contact-stripes-wrapper {
+  display: inline-block; /* Prevents stretching full width */
+  max-width: 480px; /* Ensures the stripes wrap only the card */
+  padding: 12px; /* Minimal space for the frame */
+  border-radius: 16px;
+  background: repeating-linear-gradient(
+    135deg,
+    #ececec 0px,
+    #ececec 2.5px,
+    transparent 2.5px,
+    transparent 7px
+  );
+  position: relative; /* For z-index context */
+}
+
+.agt-desc-contact-stripes {
+  /* This class seems to be the same as the wrapper in the JSX, 
+     I'll keep the styles on the wrapper and remove this if it was a mistake */
+}
+
+.agt-desc-contact-container {
+  flex: none;
+  background-color: #fff;
+  padding: 35px;
+  border-radius: 8px;
+  position: relative;
+  width: 400px;
+  /* stronger soft shadow */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  align-self: flex-start;
+}
+
+.agt-desc-contact-container::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(200, 200, 200, 0.9),
+    rgba(200, 200, 200, 0.9) 12px,
+    transparent 12px,
+    transparent 24px
+  );
+  z-index: -1;
+  border-radius: 0;
+}
+
+/* Contact Form Styles */
+.agt-desc-contact-form {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column; /* Added to make form stack */
+  gap: 0px;
+}
+
+.agt-desc-contact-form h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+.agt-desc-contact-form .agt-desc-contact-form-group:first-of-type {
+  margin-top: 10px;
+}
+
+.agt-desc-contact-form-group {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+/* Remove icons from contact form */
+.agt-desc-contact-form .agt-desc-contact-form-group::before {
+  display: none !important;
+  content: none !important;
+}
+
+.agt-desc-contact-form .agt-desc-contact-form-group {
+  margin-bottom: 12px;
+}
+
+.agt-desc-contact-form-group label {
+  display: block;
+  font-size: 14px;
+  color: #333;
+}
+
+.agt-desc-contact-form-group input,
+.agt-desc-contact-form-group select,
+.agt-desc-contact-form-group textarea {
+  width: 100%;
+  padding: 12px 0;
+  padding-left: 0 !important;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  background: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.agt-desc-contact-form-group input::placeholder,
+.agt-desc-contact-form-group select::placeholder,
+.agt-desc-contact-form-group textarea::placeholder {
+  color: #666;
+}
+
+/* Button styles */
+.agt-desc-contact-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.agt-desc-contact-btn-primary {
+  background: #ff5722;
+  color: white;
+}
+
+.agt-desc-contact-btn-primary:hover {
+  background: #f4511e;
+}
+
+.agt-desc-contact-btn-secondary {
+  background: white;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.agt-desc-contact-btn-secondary:hover {
+  background: #f5f5f5;
+}
+
+/* Added from JSX */
+.agt-desc-contact-feedback {
+  display: none;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.agt-desc-contact-feedback.success {
+  background: #d4edda;
+  color: #155724;
+}
+.agt-desc-contact-feedback.error {
+  background: #f8d7da;
+  color: #721c24;
+}

@@ -1,0 +1,747 @@
+/* --- BlogList.css --- */
+
+/* --- Google Font Import (from EJS) --- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* --- Root Variables (from your blog_list.css & images) --- */
+:root {
+  --orange-soda: hsl(9, 100%, 62%);
+  --cadet: hsl(200, 15%, 43%);
+  --white: hsl(0, 0%, 100%);
+  --dark-jungle-green: hsl(188, 63%, 7%);
+  --light-gray: hsl(0, 0%, 96%);
+  --border-color: #eee;
+  --transition: 0.3s ease-in-out;
+
+  /* Category Pill Colors */
+  --residential-bg: #fff0ed;
+  --residential-fg: var(--orange-soda);
+  --commercial-bg: #ebf5ff;
+  --commercial-fg: #007bff;
+  --investment-bg: #eaf7f0;
+  --investment-fg: #28a745;
+  --market-trends-bg: #f3f0f9;
+  --market-trends-fg: #6f42c1;
+}
+
+/* --- Base Styles --- */
+.blg-list-page {
+  color: var(--dark-jungle-green);
+  font-family: "Inter", sans-serif;
+  background-color: var(--white);
+  /* overflow-x: hidden; */
+  margin-top: -50px;
+}
+
+.blg-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.blg-list-page section {
+  padding: 60px 0;
+}
+
+.blg-list-page a {
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.blg-list-page a:hover {
+  opacity: 0.9;
+}
+
+.blg-list-page ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.blg-list-page img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* --- Loading & Empty States (from your CSS/JSX) --- */
+.blg-list-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--orange-soda);
+}
+
+.blg-list-no-featured-blog,
+.blg-list-no-blogs {
+  background-color: var(--light-gray);
+  border-radius: 10px;
+  padding: 40px 30px;
+  text-align: center;
+  margin-bottom: 40px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.blg-list-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.blg-list-empty-state i {
+  color: var(--cadet);
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.blg-list-empty-state h3 {
+  color: var(--dark-jungle-green);
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.blg-list-empty-state p {
+  color: var(--cadet);
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto 20px;
+}
+
+.blg-list-btn-add-first-blog {
+  display: inline-block;
+  background-color: var(--orange-soda);
+  color: var(--white);
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition);
+  margin-top: 15px;
+}
+
+.blg-list-btn-add-first-blog:hover {
+  background-color: hsl(9, 100%, 56%);
+  transform: translateY(-2px);
+}
+
+.blg-list-btn-add-first-blog i {
+  color: var(--white);
+  margin-right: 5px;
+}
+
+/* --- Section Header Styles (Adapted for Image) --- */
+.blg-list-section-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.blg-list-section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--dark-jungle-green);
+  position: relative;
+}
+
+/* Default icon style (left) */
+.blg-list-section-title i {
+  color: var(--orange-soda);
+  margin-right: 12px;
+  font-size: 2.2rem;
+  vertical-align: -3px;
+}
+
+/* Featured Article header specific style (icon on top) */
+.blg-list-section-title i.fa-star {
+  font-size: 2.5rem;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-right: 0;
+  vertical-align: 0;
+}
+
+/* Adjust title padding ONLY if it has a fa-star */
+.blg-list-section-title:has(i.fa-star) {
+  padding-top: 50px;
+  margin-bottom: 15px;
+}
+
+.blg-list-section-subtitle {
+  font-size: 1.1rem;
+  color: var(--cadet);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Add Blog Button (Admin) */
+.blg-list-btn-add-blog {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--orange-soda);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 0;
+  right: 20px;
+}
+
+.blg-list-btn-add-blog:hover {
+  background: #e64a19;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Featured Blog Styles (from your CSS) --- */
+.blg-list-featured-blog {
+  padding-top: 60px;
+  background-color: var(--white);
+}
+
+.blg-list-featured-blog-container {
+  display: flex;
+  background: var(--white);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  transition: var(--transition);
+}
+
+.blg-list-featured-blog-container:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.blg-list-featured-blog-image {
+  flex: 1.1;
+  position: relative;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.blg-list-featured-blog-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  display: block;
+  min-height: 450px;
+}
+
+.blg-list-featured-blog-container:hover .blg-list-featured-blog-image img {
+  transform: scale(1.05);
+}
+
+.blg-list-featured-tag {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: var(--orange-soda);
+  color: var(--white);
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.blg-list-featured-blog-content {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.blg-list-featured-meta {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.blg-list-featured-category,
+.blg-list-featured-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cadet);
+}
+
+.blg-list-featured-category i,
+.blg-list-featured-date i {
+  color: var(--orange-soda);
+}
+
+.blg-list-featured-category {
+  color: var(--orange-soda);
+  font-weight: 500;
+}
+
+.blg-list-featured-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.3;
+  color: var(--dark-jungle-green);
+}
+
+.blg-list-featured-excerpt {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--cadet);
+  margin-bottom: 30px;
+  flex-grow: 1;
+}
+
+.blg-list-featured-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.blg-list-author-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.blg-list-author-name {
+  font-weight: 600;
+  color: var(--dark-jungle-green);
+}
+
+.blg-list-featured-read-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--orange-soda);
+  color: var(--white);
+  padding: 12px 25px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  align-self: flex-start;
+}
+
+.blg-list-featured-read-more:hover {
+  background: #e64a19;
+  color: var(--white);
+  transform: translateX(5px);
+}
+
+/* --- Category Filter Styles (from your CSS/Image) --- */
+.blg-list-blog-categories {
+  padding: 40px 0;
+}
+
+.blg-list-category-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.blg-list-category-btn {
+  background: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cadet);
+}
+
+.blg-list-category-btn i {
+  color: var(--orange-soda);
+}
+
+.blg-list-category-btn:hover,
+.blg-list-category-btn.active {
+  background: var(--orange-soda);
+  color: var(--white);
+  border-color: var(--orange-soda);
+}
+
+.blg-list-category-btn:hover i,
+.blg-list-category-btn.active i {
+  color: var(--white);
+}
+
+/* --- Blog List Section --- */
+.blg-list-blog-section {
+  padding: 40px 0 60px;
+  background-color: var(--light-gray);
+}
+
+/* This is the grid container for the cards */
+.blg-list-blog-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  padding: 0;
+}
+
+/* All other card styles are in BlogCard.css */
+
+/* --- Pagination Styles (from your CSS) --- */
+.blg-list-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 40px 0 20px;
+}
+
+.blg-list-pagination a,
+.blg-list-pagination span {
+  text-decoration: none;
+  padding: 12px 18px;
+  border: none;
+  background: var(--white);
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: var(--dark-jungle-green);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 45px;
+  position: relative;
+  overflow: hidden;
+}
+
+.blg-list-pagination a:before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: var(--orange-soda);
+  transition: width 0.3s ease;
+}
+
+.blg-list-pagination a:hover:before,
+.blg-list-pagination a.active:before {
+  width: 100%;
+}
+
+.blg-list-pagination a:hover,
+.blg-list-pagination a.active {
+  background: var(--white);
+  color: var(--orange-soda);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.blg-list-pagination a.active {
+  font-weight: 700;
+}
+
+.blg-list-pagination .page-nav {
+  color: var(--orange-soda);
+}
+
+.blg-list-pagination .page-nav:hover {
+  color: var(--orange-soda);
+  transform: translateY(-3px) scale(1.05);
+}
+
+.blg-list-pagination .page-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 45px;
+  padding: 12px 18px;
+  color: var(--dark-jungle-green);
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* --- Newsletter Section (from your CSS) --- */
+.blg-list-newsletter {
+  background: #1a2a3a; /* Simplified from gradient */
+  padding: 80px 0;
+  color: var(--white);
+  margin: 60px 0;
+}
+
+.blg-list-newsletter-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.blg-list-newsletter-icon {
+  font-size: 3rem;
+  color: var(--orange-soda);
+  background: rgba(255, 255, 255, 0.1);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.blg-list-newsletter-text {
+  flex: 1;
+}
+
+.blg-list-newsletter-text h3 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.blg-list-newsletter-text p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.blg-list-newsletter-form {
+  flex: 1;
+}
+
+.blg-list-newsletter-form .form-group {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.blg-list-newsletter-form .form-group input {
+  flex: 1;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 50px 0 0 50px;
+  font-size: 1rem;
+  margin-top: 25px;
+}
+
+.blg-list-newsletter-form .form-group button {
+  background: var(--orange-soda);
+  color: var(--white);
+  border: none;
+  border-radius: 0 50px 50px 0;
+  padding: 0 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  margin-top: 25px;
+  gap: 8px;
+}
+
+.blg-list-newsletter-form .form-group button:hover {
+  background: #e64a19;
+}
+
+.blg-list-newsletter-form .form-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.blg-list-newsletter-form .form-check input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.blg-list-newsletter-form .form-check label {
+  cursor: pointer;
+  color: var(--white);
+  opacity: 0.9;
+  margin-bottom: 15px;
+}
+
+/* --- Stats Section (from your CSS) --- */
+.blg-list-stats-section {
+  padding: 60px 0;
+  background-color: var(--light-gray);
+}
+
+.blg-list-stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.blg-list-stat-card {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
+}
+
+.blg-list-stat-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.blg-list-stat-icon {
+  font-size: 2.5rem;
+  color: var(--orange-soda);
+  margin-bottom: 20px;
+}
+
+.blg-list-stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--dark-jungle-green);
+}
+
+.blg-list-stat-title {
+  font-size: 1rem;
+  color: var(--cadet);
+  font-weight: 500;
+}
+
+/* --- Back to Top Button (from your CSS) --- */
+#blg-list-backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: var(--orange-soda);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: none; /* JS will change this */
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
+  z-index: 999;
+  padding: 0;
+}
+
+#blg-list-backToTop:hover {
+  background-color: #e64a19;
+  transform: translateY(-5px);
+}
+
+/* --- Responsive Styles (from your CSS) --- */
+@media (max-width: 1024px) {
+  .blg-list-featured-blog-container {
+    flex-direction: column;
+  }
+
+  .blg-list-featured-blog-image {
+    height: 300px;
+  }
+
+  .blg-list-featured-blog-image img {
+    min-height: 300px;
+  }
+
+  .blg-list-stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .blg-list-newsletter-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .blg-list-newsletter-text {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .blg-list-blog-list {
+    /* Switch to 2 columns on tablets */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .blg-list-blog-list {
+    /* (already 2-col) */
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .blg-list-newsletter {
+    padding: 60px 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .blg-list-blog-list {
+    /* Switch to 1 column on mobile */
+    grid-template-columns: 1fr;
+  }
+
+  .blg-list-stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .blg-list-featured-title {
+    font-size: 1.5rem;
+  }
+
+  .blg-list-newsletter-form .form-group {
+    flex-direction: column;
+  }
+
+  .blg-list-newsletter-form .form-group input {
+    border-radius: 50px;
+    margin-bottom: 10px;
+  }
+
+  .blg-list-newsletter-form .form-group button {
+    border-radius: 50px;
+    padding: 15px;
+    justify-content: center;
+  }
+
+  .blg-list-category-filters {
+    gap: 8px;
+  }
+
+  .blg-list-btn-add-blog {
+    position: static;
+    margin-top: 20px;
+  }
+}

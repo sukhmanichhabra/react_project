@@ -1,0 +1,47 @@
+<!-- views/partials/blog_card.ejs -->
+<li>
+    <div class="blog-card">
+        <figure class="card-banner">
+            <img src="<%= imageUrl %>" alt="<%= imageAlt %>" class="w-100">
+        </figure>
+
+        <div class="blog-content">
+            <div class="blog-content-top">
+                <ul class="card-meta-list">
+                    <li>
+                        <a href="#" class="card-meta-link">
+                            <ion-icon name="person"></ion-icon>
+                            <span>by: <%= author %></span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="card-meta-link">
+                            <ion-icon name="pricetags"></ion-icon>
+                            <span>
+                                <%= tag %>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 class="h3 blog-title">
+                    <a href="<%= blogLink %>">
+                        <%= title %>
+                    </a>
+                </h3>
+            </div>
+
+            <div class="blog-content-bottom">
+                <div class="publish-date">
+                    <ion-icon name="calendar"></ion-icon>
+                    <time datetime="<%= dateTime %>">
+                        <%= dateFormatted %>
+                    </time>
+                </div>
+
+                <a href="<%= blogLink %>" class="read-more-btn">Read More</a>
+            </div>
+        </div>
+    </div>
+</li>

@@ -1,0 +1,320 @@
+.dash-add-listing-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* 32px */
+  padding: 2rem;
+}
+
+.dash-form-section {
+  background-color: #fff;
+  padding: 1.5rem 2rem; /* 24px 32px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dash-form-section h3 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 1.5rem; /* 24px */
+  border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+  padding-bottom: 0.75rem; /* 12px */
+}
+
+.dash-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem; /* 20px */
+}
+
+.dash-form-group label,
+label.dash-custom-checkbox {
+  margin-bottom: 0.5rem; /* 8px */
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #374151; /* text-gray-700 */
+}
+
+.dash-form-group input[type="text"],
+.dash-form-group input[type="number"],
+.dash-form-group input[type="file"],
+.dash-form-group textarea,
+.dash-form-group select {
+  width: 100%;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.75rem 1rem; /* px-4 py-2 */
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.dash-form-group input[type="file"] {
+  padding: 0.875rem;
+  background-color: #f9fafb; /* bg-gray-50 */
+  border: 2px dashed #d1d5db; /* border-gray-300 */
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.dash-form-group input[type="file"]:hover {
+  border-color: #dc2626; /* hover:border-red-600 */
+  background-color: #fef2f2; /* hover:bg-red-50 */
+}
+
+.dash-form-group input[type="file"]:focus {
+  outline: none;
+  border-color: #dc2626; /* focus:border-red-600 */
+  box-shadow: 0 0 0 3px rgb(220 38 38 / 0.1); /* focus:ring-red-100 */
+}
+
+.dash-form-group textarea {
+  min-height: 120px;
+}
+
+/* 3-column row for stats */
+.dash-form-row {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+@media (min-width: 768px) {
+  .dash-form-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 4-column grid for amenities */
+.dash-amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem; /* 16px */
+}
+
+@media (min-width: 768px) {
+  .dash-amenities-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Custom Checkbox */
+.dash-custom-checkbox {
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+.dash-custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.dash-checkmark {
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  transition: all 0.2s;
+}
+.dash-custom-checkbox:hover input ~ .dash-checkmark {
+  background-color: #ccc;
+}
+.dash-custom-checkbox input:checked ~ .dash-checkmark {
+  background-color: #dc2626; /* bg-red-600 */
+  border-color: #dc2626;
+}
+.dash-checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 7px;
+  top: 3px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+.dash-custom-checkbox input:checked ~ .dash-checkmark:after {
+  display: block;
+}
+
+/* Form actions */
+.dash-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dash-submit-btn {
+  background-color: #dc2626; /* bg-red-600 */
+  color: white;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+  border-radius: 0.5rem; /* 8px */
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+.dash-submit-btn:hover {
+  background-color: #b91c1c; /* hover:bg-red-700 */
+}
+
+/* Status Message */
+.dash-status-message {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+}
+
+.dash-status-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.dash-status-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.dash-status-message i {
+  font-size: 1.125rem;
+}
+
+/* Image Upload Enhancements */
+.dash-form-hint {
+  font-size: 0.75rem; /* 12px */
+  color: #6b7280; /* text-gray-500 */
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.dash-image-error {
+  background-color: #fef2f2; /* bg-red-50 */
+  color: #dc2626; /* text-red-600 */
+  border: 1px solid #fecaca; /* border-red-200 */
+  padding: 0.75rem;
+  border-radius: 0.375rem; /* rounded-md */
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.dash-image-error i {
+  color: #dc2626; /* text-red-600 */
+}
+
+.dash-image-preview-container {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb; /* bg-gray-50 */
+  border-radius: 0.5rem; /* rounded-lg */
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+}
+
+.dash-image-preview-container h4 {
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600;
+  color: #374151; /* text-gray-700 */
+  margin-bottom: 0.75rem;
+}
+
+.dash-image-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.dash-image-preview-item {
+  position: relative;
+  background-color: #fff;
+  border-radius: 0.5rem; /* rounded-lg */
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.dash-image-preview-item img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+}
+
+.dash-remove-image {
+  position: absolute;
+  top: 0.25rem; /* 4px */
+  right: 0.25rem; /* 4px */
+  background-color: #dc2626; /* bg-red-600 */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.75rem; /* text-xs */
+  transition: background-color 0.2s;
+}
+
+.dash-remove-image:hover {
+  background-color: #b91c1c; /* hover:bg-red-700 */
+}
+
+.dash-remove-image i {
+  font-size: 0.625rem; /* 10px */
+}
+
+/* Geolocation Section Styles */
+.geolocation-section {
+  background-color: #f8fafc !important; /* Lighter background */
+  border: 1px solid #e2e8f0;
+  margin-top: 1rem;
+}
+
+.geolocation-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 0.5rem;
+  border: none;
+  padding: 0;
+}
+
+.geolocation-help {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.geolocation-section .dash-form-group input {
+  border-color: #cbd5e1;
+}
+
+.geolocation-section .dash-form-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.geolocation-section .dash-form-group label {
+  color: #475569;
+  font-weight: 500;
+}

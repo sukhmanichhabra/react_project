@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neighbourhood Information - <%= property.title %>
+    </title>
+    <link rel="shortcut icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Neighborhood page specific styles */
+        :root {
+            --primary-color: #ff7d00;
+            --primary-light: #ffead1;
+            --primary-dark: #e66000;
+            --secondary-color: #2c3e50;
+            --text-color: #333333;
+            --light-bg: #f8f9fa;
+            --border-color: #eaeaea;
+        }
+
+        body {
+            color: var(--text-color);
+            background-color: #fafafa;
+        }
+
+        .neighborhood-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .property-overview {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .property-image {
+            width: 300px;
+            height: 220px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .property-image:hover {
+            transform: scale(1.02);
+        }
+
+        .property-basic-info {
+            flex: 1;
+        }
+
+        .property-title {
+            margin-top: 0;
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 0.5rem;
+        }
+
+        .property-location {
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .property-location i {
+            color: var(--primary-color);
+        }
+
+        .property-features {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature i {
+            color: var(--primary-color);
+        }
+
+        .property-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .primary-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 125, 0, 0.3);
+        }
+
+        .secondary-btn {
+            background-color: #ecf0f1;
+            color: var(--secondary-color);
+            border: 1px solid #dde4e6;
+        }
+
+        .secondary-btn:hover {
+            background-color: #dde4e6;
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+        }
+
+        .walkability-score {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background-color: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(255, 125, 0, 0.3);
+        }
+
+        .score-info {
+            flex: 1;
+        }
+
+        .score-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .card-title i {
+            color: #3498db;
+        }
+
+        .info-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .item-distance {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .utility-info {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .utility-info:last-child {
+            border-bottom: none;
+        }
+
+        .utility-name {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .utility-value {
+            color: #7f8c8d;
+        }
+
+        .nearby-properties {
+            margin-top: 2rem;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .property-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-image {
+            height: 180px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 1rem;
+        }
+
+        .card-title {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .card-location {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .card-features {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .card-price {
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .view-btn {
+            text-align: center;
+            display: block;
+            padding: 0.5rem;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Map container */
+        .map-container {
+            height: 400px;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* New styles for added elements */
+        .walkability-details {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .walkability-item {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .neighborhood-overview {
+            margin-bottom: 2rem;
+        }
+
+        .overview-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .overview-title {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .overview-description {
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: #34495e;
+        }
+
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        .neighborhood-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .neighborhood-tag {
+            background-color: #e8f4fc;
+            color: #3498db;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .safety-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .safety-stars {
+            display: flex;
+        }
+
+        .safety-star {
+            color: #f1c40f;
+            font-size: 1.2rem;
+        }
+
+        .safety-chart {
+            width: 100%;
+            height: 250px;
+            margin-top: 1rem;
+        }
+
+        .toggle-container {
+            margin-top: 1rem;
+            background-color: white;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .toggle-header {
+            padding: 0.75rem 1rem;
+            background-color: #e8f4fc;
+            color: #3498db;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .toggle-content.active {
+            display: block;
+        }
+
+        .safety-tips {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .safety-tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .safety-tip:last-child {
+            border-bottom: none;
+        }
+
+        .safety-tip i {
+            color: #3498db;
+            margin-top: 0.25rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .cta-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Education styles */
+        .education-summary {
+            margin-bottom: 1rem;
+            background-color: #e8f4fc;
+            padding: 0.75rem;
+            border-radius: 6px;
+            color: #34495e;
+        }
+
+        .school-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .school-rating {
+            display: flex;
+            align-items: center;
+            margin-top: 0.25rem;
+        }
+
+        .rating-value {
+            margin-right: 0.5rem;
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .rating-stars {
+            display: flex;
+        }
+
+        .rating-stars .fa-star {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .rating-stars .fa-star.filled {
+            color: #f1c40f;
+        }
+
+        .school-detail-items {
+            margin-top: 0.5rem;
+        }
+
+        .school-detail-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .school-detail-item h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .school-type {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .school-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-group {
+            background-color: #f5f5f5;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            flex: 1;
+        }
+
+        .school-programs h5 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .program-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .program-tag {
+            background-color: #e8f4fc;
+            color: #3498db;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Library services styles */
+        .library-services {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .service-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .service-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .service-item i {
+            font-size: 1.5rem;
+            color: #3498db;
+            margin-top: 0.25rem;
+        }
+
+        .service-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+
+        .service-details p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        /* Trends and Analysis styles */
+        .trends-container {
+            margin-bottom: 2rem;
+        }
+
+        .trends-chart-wrapper {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            height: 300px;
+        }
+
+        .trends-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .trend-stat-item {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .trend-stat-item i {
+            font-size: 1.8rem;
+            color: #7f8c8d;
+        }
+
+        .trend-stat-item.positive i {
+            color: #2ecc71;
+        }
+
+        .trend-stat-item.negative i {
+            color: #e74c3c;
+        }
+
+        .trend-stat-info h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        .trend-stat-info p {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .neighborhood-prediction {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .neighborhood-prediction h3 {
+            margin: 0 0 1rem 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+        }
+
+        .neighborhood-prediction p {
+            margin: 0 0 1.5rem 0;
+            color: #34495e;
+        }
+
+        .prediction-slider {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-header span {
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+
+        .prediction-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prediction-bar {
+            width: 150px;
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .prediction-fill {
+            height: 100%;
+            background-color: #2ecc71;
+            border-radius: 4px;
+        }
+
+        .prediction-label {
+            font-weight: 500;
+            color: #2ecc71;
+        }
+
+        .investment-analysis {
+            margin-top: 1.5rem;
+        }
+
+        .investment-analysis h4 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .analysis-table th {
+            text-align: left;
+            padding: 0.75rem;
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .analysis-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .appreciation-cell {
+            color: #2ecc71;
+            font-weight: 500;
+        }
+
+        .insights-content {
+            padding: 0.5rem 0;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .insight-item {
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ecf0f1;
+        }
+
+        .insight-item h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+
+        .insight-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        .full-width {
+            width: 100%;
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        /* Lifestyle section styles */
+        .lifestyle-container {
+            margin-bottom: 2rem;
+        }
+
+        .lifestyle-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .lifestyle-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .lifestyle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-light);
+        }
+
+        .lifestyle-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .lifestyle-card:hover .lifestyle-icon {
+            background-color: var(--primary-color);
+        }
+
+        .lifestyle-icon i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .lifestyle-card:hover .lifestyle-icon i {
+            color: white;
+        }
+
+        .lifestyle-card h3 {
+            margin: 0 0 0.75rem 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .lifestyle-card p {
+            margin: 0 0 1rem 0;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .lifestyle-highlights {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .lifestyle-highlights span {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .view-more-btn {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.7rem 0;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .view-more-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 125, 0, 0.2);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 800px;
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-top: 5px solid var(--primary-color);
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            color: #c0392b;
+            background-color: #f8f9fa;
+            transform: rotate(90deg);
+        }
+
+        .place-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .place-item {
+            display: flex;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .place-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-light);
+        }
+
+        .place-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .place-info {
+            padding: 12px;
+            flex: 1;
+        }
+
+        .place-name {
+            margin: 0 0 5px;
+            font-size: 16px;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .place-address {
+            margin: 0 0 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .place-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .place-rating,
+        .place-distance,
+        .place-price {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .place-rating i {
+            color: var(--primary-color);
+        }
+
+        .place-distance i {
+            color: var(--primary-color);
+        }
+
+        .place-price i {
+            color: var(--primary-color);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .property-overview {
+                flex-direction: column;
+            }
+
+            .property-image {
+                width: 100%;
+            }
+
+            .walkability-score {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .overview-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .info-cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .walkability-details {
+                grid-template-columns: 1fr;
+            }
+
+            .trends-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lifestyle-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .trends-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .lifestyle-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Include navbar partial -->
+    <%- include('./partials/header') %>
+
+        <div class="neighborhood-container">
+            <!-- Property overview section -->
+            <div class="property-overview">
+                <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-placeholder.jpg' %>"
+                    alt="<%= property.title %>" class="property-image">
+                <div class="property-basic-info">
+                    <h1 class="property-title">
+                        <%= property.title %>
+                    </h1>
+                    <p class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <%= property.location %>
+                    </p>
+                    <div class="property-features">
+                        <div class="feature">
+                            <i class="fas fa-bed"></i>
+                            <span>
+                                <%= property.features.beds %> Beds
+                            </span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-bath"></i>
+                            <span>
+                                <%= property.features.baths %> Baths
+                            </span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-ruler-combined"></i>
+                            <span>
+                                <%= property.features.sqft %> sqft
+                            </span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-home"></i>
+                            <span>
+                                <%= property.features.type %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="property-price">
+                        <%= property.price %>
+                            <% if (property.tag==='rent' ) { %>/month<% } %>
+                    </div>
+                    <div class="action-buttons">
+                        <a href="/property/<%= property._id %>" class="action-btn secondary-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Property
+                        </a>
+                        <% if (property.status==='active' ) { %>
+                            <% if (user) { %>
+                                <% if (property.tag==='rent' ) { %>
+                                    <a href="/visit/schedule/<%= property._id %>" class="action-btn primary-btn">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Schedule Visit
+                                    </a>
+                                    <% } else { %>
+                                        <a href="/property/<%= property._id %>/contact" class="action-btn primary-btn">
+                                            <i class="fas fa-envelope"></i>
+                                            Contact Agent
+                                        </a>
+                                        <% } %>
+                                            <% } else { %>
+                                                <a href="/auth/signin" class="action-btn primary-btn">
+                                                    <i class="fas fa-sign-in-alt"></i>
+                                                    Sign In to Contact
+                                                </a>
+                                                <% } %>
+                                                    <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Walkability Score -->
+            <h2 class="section-title">Walkability Score</h2>
+            <div class="walkability-score">
+                <div class="score-circle">
+                    <%= walkabilityScore %>
+                </div>
+                <div class="score-info">
+                    <h3 class="score-text">
+                        <%= walkabilityScore>= 90 ? 'Walker\'s Paradise' : walkabilityScore >= 70 ? 'Very Walkable' :
+                            walkabilityScore >= 50 ? 'Somewhat Walkable' : 'Car-Dependent' %>
+                    </h3>
+                    <p>
+                        <% if (walkabilityScore>= 90) { %>
+                            Daily errands do not require a car. Most amenities are within walking distance.
+                            <% } else if (walkabilityScore>= 70) { %>
+                                Most errands can be accomplished on foot. The area has good walkability.
+                                <% } else if (walkabilityScore>= 50) { %>
+                                    Some errands can be accomplished on foot. Basic amenities are within walking
+                                    distance.
+                                    <% } else { %>
+                                        Most errands require a car. Limited amenities are within walking distance.
+                                        <% } %>
+                    </p>
+                    <div class="walkability-details">
+                        <div class="walkability-item">
+                            <span class="detail-label">Grocery stores:</span>
+                            <span class="detail-value">
+                                <%= walkabilityScore>= 70 ? 'Less than 5 min walk' : 'Within 10 min walk' %>
+                            </span>
+                        </div>
+                        <div class="walkability-item">
+                            <span class="detail-label">Restaurants:</span>
+                            <span class="detail-value">
+                                <%= walkabilityScore>= 70 ? 'Multiple options nearby' : 'Few options within walking distance' %>
+                            </span>
+                        </div>
+                        <div class="walkability-item">
+                            <span class="detail-label">Public Transit:</span>
+                            <span class="detail-value">
+                                <%= walkabilityScore>= 80 ? 'Excellent' : walkabilityScore >= 60 ? 'Good' : 'Limited' %>
+                            </span>
+                        </div>
+                        <div class="walkability-item">
+                            <span class="detail-label">Pedestrian Friendliness:</span>
+                            <span class="detail-value">
+                                <%= walkabilityScore>= 80 ? 'Very pedestrian-friendly' : walkabilityScore >= 60 ?
+                                    'Pedestrian-friendly' : 'Limited sidewalks' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Neighborhood Overview (replacing the map) -->
+            <h2 class="section-title">Neighborhood Overview</h2>
+            <div class="neighborhood-overview">
+                <div class="overview-card">
+                    <h3 class="overview-title">About <%= property.location.split(',')[0] %>
+                    </h3>
+                    <p class="overview-description">
+                        <%= property.location.split(',')[0] %> is a <%= ['vibrant', 'peaceful', 'sought-after', 'family-friendly', 'upscale'][Math.floor(Math.random() * 5)] %> neighborhood located
+                        in <%= property.location.split(',').pop().trim() %>.
+                        Known for its <%= ['excellent amenities', 'community atmosphere', 'convenient location', 'cultural diversity', 'beautiful parks'][Math.floor(Math.random() * 5)] %>,
+                        this area offers residents a <%= ['high quality of life', 'blend of urban and suburban living', 'convenient access to city attractions', 'peaceful retreat from city bustle', 'strong sense of community'][Math.floor(Math.random() * 5)] %>.
+                    </p>
+                    <div class="overview-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Population</span>
+                            <span class="stat-value">
+                                <%= Math.floor(Math.random() * 50000) + 10000 %>
+                            </span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Median Age</span>
+                            <span class="stat-value">
+                                <%= Math.floor(Math.random() * 20) + 25 %>
+                            </span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Growth Rate</span>
+                            <span class="stat-value">+<%= (Math.random() * 5 + 1).toFixed(1) %>%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Average Income</span>
+                            <span class="stat-value">$<%= (Math.floor(Math.random() * 50) + 50) %>k</span>
+                        </div>
+                    </div>
+                    <div class="neighborhood-tags">
+                        <% const tags=['Family-Friendly', 'Pet-Friendly' , 'Quiet' , 'Trendy' , 'Historic'
+                            , 'Up-and-Coming' , 'Suburban' , 'Urban' , 'Safe' , 'Diverse' , 'Walkable' ]; const
+                            selectedTags=[]; while (selectedTags.length < 5) { const tag=tags[Math.floor(Math.random() *
+                            tags.length)]; if (!selectedTags.includes(tag)) { selectedTags.push(tag); } } %>
+                            <% selectedTags.forEach(tag=> { %>
+                                <span class="neighborhood-tag">
+                                    <%= tag %>
+                                </span>
+                                <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Information -->
+            <h2 class="section-title">Safety & Security</h2>
+            <div class="info-cards-container">
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Safety Rating
+                    </h3>
+                    <div class="safety-rating">
+                        <div class="safety-stars">
+                            <% for(let i=0; i < 5; i++) { %>
+                                <i
+                                    class="fas fa-star safety-star <%= i < Math.round(neighborhoodData.safety.safetyRating) ? '' : 'far' %>"></i>
+                                <% } %>
+                        </div>
+                        <span>
+                            <%= neighborhoodData.safety.safetyRating %> out of 5
+                        </span>
+                    </div>
+                    <canvas id="safetyCrimeChart" class="safety-chart"></canvas>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <span class="item-name">Crime Rate</span>
+                            <span class="item-distance">
+                                <%= neighborhoodData.safety.crimeRate %>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="item-name">Police Stations</span>
+                            <span class="item-distance">
+                                <%= neighborhoodData.safety.policeStations %> in vicinity
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="item-name">Security Services</span>
+                            <span class="item-distance">
+                                <%= neighborhoodData.safety.securityServices %>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="item-name">Emergency Response Time</span>
+                            <span class="item-distance">~<%= Math.floor(Math.random() * 6) + 3 %> minutes</span>
+                        </div>
+                    </div>
+                    <div class="toggle-container">
+                        <div class="toggle-header" onclick="toggleContent('safetyTips')">
+                            <span>Safety Tips for This Area</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="safetyTips" class="toggle-content">
+                            <ul class="safety-tips">
+                                <li class="safety-tip">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>Always be aware of your surroundings, especially at night.</div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>Keep emergency numbers saved in your phone for quick access.</div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>Use well-lit and populated streets when walking at night.</div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>Consider joining the neighborhood watch program for added security.</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="toggle-container">
+                        <div class="toggle-header" onclick="toggleContent('emergencyContacts')">
+                            <span>Emergency Contacts</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="emergencyContacts" class="toggle-content">
+                            <ul class="safety-tips">
+                                <li class="safety-tip">
+                                    <i class="fas fa-phone"></i>
+                                    <div>Local Police: <strong>(555) 123-4567</strong></div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-ambulance"></i>
+                                    <div>Ambulance: <strong>911</strong></div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-fire-extinguisher"></i>
+                                    <div>Fire Department: <strong>911</strong></div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-hospital"></i>
+                                    <div>Nearest Hospital: <strong>
+                                            <%= neighborhoodData.healthcare.hospitals[0].name %>
+                                        </strong></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-camera-retro"></i>
+                        Security Features
+                    </h3>
+                    <ul class="info-list">
+                        <li class="info-item">
+                            <span class="item-name">Street Lighting</span>
+                            <span class="item-distance">Good coverage</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="item-name">Surveillance Cameras</span>
+                            <span class="item-distance">At major intersections</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="item-name">Gated Communities</span>
+                            <span class="item-distance">
+                                <%= Math.floor(Math.random() * 5) + 1 %> in the area
+                            </span>
+                        </li>
+                        <li class="info-item">
+                            <span class="item-name">Neighborhood Watch</span>
+                            <span class="item-distance">Active program</span>
+                        </li>
+                    </ul>
+                    <div class="toggle-container">
+                        <div class="toggle-header" onclick="toggleContent('localNews')">
+                            <span>Recent Local News</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="localNews" class="toggle-content">
+                            <ul class="safety-tips">
+                                <li class="safety-tip">
+                                    <i class="fas fa-newspaper"></i>
+                                    <div><strong>Community Park Renovation</strong> - The local park is undergoing
+                                        renovations to add new playground equipment.</div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-newspaper"></i>
+                                    <div><strong>New Traffic Signals</strong> - New traffic signals are being installed
+                                        at the main intersection to improve safety.</div>
+                                </li>
+                                <li class="safety-tip">
+                                    <i class="fas fa-newspaper"></i>
+                                    <div><strong>Community Clean-up Event</strong> - Residents are organizing a
+                                        community clean-up event next weekend.</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <a href="#" class="cta-button">View Crime Map</a>
+                </div>
+            </div>
+
+            <!-- Education Information -->
+            <h2 class="section-title">Education</h2>
+            <div class="info-cards-container">
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-school"></i>
+                        Schools
+                    </h3>
+                    <div class="education-summary">
+                        <p>This neighborhood offers access to <%= neighborhoodData.education.schools.length %> schools
+                                and <%= neighborhoodData.education.colleges.length %> colleges within easy reach. The
+                                    average school rating in this area is <%= (4.2).toFixed(1) %> out of 5.</p>
+                    </div>
+                    <ul class="info-list">
+                        <% neighborhoodData.education.schools.forEach(school=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= school.name %>
+                                </span>
+                                <div class="school-details">
+                                    <span class="item-distance">
+                                        <%= school.distance %>
+                                    </span>
+                                    <% if (school.rating) { %>
+                                        <div class="school-rating">
+                                            <span class="rating-value">
+                                                <%= school.rating %>/5
+                                            </span>
+                                            <div class="rating-stars">
+                                                <% for(let i=0; i < 5; i++) { %>
+                                                    <i
+                                                        class="fas fa-star <%= i < Math.floor(school.rating) ? 'filled' : '' %>"></i>
+                                                    <% } %>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                </div>
+                            </li>
+                            <% }); %>
+                    </ul>
+                    <div class="toggle-container">
+                        <div class="toggle-header" onclick="toggleContent('schoolDetails')">
+                            <span>School Details</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="schoolDetails" class="toggle-content">
+                            <div class="school-detail-items">
+                                <% neighborhoodData.education.schools.forEach((school, index)=> { %>
+                                    <div class="school-detail-item">
+                                        <h4>
+                                            <%= school.name %>
+                                        </h4>
+                                        <p class="school-type">
+                                            <%= ['Public', 'Private' , 'Charter' ][index % 3] %> School
+                                        </p>
+                                        <div class="school-stats">
+                                            <div class="stat-group">
+                                                <span class="stat-label">Grades</span>
+                                                <span class="stat-value">
+                                                    <%= ['K-5', '6-8' , '9-12' ][index % 3] %>
+                                                </span>
+                                            </div>
+                                            <div class="stat-group">
+                                                <span class="stat-label">Students</span>
+                                                <span class="stat-value">
+                                                    <%= Math.floor(Math.random() * 800) + 200 %>
+                                                </span>
+                                            </div>
+                                            <div class="stat-group">
+                                                <span class="stat-label">Student/Teacher</span>
+                                                <span class="stat-value">
+                                                    <%= Math.floor(Math.random() * 10) + 10 %>:1
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="school-programs">
+                                            <h5>Special Programs:</h5>
+                                            <div class="program-tags">
+                                                <% const programs=['STEM', 'Arts' , 'Sports' , 'Languages'
+                                                    , 'Special Education' , 'Gifted Program' , 'Music' ]; %>
+                                                    <% const selectedPrograms=programs.sort(()=> 0.5 -
+                                                        Math.random()).slice(0, 3); %>
+                                                        <% selectedPrograms.forEach(program=> { %>
+                                                            <span class="program-tag">
+                                                                <%= program %>
+                                                            </span>
+                                                            <% }); %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% if (index < neighborhoodData.education.schools.length - 1) { %>
+                                        <hr>
+                                        <% } %>
+                                            <% }); %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-university"></i>
+                        Colleges & Libraries
+                    </h3>
+                    <ul class="info-list">
+                        <% neighborhoodData.education.colleges.forEach(college=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= college.name %>
+                                </span>
+                                <div class="school-details">
+                                    <span class="item-distance">
+                                        <%= college.distance %>
+                                    </span>
+                                    <% if (college.rating) { %>
+                                        <div class="school-rating">
+                                            <span class="rating-value">
+                                                <%= college.rating %>/5
+                                            </span>
+                                            <div class="rating-stars">
+                                                <% for(let i=0; i < 5; i++) { %>
+                                                    <i
+                                                        class="fas fa-star <%= i < Math.floor(college.rating) ? 'filled' : '' %>"></i>
+                                                    <% } %>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                </div>
+                            </li>
+                            <% }); %>
+
+                                <% neighborhoodData.education.libraries.forEach(library=> { %>
+                                    <li class="info-item">
+                                        <span class="item-name">
+                                            <%= library.name %>
+                                        </span>
+                                        <span class="item-distance">
+                                            <%= library.distance %>
+                                        </span>
+                                    </li>
+                                    <% }); %>
+                    </ul>
+                    <div class="toggle-container">
+                        <div class="toggle-header" onclick="toggleContent('libraryServices')">
+                            <span>Library Services</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="libraryServices" class="toggle-content">
+                            <div class="library-services">
+                                <div class="service-item">
+                                    <i class="fas fa-book"></i>
+                                    <div class="service-details">
+                                        <h4>Book Borrowing</h4>
+                                        <p>Access to a wide collection of books, magazines, and reference materials.</p>
+                                    </div>
+                                </div>
+                                <div class="service-item">
+                                    <i class="fas fa-laptop"></i>
+                                    <div class="service-details">
+                                        <h4>Computer Access</h4>
+                                        <p>Public computers with internet access and printing services.</p>
+                                    </div>
+                                </div>
+                                <div class="service-item">
+                                    <i class="fas fa-users"></i>
+                                    <div class="service-details">
+                                        <h4>Study Rooms</h4>
+                                        <p>Private and group study spaces available for reservation.</p>
+                                    </div>
+                                </div>
+                                <div class="service-item">
+                                    <i class="fas fa-child"></i>
+                                    <div class="service-details">
+                                        <h4>Children's Programs</h4>
+                                        <p>Storytelling sessions, craft activities, and educational programs for
+                                            children.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#" class="cta-button">View School Districts Map</a>
+                </div>
+            </div>
+
+            <!-- Healthcare Information -->
+            <h2 class="section-title">Healthcare</h2>
+            <div class="info-cards-container">
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-hospital"></i>
+                        Hospitals & Clinics
+                    </h3>
+                    <ul class="info-list">
+                        <% neighborhoodData.healthcare.hospitals.forEach(hospital=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= hospital.name %>
+                                        <% if(hospital.emergency) { %><span
+                                                style="color: #e74c3c; font-size: 0.8rem;">(24/7 Emergency)</span>
+                                            <% } %>
+                                </span>
+                                <span class="item-distance">
+                                    <%= hospital.distance %>
+                                </span>
+                            </li>
+                            <% }); %>
+
+                                <% neighborhoodData.healthcare.clinics.forEach(clinic=> { %>
+                                    <li class="info-item">
+                                        <span class="item-name">
+                                            <%= clinic.name %>
+                                        </span>
+                                        <span class="item-distance">
+                                            <%= clinic.distance %>
+                                        </span>
+                                    </li>
+                                    <% }); %>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                        Pharmacies
+                    </h3>
+                    <ul class="info-list">
+                        <% neighborhoodData.healthcare.pharmacies.forEach(pharmacy=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= pharmacy.name %>
+                                </span>
+                                <span class="item-distance">
+                                    <%= pharmacy.distance %>
+                                </span>
+                            </li>
+                            <% }); %>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Transportation Information -->
+            <h2 class="section-title">Transportation</h2>
+            <div class="info-cards-container">
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-bus"></i>
+                        Public Transport
+                    </h3>
+                    <ul class="info-list">
+                        <% neighborhoodData.transportation.busStops.forEach(stop=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= stop.name %> (Bus Stop)
+                                </span>
+                                <span class="item-distance">
+                                    <%= stop.distance %>
+                                </span>
+                            </li>
+                            <% }); %>
+
+                                <% neighborhoodData.transportation.metroStations.forEach(station=> { %>
+                                    <li class="info-item">
+                                        <span class="item-name">
+                                            <%= station.name %> (Metro)
+                                        </span>
+                                        <span class="item-distance">
+                                            <%= station.distance %>
+                                        </span>
+                                    </li>
+                                    <% }); %>
+
+                                        <% neighborhoodData.transportation.railwayStations.forEach(station=> { %>
+                                            <li class="info-item">
+                                                <span class="item-name">
+                                                    <%= station.name %> (Railway)
+                                                </span>
+                                                <span class="item-distance">
+                                                    <%= station.distance %>
+                                                </span>
+                                            </li>
+                                            <% }); %>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-plane"></i>
+                        Airport Access
+                    </h3>
+                    <ul class="info-list">
+                        <li class="info-item">
+                            <span class="item-name">
+                                <%= neighborhoodData.transportation.airportName %>
+                            </span>
+                            <span class="item-distance">
+                                <%= neighborhoodData.transportation.airportDistance %>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Shopping & Recreation Information -->
+            <h2 class="section-title">Shopping & Recreation</h2>
+            <div class="info-cards-container">
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-shopping-cart"></i>
+                        Shopping
+                    </h3>
+                    <ul class="info-list">
+                        <% neighborhoodData.shopping.malls.forEach(mall=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= mall.name %> (Mall)
+                                </span>
+                                <span class="item-distance">
+                                    <%= mall.distance %>
+                                </span>
+                            </li>
+                            <% }); %>
+
+                                <% neighborhoodData.shopping.markets.forEach(market=> { %>
+                                    <li class="info-item">
+                                        <span class="item-name">
+                                            <%= market.name %> (Market)
+                                        </span>
+                                        <span class="item-distance">
+                                            <%= market.distance %>
+                                        </span>
+                                    </li>
+                                    <% }); %>
+
+                                        <% neighborhoodData.shopping.supermarkets.forEach(supermarket=> { %>
+                                            <li class="info-item">
+                                                <span class="item-name">
+                                                    <%= supermarket.name %> (Supermarket)
+                                                </span>
+                                                <span class="item-distance">
+                                                    <%= supermarket.distance %>
+                                                </span>
+                                            </li>
+                                            <% }); %>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-utensils"></i>
+                        Dining
+                    </h3>
+                    <ul class="info-list">
+                        <% neighborhoodData.recreation.restaurants.forEach(restaurant=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= restaurant.name %>
+                                </span>
+                                <span class="item-distance">
+                                    <%= restaurant.distance %>
+                                </span>
+                            </li>
+                            <% }); %>
+
+                                <% neighborhoodData.recreation.cafes.forEach(cafe=> { %>
+                                    <li class="info-item">
+                                        <span class="item-name">
+                                            <%= cafe.name %>
+                                        </span>
+                                        <span class="item-distance">
+                                            <%= cafe.distance %>
+                                        </span>
+                                    </li>
+                                    <% }); %>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-tree"></i>
+                        Recreation
+                    </h3>
+                    <ul class="info-list">
+                        <% neighborhoodData.recreation.parks.forEach(park=> { %>
+                            <li class="info-item">
+                                <span class="item-name">
+                                    <%= park.name %>
+                                </span>
+                                <span class="item-distance">
+                                    <%= park.distance %>
+                                </span>
+                            </li>
+                            <% }); %>
+
+                                <% neighborhoodData.recreation.gyms.forEach(gym=> { %>
+                                    <li class="info-item">
+                                        <span class="item-name">
+                                            <%= gym.name %>
+                                        </span>
+                                        <span class="item-distance">
+                                            <%= gym.distance %>
+                                        </span>
+                                    </li>
+                                    <% }); %>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Utilities & Environment -->
+            <h2 class="section-title">Utilities & Environment</h2>
+            <div class="info-cards-container">
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-plug"></i>
+                        Utilities
+                    </h3>
+                    <div class="utility-info">
+                        <div class="utility-name">Water Supply</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.utilities.waterSupply %>
+                        </div>
+                    </div>
+                    <div class="utility-info">
+                        <div class="utility-name">Electricity</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.utilities.electricity %>
+                        </div>
+                    </div>
+                    <div class="utility-info">
+                        <div class="utility-name">Internet</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.utilities.internet %>
+                        </div>
+                    </div>
+                    <div class="utility-info">
+                        <div class="utility-name">Gas Supply</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.utilities.gasSupply %>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-leaf"></i>
+                        Environment
+                    </h3>
+                    <div class="utility-info">
+                        <div class="utility-name">Air Quality</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.environment.airQuality %>
+                        </div>
+                    </div>
+                    <div class="utility-info">
+                        <div class="utility-name">Noise Level</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.environment.noiseLevel %>
+                        </div>
+                    </div>
+                    <div class="utility-info">
+                        <div class="utility-name">Green Spaces</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.environment.greenSpaces %>
+                        </div>
+                    </div>
+                    <div class="utility-info">
+                        <div class="utility-name">Waste Management</div>
+                        <div class="utility-value">
+                            <%= neighborhoodData.environment.wasteManagement %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nearby Properties -->
+            <h2 class="section-title">Similar Properties Nearby</h2>
+            <div class="property-grid">
+                <% nearbyProperties.forEach(property=> { %>
+                    <div class="property-card">
+                        <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-placeholder.jpg' %>"
+                            alt="<%= property.title %>" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">
+                                <%= property.title %>
+                            </h3>
+                            <p class="card-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <%= property.location %>
+                            </p>
+                            <div class="card-features">
+                                <span><i class="fas fa-bed"></i>
+                                    <%= property.features.beds %>
+                                </span>
+                                <span><i class="fas fa-bath"></i>
+                                    <%= property.features.baths %>
+                                </span>
+                                <span><i class="fas fa-ruler-combined"></i>
+                                    <%= property.features.sqft %>
+                                </span>
+                            </div>
+                            <div class="card-price">
+                                <%= property.price %>
+                                    <% if (property.tag==='rent' ) { %>/month<% } %>
+                            </div>
+                            <a href="/property/<%= property._id %>" class="view-btn">View Details</a>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+
+            <!-- Neighborhood Trends and Analysis -->
+            <h2 class="section-title">Neighborhood Trends & Analysis</h2>
+            <div class="trends-container">
+                <div class="trends-chart-wrapper">
+                    <canvas id="propertyTrendsChart"></canvas>
+                </div>
+                <div class="trends-stats">
+                    <div class="trend-stat-item positive">
+                        <i class="fas fa-chart-line"></i>
+                        <div class="trend-stat-info">
+                            <h3>Property Value Trend</h3>
+                            <p>+<%= (Math.random() * 10 + 5).toFixed(1) %>% annual appreciation</p>
+                        </div>
+                    </div>
+                    <div class="trend-stat-item positive">
+                        <i class="fas fa-home"></i>
+                        <div class="trend-stat-info">
+                            <h3>Avg. Days on Market</h3>
+                            <p>
+                                <%= Math.floor(Math.random() * 20 + 15) %> days
+                            </p>
+                        </div>
+                    </div>
+                    <div class="trend-stat-item">
+                        <i class="fas fa-dollar-sign"></i>
+                        <div class="trend-stat-info">
+                            <h3>Median Sale Price</h3>
+                            <p>$<%= (Math.random() * 200000 + 300000).toFixed(0) %>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="trend-stat-item positive">
+                        <i class="fas fa-building"></i>
+                        <div class="trend-stat-info">
+                            <h3>Development Projects</h3>
+                            <p>
+                                <%= Math.floor(Math.random() * 5 + 2) %> new projects nearby
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="neighborhood-prediction">
+                    <h3>Property Value Prediction</h3>
+                    <p>Based on current trends and upcoming developments, properties in this neighborhood are expected
+                        to appreciate by <strong>
+                            <%= (Math.random() * 15 + 10).toFixed(1) %>%
+                        </strong> over the next 5 years.</p>
+
+                    <div class="prediction-slider">
+                        <div class="slider-header">
+                            <span>Value Appreciation Potential</span>
+                            <div class="prediction-rating">
+                                <div class="prediction-bar">
+                                    <% const predictionWidth=Math.floor(Math.random() * 30 + 70); %>
+                                        <div class="prediction-fill" data-width="<%= predictionWidth %>"></div>
+                                </div>
+                                <span class="prediction-label">High</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="investment-analysis">
+                        <h4>Investment Analysis</h4>
+                        <table class="analysis-table">
+                            <thead>
+                                <tr>
+                                    <th>Timeframe</th>
+                                    <th>Estimated Value</th>
+                                    <th>Appreciation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% 
+                                const priceValue = 500000; // Base price value
+                                const annualRate = (Math.random() * 0.04 + 0.03); // 3-7% annual appreciation
+                                const years = [1, 3, 5, 10]; 
+                                years.forEach(year => {
+                                    const appreciatedValue = priceValue * Math.pow(1 + annualRate, year);
+                                    const appreciationPct = (Math.pow(1 + annualRate, year) - 1) * 100;
+                                %>
+                                    <tr>
+                                        <td>
+                                            <%= year %>
+                                                <%= year===1 ? 'Year' : 'Years' %>
+                                        </td>
+                                        <td>$<%= appreciatedValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, "," ) %>
+                                        </td>
+                                        <td class="appreciation-cell">+<%= appreciationPct.toFixed(1) %>%</td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="toggle-container">
+                    <div class="toggle-header" onclick="toggleContent('marketInsights')">
+                        <span>Market Insights</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div id="marketInsights" class="toggle-content">
+                        <div class="insights-content">
+                            <p>The <%= property.location.split(',')[0] %> area has shown strong resilience in the real
+                                    estate market over the past few years. Properties in this neighborhood typically
+                                    sell for <%= (Math.random() * 10 + 95).toFixed(1) %>% of the listing price,
+                                        indicating a <%= Math.random()> 0.5 ? "seller's" : "balanced" %> market.</p>
+
+                            <div class="insights-grid">
+                                <div class="insight-item">
+                                    <h4>Supply & Demand</h4>
+                                    <p>The current inventory of available properties in this area is <strong>
+                                            <%= (Math.random() * 0.4 + 0.2).toFixed(1) %>
+                                        </strong> months, suggesting <%= Math.random()> 0.6 ? "high" : "moderate" %>
+                                            demand relative to supply.</p>
+                                </div>
+                                <div class="insight-item">
+                                    <h4>Price Per Square Foot</h4>
+                                    <p>The average price per square foot in this area is <strong>$<%= (Math.random() *
+                                                100 + 200).toFixed(0) %></strong>, which is <%= Math.random()> 0.5 ?
+                                            "above" : "comparable to" %> the city average.</p>
+                                </div>
+                                <div class="insight-item">
+                                    <h4>Rental Yield</h4>
+                                    <p>Properties in this neighborhood generate an average rental yield of <strong>
+                                            <%= (Math.random() * 2 + 4).toFixed(1) %>%
+                                        </strong>, making it an <%= (Math.random() * 2 + 4)> 5 ? "attractive" :
+                                            "average" %> investment opportunity.</p>
+                                </div>
+                                <div class="insight-item">
+                                    <h4>Future Development</h4>
+                                    <p>Upcoming infrastructure and commercial development projects are expected to
+                                        positively impact property values in this area over the next 3-5 years.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" class="cta-button full-width" id="requestAnalysisBtn">
+                    <i class="fas fa-file-download"></i> Request Detailed Market Analysis
+                </a>
+            </div>
+
+            <!-- Lifestyle & Activities Section -->
+            <h2 class="section-title">Lifestyle & Activities</h2>
+            <div class="lifestyle-container">
+                <div class="lifestyle-cards">
+                    <div class="lifestyle-card">
+                        <div class="lifestyle-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h3>Dining & Nightlife</h3>
+                        <p>Explore <%= Math.floor(Math.random() * 15 + 10) %>+ restaurants and bars within a 2-mile
+                                radius, from casual dining to fine cuisine.</p>
+                        <div class="lifestyle-highlights">
+                            <span>Fine Dining</span>
+                            <span>Craft Cocktails</span>
+                            <span>Ethnic Cuisine</span>
+                        </div>
+                        <button class="view-more-btn" onclick="showLifestyleDetails('dining')">View Options</button>
+                    </div>
+                    <div class="lifestyle-card">
+                        <div class="lifestyle-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <h3>Shopping</h3>
+                        <p>From boutique shops to major retailers, this neighborhood offers diverse shopping
+                            experiences.</p>
+                        <div class="lifestyle-highlights">
+                            <span>Fashion</span>
+                            <span>Specialty Shops</span>
+                            <span>Grocery</span>
+                        </div>
+                        <button class="view-more-btn" onclick="showLifestyleDetails('shopping')">View Options</button>
+                    </div>
+                    <div class="lifestyle-card">
+                        <div class="lifestyle-icon">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <h3>Recreation</h3>
+                        <p>Stay active with nearby parks, fitness centers, and recreational facilities for all ages.</p>
+                        <div class="lifestyle-highlights">
+                            <span>Parks</span>
+                            <span>Fitness</span>
+                            <span>Sports</span>
+                        </div>
+                        <button class="view-more-btn" onclick="showLifestyleDetails('recreation')">View Options</button>
+                    </div>
+                    <div class="lifestyle-card">
+                        <div class="lifestyle-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <h3>Entertainment</h3>
+                        <p>Enjoy local theaters, music venues, and cultural attractions throughout the year.</p>
+                        <div class="lifestyle-highlights">
+                            <span>Cinema</span>
+                            <span>Arts</span>
+                            <span>Events</span>
+                        </div>
+                        <button class="view-more-btn" onclick="showLifestyleDetails('entertainment')">View
+                            Options</button>
+                    </div>
+                </div>
+
+                <!-- Lifestyle Modal (will be shown dynamically) -->
+                <div id="lifestyleModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal" onclick="closeLifestyleModal()">&times;</span>
+                        <div id="lifestyleModalContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Include footer partial -->
+        <%- include('./partials/footer') %>
+
+            <script>
+                // Toggle functionality for collapsible sections
+                function toggleContent(id) {
+                    const content = document.getElementById(id);
+                    const header = content.previousElementSibling;
+                    const icon = header.querySelector('i');
+
+                    content.classList.toggle('active');
+
+                    if (content.classList.contains('active')) {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    } else {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    }
+                }
+
+                // Lifestyle modal functions
+                function showLifestyleDetails(type) {
+                    const modal = document.getElementById('lifestyleModal');
+                    const modalContent = document.getElementById('lifestyleModalContent');
+
+                    let title, places;
+
+                    switch (type) {
+                        case 'dining':
+                            title = 'Dining & Nightlife Options';
+                            places = [
+                                {
+                                    name: 'The Fine Table',
+                                    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '123 Main St, Downtown',
+                                    rating: 4.7,
+                                    distance: '0.5 miles',
+                                    price: '$$$'
+                                },
+                                {
+                                    name: 'Café Sunrise',
+                                    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '78 Broadway Ave',
+                                    rating: 4.5,
+                                    distance: '0.8 miles',
+                                    price: '$$'
+                                },
+                                {
+                                    name: 'Nightowl Lounge',
+                                    image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '45 Park Lane',
+                                    rating: 4.2,
+                                    distance: '1.2 miles',
+                                    price: '$$'
+                                },
+                                {
+                                    name: 'Urban Spice',
+                                    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '230 Market St',
+                                    rating: 4.8,
+                                    distance: '0.7 miles',
+                                    price: '$$$'
+                                }
+                            ];
+                            break;
+
+                        case 'shopping':
+                            title = 'Shopping Options';
+                            places = [
+                                {
+                                    name: 'City Center Mall',
+                                    image: 'https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '500 Commercial Ave',
+                                    rating: 4.3,
+                                    distance: '1.5 miles',
+                                    price: 'Various'
+                                },
+                                {
+                                    name: 'Fashion Avenue',
+                                    image: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '78 Luxury Lane',
+                                    rating: 4.6,
+                                    distance: '2.0 miles',
+                                    price: '$$$'
+                                },
+                                {
+                                    name: 'Daily Goods Market',
+                                    image: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '120 Corner St',
+                                    rating: 4.4,
+                                    distance: '0.4 miles',
+                                    price: '$'
+                                }
+                            ];
+                            break;
+
+                        case 'recreation':
+                            title = 'Recreation Options';
+                            places = [
+                                {
+                                    name: 'Central Park',
+                                    image: 'https://images.unsplash.com/photo-1551651653-c5186a1fbba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: 'Park Avenue',
+                                    rating: 4.8,
+                                    distance: '0.6 miles',
+                                    price: 'Free'
+                                },
+                                {
+                                    name: 'Elite Fitness',
+                                    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '45 Wellness Road',
+                                    rating: 4.5,
+                                    distance: '1.0 miles',
+                                    price: '$$'
+                                },
+                                {
+                                    name: 'Community Sports Center',
+                                    image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '89 Athletic Drive',
+                                    rating: 4.3,
+                                    distance: '1.8 miles',
+                                    price: '$'
+                                }
+                            ];
+                            break;
+
+                        case 'entertainment':
+                            title = 'Entertainment Options';
+                            places = [
+                                {
+                                    name: 'Grand Cinema',
+                                    image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '200 Screen Drive',
+                                    rating: 4.6,
+                                    distance: '1.2 miles',
+                                    price: '$$'
+                                },
+                                {
+                                    name: 'City Theater',
+                                    image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '45 Arts Avenue',
+                                    rating: 4.7,
+                                    distance: '2.5 miles',
+                                    price: '$$$'
+                                },
+                                {
+                                    name: 'Music Hall',
+                                    image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                                    address: '120 Melody Lane',
+                                    rating: 4.4,
+                                    distance: '1.8 miles',
+                                    price: '$$'
+                                }
+                            ];
+                            break;
+                    }
+
+                    let html = `
+                <h2>${title}</h2>
+                <div class="place-list">
+            `;
+
+                    places.forEach(place => {
+                        html += `
+                    <div class="place-item">
+                        <img src="${place.image}" alt="${place.name}" class="place-image">
+                        <div class="place-info">
+                            <h3 class="place-name">${place.name}</h3>
+                            <p class="place-address">${place.address}</p>
+                            <div class="place-meta">
+                                <div class="place-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>${place.rating}</span>
+                                </div>
+                                <div class="place-distance">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${place.distance}</span>
+                                </div>
+                                <div class="place-price">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span>${place.price}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    });
+
+                    html += `
+                </div>
+            `;
+
+                    modalContent.innerHTML = html;
+                    modal.style.display = 'block';
+
+                    // Prevent scrolling on the body when modal is open
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeLifestyleModal() {
+                    const modal = document.getElementById('lifestyleModal');
+                    modal.style.display = 'none';
+
+                    // Re-enable scrolling on the body
+                    document.body.style.overflow = 'auto';
+                }
+
+                // Close modal when clicking outside the content
+                window.onclick = function (event) {
+                    const modal = document.getElementById('lifestyleModal');
+                    if (event.target === modal) {
+                        closeLifestyleModal();
+                    }
+                };
+
+                // Initialize Chart.js for charts
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Safety crime chart
+                    const safetyChartCtx = document.getElementById('safetyCrimeChart').getContext('2d');
+
+                    const safetyChart = new Chart(safetyChartCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Theft', 'Assault', 'Burglary', 'Vandalism', 'Vehicle Theft'],
+                            datasets: [{
+                                label: 'Incidents per 1,000 residents',
+                                data: [
+                                    Math.random() * 5,
+                                    Math.random() * 3,
+                                    Math.random() * 4,
+                                    Math.random() * 6,
+                                    Math.random() * 2
+                                ],
+                                backgroundColor: [
+                                    'rgba(52, 152, 219, 0.7)',
+                                    'rgba(52, 152, 219, 0.7)',
+                                    'rgba(52, 152, 219, 0.7)',
+                                    'rgba(52, 152, 219, 0.7)',
+                                    'rgba(52, 152, 219, 0.7)',
+                                ],
+                                borderColor: [
+                                    'rgba(41, 128, 185, 1)',
+                                    'rgba(41, 128, 185, 1)',
+                                    'rgba(41, 128, 185, 1)',
+                                    'rgba(41, 128, 185, 1)',
+                                    'rgba(41, 128, 185, 1)',
+                                ],
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'City Average',
+                                data: [6.2, 4.1, 5.3, 7.2, 3.8],
+                                type: 'line',
+                                fill: false,
+                                borderColor: 'rgba(231, 76, 60, 1)',
+                                backgroundColor: 'rgba(231, 76, 60, 1)',
+                                pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+                                pointBorderColor: '#fff',
+                                pointRadius: 4,
+                                borderWidth: 2,
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Incidents per 1,000 residents'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Crime Statistics Comparison',
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            }
+                        }
+                    });
+
+                    // Property trends chart
+                    const trendsChartCtx = document.getElementById('propertyTrendsChart').getContext('2d');
+
+                    // Generate data for the past 5 years
+                    const years = [];
+                    const propertyValues = [];
+                    const cityAverages = [];
+
+                    const currentYear = new Date().getFullYear();
+                    const baseValue = 500000;
+                    const cityBaseValue = 450000;
+                    let propValue = baseValue;
+                    let cityValue = cityBaseValue;
+
+                    for (let i = 0; i < 5; i++) {
+                        const year = currentYear - 4 + i;
+                        years.push(year);
+
+                        // Random growth between 3-8% for property
+                        const propGrowth = 1 + (Math.random() * 0.05 + 0.03);
+                        propValue *= propGrowth;
+                        propertyValues.push(propValue);
+
+                        // Random growth between 2-6% for city average
+                        const cityGrowth = 1 + (Math.random() * 0.04 + 0.02);
+                        cityValue *= cityGrowth;
+                        cityAverages.push(cityValue);
+                    }
+
+                    // Add prediction for next 2 years
+                    for (let i = 1; i <= 2; i++) {
+                        const year = currentYear + i;
+                        years.push(year);
+
+                        // Random growth between 4-9% for property (future prediction)
+                        const propGrowth = 1 + (Math.random() * 0.05 + 0.04);
+                        propValue *= propGrowth;
+                        propertyValues.push(propValue);
+
+                        // Random growth between 3-7% for city average (future prediction)
+                        const cityGrowth = 1 + (Math.random() * 0.04 + 0.03);
+                        cityValue *= cityGrowth;
+                        cityAverages.push(cityValue);
+                    }
+
+                    const trendsChart = new Chart(trendsChartCtx, {
+                        type: 'line',
+                        data: {
+                            labels: years,
+                            datasets: [
+                                {
+                                    label: 'Neighborhood Property Values',
+                                    data: propertyValues,
+                                    borderColor: 'rgba(46, 204, 113, 1)',
+                                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                                    pointBorderColor: '#fff',
+                                    pointRadius: 5,
+                                    pointHoverRadius: 8,
+                                    borderWidth: 3
+                                },
+                                {
+                                    label: 'City Average',
+                                    data: cityAverages,
+                                    borderColor: 'rgba(52, 152, 219, 1)',
+                                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                                    pointBorderColor: '#fff',
+                                    pointRadius: 5,
+                                    pointHoverRadius: 8,
+                                    borderWidth: 3
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    title: {
+                                        display: true,
+                                        text: 'Property Value ($)'
+                                    },
+                                    ticks: {
+                                        callback: function (value) {
+                                            return '$' + value.toLocaleString();
+                                        }
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Year'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Property Value Trends & Forecast',
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    callbacks: {
+                                        label: function (context) {
+                                            return context.dataset.label + ': $' + context.raw.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Add hover effects to property cards
+                    const propertyCards = document.querySelectorAll('.property-card');
+                    propertyCards.forEach(card => {
+                        card.addEventListener('mouseenter', function () {
+                            this.style.transform = 'translateY(-10px)';
+                            this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+                        });
+
+                        card.addEventListener('mouseleave', function () {
+                            this.style.transform = 'translateY(-5px)';
+                            this.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
+                        });
+                    });
+
+                    // Add click functionality to CTA buttons
+                    const ctaButtons = document.querySelectorAll('.cta-button');
+                    ctaButtons.forEach(button => {
+                        button.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            if (this.id === 'requestAnalysisBtn') {
+                                alert('This would generate and send a detailed PDF market analysis for this neighborhood.');
+                            } else {
+                                alert('This feature would open a detailed map view in a production environment.');
+                            }
+                        });
+                    });
+
+                    // Set prediction bar width from data attribute
+                    const predictionFill = document.querySelector('.prediction-fill');
+                    if (predictionFill) {
+                        const width = predictionFill.getAttribute('data-width');
+                        predictionFill.style.width = width + '%';
+                    }
+                });
+            </script>
+</body>
+
+</html>

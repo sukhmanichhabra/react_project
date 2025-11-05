@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/advertising.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Advertise With us</title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <script src="/js/advertising.js" defer></script>
+
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+        <div class="hero-banner">
+            <img src="/assets/hero-banner.png" alt="Hero Banner" class="banner-image">
+            <div class="content">
+                <h1>Advertise your Property with Max Visibility</h1>
+                <p>Here, posting a listing is just the beginning. Connect with people , seamless onboarding and
+                    more.</p>
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Fill vacancies and manage properties</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Over 30 million visitors each month</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>A brand you can trust</span>
+                    </div>
+                </div>
+                <button id="getStartedBtn">Get Started</button>
+            </div>
+        </div>
+
+        <% if (isSeller && sellerProperties && sellerProperties.length> 0) { %>
+            <div class="seller-properties reveal">
+                <h2>Your Properties</h2>
+                <p>Select a property to advertise and choose from our premium packages to increase visibility</p>
+
+                <!-- Step 1: Property Selection -->
+                <div id="property-selection" class="selection-step active-step">
+                    <h3 class="step-title"><span class="step-number">1</span> Select a Property</h3>
+
+                    <div class="property-grid">
+                        <% sellerProperties.filter(property=> property.status === 'active').forEach(property => { %>
+                            <div class="property-card" data-property-id="<%= property._id %>">
+                                <div class="property-image">
+                                    <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-1.jpg' %>"
+                                        alt="<%= property.title %>">
+                                    <% if (property.tag) { %>
+                                        <div class="property-tag <%= property.tag.toLowerCase() %>">FOR <%=
+                                                property.tag.toUpperCase() %>
+                                        </div>
+                                        <% } %>
+                                            <% if (property.advertising) { %>
+                                                <div class="advertising-badge"><i class="fas fa-ad"></i> Advertised
+                                                </div>
+                                                <% } %>
+                                </div>
+                                <div class="property-details">
+                                    <h3>
+                                        <%= property.title %>
+                                    </h3>
+                                    <p class="property-location"><i class="fas fa-map-marker-alt"></i>
+                                        <%= property.location %>
+                                    </p>
+                                    <p class="property-price">
+                                        <%= property.price %>
+                                    </p>
+                                    <div class="property-features">
+                                        <span><i class="fas fa-bed"></i>
+                                            <%= property.features.beds %> Beds
+                                        </span>
+                                        <span><i class="fas fa-bath"></i>
+                                            <%= property.features.baths %> Baths
+                                        </span>
+                                        <span><i class="fas fa-ruler-combined"></i>
+                                            <%= property.features.sqft %> sqft
+                                        </span>
+                                    </div>
+
+                                    <% if (property.advertising) { %>
+                                        <div class="current-package">
+                                            <p>Current Package: <strong>
+                                                    <%= property.advertising.packageType ?
+                                                        (property.advertising.packageType.charAt(0).toUpperCase() +
+                                                        property.advertising.packageType.slice(1)) : 'Standard' %>
+                                                </strong></p>
+                                            <p>Expires: <%= new Date(property.advertising.endDate).toLocaleDateString()
+                                                    %>
+                                            </p>
+
+                                            <%
+                                                // Calculate time remaining percentage
+                                                const now = new Date();
+                                                const endDate = new Date(property.advertising.endDate);
+                                                const startDate = new Date(property.advertising.startDate);
+                                                const totalDuration = endDate - startDate;
+                                                const timeRemaining = endDate - now;
+                                                
+                                                // Calculate percentage (0-100)
+                                                let percentRemaining = 100;
+                                                if (timeRemaining > 0 && totalDuration > 0) {
+                                                    percentRemaining = Math.max(0, Math.min(100, Math.round((timeRemaining / totalDuration) * 100)));
+                                                } else if (timeRemaining <= 0) {
+                                                    percentRemaining = 0;
+                                                }
+                                                
+                                                // Calculate days remaining
+                                                const daysRemaining = Math.max(0, Math.ceil(timeRemaining / (1000 * 60 * 60 * 24)));
+                                            %>
+
+                                                    <div class="time-remaining-container">
+                                                        <p class="time-remaining-text">
+                                                            <%= daysRemaining %> day<%= daysRemaining !==1 ? 's' : '' %>
+                                                                    remaining
+                                                        </p>
+                                                        <div class="time-remaining-bar">
+                                                            <div class="time-remaining-progress"
+                                                                style="--progress-width: <%= percentRemaining %>%;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <button class="cancel-package-btn"
+                                                        data-advertising-id="<%= property.advertising._id %>">Cancel
+                                                        Package</button>
+                                        </div>
+                                        <% } else { %>
+                                            <button class="select-property-btn"
+                                                data-property-id="<%= property._id %>">Select This Property</button>
+                                            <% } %>
+                                </div>
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+
+                <!-- Step 2: Package Selection -->
+                <div id="package-selection" class="selection-step">
+                    <h3 class="step-title"><span class="step-number">2</span> Choose an Advertising Package</h3>
+                    <button id="back-to-properties" class="back-button"><i class="fas fa-arrow-left"></i> Back to
+                        Properties</button>
+
+                    <div class="selected-property-preview">
+                        <h4>Selected Property: <span id="selected-property-title"></span></h4>
+                        <p id="selected-property-location"></p>
+                    </div>
+
+                    <div class="packages-container">
+                        <div class="package">
+                            <h5>Basic</h5>
+                            <p class="price">$50</p>
+                            <p class="duration">30 days</p>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Standard listing visibility</li>
+                                <li><i class="fas fa-check"></i> Basic search placement</li>
+                            </ul>
+                            <button class="package-option" data-package="basic">Select Basic</button>
+                        </div>
+                        <div class="package recommended">
+                            <div class="recommended-badge">RECOMMENDED</div>
+                            <h5>Premium</h5>
+                            <p class="price">$100</p>
+                            <p class="duration">60 days</p>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Enhanced visibility</li>
+                                <li><i class="fas fa-check"></i> Priority search placement</li>
+                                <li><i class="fas fa-check"></i> Featured on homepage</li>
+                            </ul>
+                            <button class="package-option" data-package="premium">Select Premium</button>
+                        </div>
+                        <div class="package">
+                            <h5>Featured</h5>
+                            <p class="price">$200</p>
+                            <p class="duration">90 days</p>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Maximum visibility</li>
+                                <li><i class="fas fa-check"></i> Top search placement</li>
+                                <li><i class="fas fa-check"></i> Featured on homepage</li>
+                                <li><i class="fas fa-check"></i> Social media promotion</li>
+                            </ul>
+                            <button class="package-option" data-package="featured">Select Featured</button>
+                        </div>
+                    </div>
+
+                    <div class="package-summary">
+                        <h4>Your Selection</h4>
+                        <div id="selected-package-info">
+                            <p>No package selected</p>
+                        </div>
+                        <button id="finalize-btn" class="finalize-button" disabled>Finalize Advertising</button>
+                    </div>
+                </div>
+
+                <!-- No Properties with Advertising -->
+                <div id="no-advertising-properties"
+                    class="<%= sellerProperties.every(p => p.advertising) ? 'active-step' : '' %>">
+                    <div class="empty-state">
+                        <i class="fas fa-ad empty-icon"></i>
+                        <h3>No Properties Available for Advertising</h3>
+                        <p>All your properties already have active advertising packages.</p>
+                        <p>You can cancel existing packages to create new ones.</p>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+                <div class="services reveal">
+                    <h2>Our Services</h2>
+                    <p>Maximize your property's exposure with our premium marketing tools</p>
+
+                    <div class="service-container">
+                        <div class="service-box reveal">
+                            <i class="fas fa-home"></i>
+                            <h3>Featured Listing</h3>
+                            <p>Get premium placement in search results and enhanced visibility for your property listing
+                            </p>
+                        </div>
+
+                        <div class="service-box reveal" style="animation-delay: 0.2s;">
+                            <i class="fas fa-eye"></i>
+                            <h3>Enhanced Visibility</h3>
+                            <p>Stand out with professional photos and detailed property information to attract quality
+                                tenants</p>
+                        </div>
+
+                        <div class="service-box reveal" style="animation-delay: 0.4s;">
+                            <i class="fas fa-tags"></i>
+                            <h3>Keyword Tagging</h3>
+                            <p>Optimize your listing with relevant keywords to reach the right audience searching for
+                                your property
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="comparison-section reveal">
+                    <h2>How it stacks up against the competition</h2>
+                    <div class="comparison-table">
+                        <div class="table-header">
+                            <div class="col">What's included</div>
+                            <div class="col">Homescape Service</div>
+                            <div class="col">Typical Advertising services*</div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="col">Ongoing rental pricing guidance</div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                            <div class="col"></div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="col">
+                                Homescape Premium listings
+                                <i class="fas fa-question-circle tooltip-icon"></i>
+                            </div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                            <div class="col"></div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="col">
+                                Real estate agent-led tours
+                                <i class="fas fa-question-circle tooltip-icon"></i>
+                            </div>
+                            <div class="col">
+                                <i class="fas fa-check"></i>
+                                <span class="subtitle">Fast availability</span>
+                            </div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                        </div>
+
+
+
+                        <div class="table-row">
+                            <div class="col">Tenant screening</div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="col">Lease preparation</div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="col">
+                                Owner dashboard
+                                <i class="fas fa-question-circle tooltip-icon"></i>
+                            </div>
+                            <div class="col"><i class="fas fa-check"></i></div>
+                            <div class="col"></div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="col">Competitive pricing</div>
+                            <div class="col">
+                                <i class="fas fa-check"></i>
+                                <span class="subtitle">50% first month's rent</span>
+                            </div>
+                            <div class="col">
+                                <span class="subtitle">75-100% first month's rent</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="statistics reveal">
+                    <h2>Reach serious home shoppers</h2>
+                    <div class="stats-container">
+                        <div class="stat">
+                            <i class="fas fa-users"></i>
+                            <h3>73M</h3>
+                            <p>Unique visitors</p>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-calendar-alt"></i>
+                            <h3>31%</h3>
+                            <p>Monthly adults reached</p>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-clock"></i>
+                            <h3>90%</h3>
+                            <p>Listings updated every 15 min</p>
+                        </div>
+                        <img src="/assets/img-side.png" alt="Side Image" class="side-image">
+                    </div>
+                </div>
+                <%- include('./partials/footer') %>
+
+                    <!-- Back to Top Button -->
+                    <button id="backToTop" aria-label="Back to top">
+                        <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+                    </button>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            // Scroll reveal animation
+                            const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+
+                            const revealOnScroll = function () {
+                                for (let i = 0; i < revealElements.length; i++) {
+                                    const windowHeight = window.innerHeight;
+                                    const elementTop = revealElements[i].getBoundingClientRect().top;
+                                    const elementVisible = 150;
+
+                                    if (elementTop < windowHeight - elementVisible) {
+                                        revealElements[i].classList.add('active');
+                                    }
+                                }
+                            };
+
+                            window.addEventListener('scroll', revealOnScroll);
+                            revealOnScroll(); // Initial check on page load
+
+                            // Range slider value display
+                            const sizeSlider = document.getElementById('size');
+                            const sizeOutput = document.getElementById('sizeOutput');
+
+                            if (sizeSlider && sizeOutput) {
+                                sizeSlider.addEventListener('input', function () {
+                                    sizeOutput.textContent = this.value + ' sq ft';
+                                });
+                            }
+
+                            // Get Started button scrolls to services section
+                            const getStartedBtn = document.getElementById('getStartedBtn');
+                            const servicesSection = document.querySelector('.services');
+
+                            if (getStartedBtn && servicesSection) {
+                                getStartedBtn.addEventListener('click', function () {
+                                    servicesSection.scrollIntoView({ behavior: 'smooth' });
+                                });
+                            }
+
+                            // Tooltip functionality
+                            const tooltipIcons = document.querySelectorAll('.tooltip-icon');
+
+                            tooltipIcons.forEach(icon => {
+                                icon.addEventListener('mouseenter', function () {
+                                    const tooltipText = this.getAttribute('data-tooltip') || 'More information available';
+
+                                    const tooltip = document.createElement('div');
+                                    tooltip.className = 'tooltip';
+                                    tooltip.textContent = tooltipText;
+
+                                    document.body.appendChild(tooltip);
+
+                                    const iconRect = this.getBoundingClientRect();
+                                    tooltip.style.position = 'absolute';
+                                    tooltip.style.top = (iconRect.bottom + window.scrollY + 10) + 'px';
+                                    tooltip.style.left = (iconRect.left + window.scrollX - 100) + 'px';
+                                    tooltip.style.backgroundColor = '#333';
+                                    tooltip.style.color = '#fff';
+                                    tooltip.style.padding = '8px 12px';
+                                    tooltip.style.borderRadius = '4px';
+                                    tooltip.style.fontSize = '14px';
+                                    tooltip.style.zIndex = '1000';
+                                    tooltip.style.width = '200px';
+                                    tooltip.style.textAlign = 'center';
+
+                                    this._tooltip = tooltip;
+                                });
+
+                                icon.addEventListener('mouseleave', function () {
+                                    if (this._tooltip) {
+                                        document.body.removeChild(this._tooltip);
+                                        this._tooltip = null;
+                                    }
+                                });
+                            });
+                        });
+
+                        // Back to Top Button
+                        const backToTopButton = document.getElementById('backToTop');
+
+                        backToTopButton.addEventListener('click', () => {
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        });
+
+                        window.addEventListener('scroll', () => {
+                            if (window.pageYOffset > 300) {
+                                backToTopButton.style.display = 'flex';
+                            } else {
+                                backToTopButton.style.display = 'none';
+                            }
+                        });
+
+                        // Ensure page starts at the top when loaded or refreshed
+                        window.onload = function () {
+                            window.scrollTo(0, 0);
+
+                            // Force scroll to top after a slight delay to override any browser behavior
+                            setTimeout(() => {
+                                window.scrollTo(0, 0);
+                            }, 50);
+
+                            // Initialize back to top button
+                            backToTopButton.style.display = 'none';
+                        };
+                    </script>
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/base.css">
+        <link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/header.css">
+        <link rel="stylesheet" href="/css/footer.css">
+        <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Plans</title>
+    <link rel="stylesheet" href="/css/pricing.css" type="text/css">
+</head>
+<body>
+    <%- include('./partials/header') %>
+    <div class="pricing-container">
+        <div class="pricing-header">
+            <h1>No hidden charge, get your plan.</h1>
+            <p>Try Free plan features for 14 days · No credit card required for exploration.</p>
+        </div>
+        
+        <div class="pricing-cards">
+            <div class="pricing-card free">
+                <h2>FREE PLAN</h2>
+                <div class="price">
+                    <span class="amount">0</span>
+                    <span class="period">per user/month</span>
+                </div>
+                <ul class="features">
+                    <li class="included">60-day chat history</li>
+                    <li class="included">Basic widget customization</li>
+                    <li class="excluded">Ticketing system</li>
+                    <li class="excluded">Data security</li>
+                </ul>
+                <button class="subscribe-btn dark">Subscribe Now</button>
+            </div>
+
+            <div class="pricing-card standard">
+                <h2>STANDARD</h2>
+                <div class="price">
+                    <span class="amount">$12</span>
+                    <span class="period">per user/month</span>
+                </div>
+                <ul class="features">
+                    <li class="included">60-day chat history</li>
+                    <li class="included">Basic widget customization</li>
+                    <li class="included">Ticketing system</li>
+                    <li class="excluded">Data security</li>
+                </ul>
+                <button class="subscribe-btn light">Subscribe Now</button>
+            </div>
+
+            <div class="pricing-card business">
+                <h2>BUSINESS</h2>
+                <div class="price">
+                    <span class="amount">$39</span>
+                    <span class="period">per user/month</span>
+                </div>
+                <ul class="features">
+                    <li class="included">60-day chat history</li>
+                    <li class="included">Basic widget customization</li>
+                    <li class="included">Ticketing system</li>
+                    <li class="included">Data security</li>
+                </ul>
+                <button class="subscribe-btn light">Subscribe Now</button>
+            </div>
+        </div>
+    </div>
+    <%- include('./partials/footer') %>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" aria-label="Back to top">
+        <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+    </button>
+
+    <script>
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        // Ensure page starts at the top when loaded or refreshed
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            
+            // Force scroll to top after a slight delay to override any browser behavior
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 50);
+            
+            // Initialize back to top button
+            backToTopButton.style.display = 'none';
+        };
+    </script>
+</body>
+</html> 

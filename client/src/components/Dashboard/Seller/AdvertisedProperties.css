@@ -1,0 +1,37 @@
+.advertised-properties-section {
+  width: 100%;
+  padding: 2rem;
+}
+
+.advertised-properties-header {
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.advertised-properties-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+
+.advertised-properties-header p {
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* This grid is the same as the others */
+.advertised-properties-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+@media (min-width: 768px) {
+  .advertised-properties-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .advertised-properties-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

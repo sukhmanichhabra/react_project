@@ -1,0 +1,487 @@
+<!-- Announcement Bar - Only shown on homepage -->
+<% if (locals.currentPath === '/' || !locals.currentPath) { %>
+<div class="announcement-bar">
+    <div class="announcement-content">
+        <div class="announcement-text">
+            <span>🎉 New Feature: Property Price Prediction Tool Now Available!</span>
+            <span>📱 Try our new mobile app for faster property browsing</span>
+            <span>💰 Special discount on premium listings this month</span>
+            <span>🏠 Virtual property tours now available for selected properties</span>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<nav class="navbar">
+    <div class="nav-left">
+        <a href="/" class="logo">
+            <img src="/assets/logo_main.png" alt="Logo" class="logo-image">
+        </a>
+    </div>
+
+    <div class="nav-middle">
+        <% if (locals.user && locals.user.role==='admin' ) { %>
+            <!-- Admin Navigation -->
+            <div class="admin-nav">
+                <a href="/" class="nav-link admin-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+
+                <a href="/approve-property" class="nav-link admin-link">
+                    <i class="fas fa-check-circle"></i> Property Approvals
+                </a>
+                <a href="/blog/add" class="nav-link admin-link">
+                    <i class="fas fa-edit"></i> Add Blog
+                </a>
+                <a href="/chatbot/admin" class="nav-link admin-link">
+                    <i class="fas fa-robot"></i> chatbot
+                </a>
+                <a href="/activity/log" class="nav-link admin-link">
+                    <i class="fas fa-chart-line"></i> Activity Log
+                </a>
+            </div>
+            <% } else { %>
+                <!-- Regular User Navigation -->
+                <a href="/" class="nav-link">Home</a>
+
+                <div class="nav-dropdown">
+                    <a href="/agent" class="nav-link">Our Agents</a>
+                </div>
+
+                <div class="nav-dropdown">
+                    <a href="/blog_list" class="nav-link">News</a>
+                </div>
+
+                <div class="nav-dropdown">
+                    <a href="/property_list" class="nav-link">Property</a>
+                    <div class="dropdown-content">
+                        <div class="dropdown-grid">
+                            <div class="dropdown-column">
+                                <h3>Property Options</h3>
+                                <a href="/property_list">All Properties</a>
+                                <a href="/property/compare">Compare Properties</a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <div class="nav-dropdown">
+                    <a href="#" class="nav-link">Finances <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-content">
+                        <div class="dropdown-grid">
+                            <div class="dropdown-column">
+                                <h3>Finances</h3>
+                                <a href="/loan/emi-calculator">Loan and EMI</a>
+                                <% if (locals.user && locals.user.role === 'buyer') { %>
+                                <a href="/loan/my-emis" id="payEmiLink" style="display: none;">Pay EMI</a>
+                                <% } %>
+                                <a href="/model">Price Prediction</a>
+                                <a href="/pricing">Pricing</a>
+                                <a href="/trend">Market Trends</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-dropdown">
+                    <a href="#" class="nav-link">About Us <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-content">
+                        <div class="dropdown-grid">
+                            <div class="dropdown-column">
+                                <h3>About Us</h3>
+                                <a href="/about">About Us</a>
+                                <a href="/contact">Contact Us</a>
+                                <a href="/faq">FAQ</a>
+                                <% if (locals.user) { %>
+                                <a href="/chat" class="nav-link chat-link">
+                                    Messages
+                                    <span class="message-indicator" id="navMessageCount" style="display: none;"></span>
+                                </a>
+                                <% } %>
+                                <a href="/chatbot">
+                                    Chatbot
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                    <% if (locals.user) { %>
+                        <% if (locals.user.role==='seller' ) { %>
+                            <div class="nav-dropdown">
+                                <a href="/advertising" class="nav-link">Advertise with Us</a>
+                            </div>
+                            <div class="nav-dropdown">
+                                <a href="#" class="nav-link">Properties<i class="fas fa-chevron-down"></i></a>
+                                <div class="dropdown-content">
+                                    <div class="dropdown-grid">
+                                        <div class="dropdown-column">
+                                            <h3>Properties</h3>
+                                            <a href="/property/listing">List Property</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } else if (locals.user.role==='buyer' ) { %>
+                                <a href="/property/my-purchases" class="nav-link">My Properties</a>
+
+                                <div class="nav-dropdown">
+                                    <a href="#" class="nav-link">Visits<i class="fas fa-chevron-down"></i></a>
+                                    <div class="dropdown-content">
+                                        <div class="dropdown-grid">
+                                            <div class="dropdown-column">
+                                                <h3>Visits</h3>
+                                                <a href="/visit/my-visits" class="nav-link">My Visits</a>
+                                                <a href="/visit/schedule" class="nav-link">Schedule Visit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <% } else if (locals.user.role==='agent' ) { %>
+                                <a href="/visit/agent" class="nav-link">Visit Requests</a>
+                                <% } %>
+                                    <% } %>
+    </div>
+
+
+    <div class="nav-right">
+        <% if (locals.user) { %>
+            <div class="nav-right">
+                <!-- Notification Bell -->
+                <a href="/notifications" class="notification-bell-link">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <% if (locals.unreadNotifications && locals.unreadNotifications > 0) { %>
+                            <span class="notification-count-badge"><%= locals.unreadNotifications %></span>
+                        <% } %>
+                    </div>
+                </a>
+                
+                <a href="/dashboard" class="user-name <%= locals.user.role === 'admin' ? 'admin-user-name' : '' %>">
+                    <i class="<%= locals.user.role === 'admin' ? 'fas fa-crown' : 'fas fa-star' %>"></i>
+                    <%= locals.user.name %>
+                        <% if (locals.user.role==='admin' ) { %>
+                            <span>(Admin)</span>
+                            <% } %>
+                </a>
+                <a href="/settings" class="login-btn">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="/auth/logout" class="login-btn <%= locals.user.role === 'admin' ? 'admin-logout-btn' : '' %>">
+                    Logout
+                </a>
+            </div>
+            <% } else { %>
+                <div class="nav-right">
+                    <button class="login-btn" onclick="window.location.href='/auth/signin'">Login</button>
+                    <button class="login-btn" onclick="window.location.href='/auth/signup'">Signup</button>
+                </div>
+                <% } %>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-content">
+        <div class="mobile-menu-header">
+            <a href="/" class="logo">
+                <img src="/assets/logo_main.png" alt="Logo">
+            </a>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="mobile-nav-items">
+            <% if (locals.user && locals.user.role==='admin' ) { %>
+                <!-- Admin Mobile Navigation -->
+                <a href="/" class="mobile-nav-link">
+                    <span><i class="fas fa-home"></i> Home</span>
+                </a>
+                <a href="/dashboard" class="mobile-nav-link">
+                    <span><i class="fas fa-tachometer-alt"></i> Dashboard</span>
+                </a>
+                <a href="/approve-property" class="mobile-nav-link">
+                    <span><i class="fas fa-check-circle"></i> Property Approvals</span>
+                </a>
+                <a href="/blog/add" class="mobile-nav-link">
+                    <span><i class="fas fa-edit"></i> Add Blog</span>
+                </a>
+                <% } else { %>
+                    <!-- Regular User Mobile Navigation -->
+                    <a href="/" class="mobile-nav-link">
+                        <span>Home</span>
+                    </a>
+
+                    <a href="/agent" class="mobile-nav-link">
+                        <span>Our Agents</span>
+                    </a>
+
+                    <a href="/blog_list" class="mobile-nav-link">
+                        <span>News and Insights</span>
+                    </a>
+
+                    <a href="/property_list" class="mobile-nav-link">
+                        <span>Property</span>
+                    </a>
+
+                    <!-- Add Property Compare to mobile menu -->
+                    <a href="/property/compare" class="mobile-nav-link">
+                        <span><i class="fas fa-exchange-alt"></i> Compare Properties</span>
+                    </a>
+
+                    <% if (locals.user) { %>
+                    <!-- Notifications in mobile menu -->
+                    <a href="/notifications" class="mobile-nav-link">
+                        <span><i class="fas fa-bell"></i> Notifications</span>
+                        <% if (locals.unreadNotifications && locals.unreadNotifications > 0) { %>
+                            <span class="notification-count-badge"><%= locals.unreadNotifications %></span>
+                        <% } %>
+                    </a>
+                    
+                    <a href="/chat" class="mobile-nav-link chat-link">
+                        <span>Messages</span>
+                        <span class="message-indicator" id="navMessageCount" style="display: none;"></span>
+                    </a>
+                    <% } %>
+
+                    <a href="#" class="mobile-nav-link toggle-submenu" data-submenu="finances">
+                        <span>Finances</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-submenu" id="finances-submenu">
+                        <a href="/loan/emi-calculator">Loan and EMI</a>
+                        <% if (locals.user && locals.user.role === 'buyer') { %>
+                        <a href="/loan/my-emis" id="payEmiLinkMobile" style="display: none;">Pay EMI</a>
+                        <% } %>
+                        <a href="/model">Price Prediction</a>
+                        <a href="/pricing">Pricing</a>
+                        <a href="/trend">Market Trends</a>
+                    </div>
+
+                    <a href="/advertising" class="mobile-nav-link">
+                        <span>Advertise with Us</span>
+                    </a>
+
+                    <a href="#" class="mobile-nav-link toggle-submenu" data-submenu="about">
+                        <span>About Us</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-submenu" id="about-submenu">
+                        <a href="/about">About Us</a>
+                        <a href="/contact">Contact Us</a>
+                        <a href="/faq">FAQ</a>
+                        <% if (locals.user) { %>
+                        <a href="/chat" class="chat-link">
+                            <span>Messages</span>
+                            <span class="message-indicator" id="navMessageCount" style="display: none;"></span>
+                        </a>
+                        <% } %>
+                    </div>
+
+                    <% if (locals.user) { %>
+                        <% if (locals.user.role==='seller' ) { %>
+                            <a href="/property/my-properties" class="mobile-nav-link">
+                                <span>My Properties</span>
+                            </a>
+                            <a href="/property/listing" class="mobile-nav-link">
+                                <span>List Property</span>
+                            </a>
+                            <% } else if (locals.user.role==='buyer' ) { %>
+                                <a href="/property/my-purchases" class="mobile-nav-link">
+                                    <span>My Properties</span>
+                                </a>
+                                <a href="/visit/my-visits" class="mobile-nav-link">
+                                    <span>My Visits</span>
+                                </a>
+                                <% } else if (locals.user.role==='agent' ) { %>
+                                <a href="/visit/agent" class="mobile-nav-link">
+                                    <span>Visit Requests</span>
+                                </a>
+                                <% } %>
+                                    <% } %>
+                                        <% } %>
+        </div>
+
+        <div class="mobile-nav-actions">
+            <% if (locals.user) { %>
+                <a href="/dashboard" class="user-name <%= locals.user.role === 'admin' ? 'admin-user-name' : '' %>">
+                    <i class="<%= locals.user.role === 'admin' ? 'fas fa-crown' : 'fas fa-star' %>"></i>
+                    <%= locals.user.name %>
+                        <% if (locals.user.role==='admin' ) { %>
+                            <span>(Admin)</span>
+                            <% } %>
+                </a>
+                <a href="/settings" class="login-btn">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="/auth/logout" class="login-btn <%= locals.user.role === 'admin' ? 'admin-logout-btn' : '' %>">
+                    Logout
+                </a>
+                <% } else { %>
+                    <button class="login-btn" onclick="window.location.href='/auth/signin'">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="login-btn" onclick="window.location.href='/auth/signup'">
+                        <i class="fas fa-user-plus"></i> Signup
+                    </button>
+                    <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Include navbar.js for mobile menu functionality -->
+<script src="/js/navbar.js"></script>
+
+<!-- Announcement bar script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const closeMenu = document.getElementById('closeMenu');
+        const toggleSubmenu = document.querySelectorAll('.toggle-submenu');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        if (closeMenu) {
+            closeMenu.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        toggleSubmenu.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const submenuId = this.getAttribute('data-submenu') + '-submenu';
+                const submenu = document.getElementById(submenuId);
+                
+                if (submenu.style.display === 'block') {
+                    submenu.style.display = 'none';
+                    this.querySelector('i').classList.remove('fa-chevron-up');
+                    this.querySelector('i').classList.add('fa-chevron-down');
+                } else {
+                    // Close all other submenus
+                    document.querySelectorAll('.mobile-submenu').forEach(function(menu) {
+                        menu.style.display = 'none';
+                    });
+                    
+                    // Reset all icons
+                    document.querySelectorAll('.toggle-submenu i').forEach(function(icon) {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    });
+                    
+                    submenu.style.display = 'block';
+                    this.querySelector('i').classList.remove('fa-chevron-down');
+                    this.querySelector('i').classList.add('fa-chevron-up');
+                }
+            });
+        });
+        
+        // Announcement bar animation - only run if the announcement bar exists
+        const announcementText = document.querySelector('.announcement-text');
+        if (announcementText) {
+            // Clone the announcements for seamless scrolling
+            announcementText.innerHTML += announcementText.innerHTML;
+            
+            // Set initial position
+            let scrollPosition = 0;
+            
+            // Scroll animation
+            function scrollAnnouncement() {
+                scrollPosition++;
+                // Reset position when all items have scrolled
+                if (scrollPosition >= announcementText.scrollWidth / 2) {
+                    scrollPosition = 0;
+                }
+                announcementText.style.transform = `translateX(-${scrollPosition}px)`;
+                requestAnimationFrame(scrollAnnouncement);
+            }
+            
+            scrollAnnouncement();
+        }
+    });
+</script>
+
+<style>
+    .announcement-bar {
+        background: linear-gradient(90deg, #FF8C00, #FFA500);
+        color: white;
+        padding: 8px 0;
+        font-size: 14px;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+    
+    .announcement-content {
+        width: 100%;
+        overflow: hidden;
+    }
+    
+    .announcement-text {
+        white-space: nowrap;
+        display: inline-block;
+    }
+    
+    .announcement-text span {
+        display: inline-block;
+        padding: 0 30px;
+    }
+    
+    /* Adjust navbar top margin to compensate for announcement bar */
+    .navbar {
+        margin-top: 15px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .announcement-bar {
+            font-size: 12px;
+            padding: 6px 0;
+        }
+        
+        .navbar {
+            margin-top: 10px;
+        }
+    }
+</style>
+
+<% if (locals.user && locals.user.role === 'buyer') { %>
+<script>
+    // Check if user has any approved loans to show the Pay EMI link
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const response = await fetch('/loan/has-approved-loans');
+            const data = await response.json();
+            
+            if (data.success && data.hasApprovedLoans) {
+                // Show the Pay EMI links if user has approved loans
+                const desktopLink = document.getElementById('payEmiLink');
+                const mobileLink = document.getElementById('payEmiLinkMobile');
+                
+                if (desktopLink) desktopLink.style.display = 'block';
+                if (mobileLink) mobileLink.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error checking loan status:', error);
+        }
+    });
+</script>
+<% } %>

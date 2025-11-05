@@ -1,0 +1,420 @@
+<!-- website/views/blog_list.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Scape - Latest News</title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/blog_list.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+
+<body id="top">
+    <%- include('./partials/header') %>
+
+
+
+        <!-- Featured Blog Section -->
+        <section class="featured-blog" data-aos="fade-up" data-aos-duration="800">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fas fa-star"></i> Featured Article</h2>
+                    <p class="section-subtitle">Our most popular and insightful content</p>
+                    <% if (locals.user && locals.user.role==='admin' ) { %>
+                        <a href="/blog/add" class="btn-add-blog">
+                            <i class="fas fa-plus-circle"></i> Add New Blog
+                        </a>
+                        <% } %>
+                </div>
+
+                <% if (featuredBlog) { %>
+                <div class="featured-blog-container">
+                    <div class="featured-blog-image">
+                        <img src="<%= featuredBlog.imageUrl %>" alt="Featured blog post" onerror="this.src='/assets/house.jpg';">
+                        <div class="featured-tag"><i class="fas fa-bookmark"></i> Featured</div>
+                    </div>
+                    <div class="featured-blog-content">
+                        <div class="featured-meta">
+                            <span class="featured-category"><i class="fas fa-tag"></i>
+                                <%= featuredBlog.tags && featuredBlog.tags.length > 0 ? featuredBlog.tags[0] : 'General' %>
+                            </span>
+                            <span class="featured-date"><i class="far fa-calendar-alt"></i>
+                                <%= new Date(featuredBlog.createdOn).toLocaleDateString('en-US', { month: 'short' ,
+                                    day: 'numeric' , year: 'numeric' }) %>
+                            </span>
+                        </div>
+                        <h3 class="featured-title">
+                            <%= featuredBlog.title %>
+                        </h3>
+                        <p class="featured-excerpt">
+                            <%= featuredBlog.content.replace(/<[^>]*>/g, '').substring(0, 150) %>...
+                        </p>
+                        <div class="featured-author">
+                            <img src="/assets/agent.png" alt="Author" class="author-avatar">
+                            <span class="author-name">By <%= featuredBlog.author %></span>
+                        </div>
+                        <a href="/blog_desc/<%= featuredBlog._id %>" class="featured-read-more">Read Full Article <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <% } else { %>
+                <div class="no-featured-blog">
+                    <div class="empty-state">
+                        <i class="fas fa-newspaper fa-3x"></i>
+                        <h3>No Featured Article Yet</h3>
+                        <p>We're working on creating great content for you. Check back soon!</p>
+                        <% if (locals.user && locals.user.role === 'admin') { %>
+                            <a href="/blog/add" class="btn-add-first-blog">
+                                <i class="fas fa-plus-circle"></i> Create Your First Blog
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </section>
+
+        <!-- Category Filter Section -->
+        <section class="blog-categories" data-aos="fade-up" data-aos-duration="800">
+            <div class="container">
+                <div class="category-filters">
+                    <button class="category-btn active" data-filter="all">All Categories</button>
+                    <button class="category-btn" data-filter="residential"><i class="fas fa-home"></i>
+                        Residential</button>
+                    <button class="category-btn" data-filter="commercial"><i class="fas fa-building"></i>
+                        Commercial</button>
+                    <button class="category-btn" data-filter="investment"><i class="fas fa-chart-line"></i>
+                        Investment</button>
+                    <button class="category-btn" data-filter="market-trends"><i class="fas fa-chart-bar"></i> Market
+                        Analysis</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog List Section -->
+        <section class="blog" id="blog" data-aos="fade-up" data-aos-duration="800">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fas fa-newspaper"></i> Latest Articles</h2>
+                    <p class="section-subtitle">Stay updated with our most recent real estate content</p>
+                </div>
+
+                <% if (blogs && blogs.length > 0) { %>
+                <ul class="blog-list">
+                    <% blogs.forEach(blog=> { %>
+                        <li class="blog-card" data-tags="<%= blog.tags.join(' ').toLowerCase() %>">
+                            <div class="card-banner">
+                                <img src="<%= blog.imageUrl %>" alt="<%= blog.title %>" onerror="this.src='/assets/house.jpg';">
+                            </div>
+                            <div class="blog-content">
+                                <div class="card-meta-list">
+                                    <a href="#" class="card-meta-link"><i class="far fa-calendar-alt"></i>
+                                        <%= new Date(blog.createdOn).toLocaleDateString('en-US', { month: 'short' ,
+                                            day: 'numeric' , year: 'numeric' }) %>
+                                    </a>
+                                    <a href="#" class="card-meta-link" style="color: rgb(232, 123, 14);"><i class="fas fa-tag"></i>
+                                        <%= blog.tags && blog.tags.length > 0 ? blog.tags[0] : 'General' %>
+                                    </a>
+                                </div>
+                                <h3 class="blog-title">
+                                    <a href="/blog_desc/<%= blog._id %>"><%= blog.title %></a>
+                                </h3>
+                                <div class="card-meta-list">
+                                    <ion-icon name="person"></ion-icon>
+                                    <span class="author-name">By <%= blog.author %></span>
+                                </div>
+                                <a href="/blog_desc/<%= blog._id %>" class="read-more-btn">Read More <i
+                                        class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </li>
+                        <% }); %>
+                </ul>
+
+                <!-- Pagination -->
+                <div class="pagination" data-aos="fade-up">
+                    <% if (pagination.hasPrev) { %>
+                        <a href="/blog_list?page=<%= pagination.page - 1 %>" class="page-nav prev"><i
+                                class="fas fa-angle-left"></i></a>
+                        <% } else { %>
+                            <span class="page-nav prev disabled"><i class="fas fa-angle-left"></i></span>
+                            <% } %>
+
+                                <% // Limit the number of page links to display 
+                                    const maxPagesToShow=5; 
+                                    let startPage=Math.max(1, pagination.page - Math.floor(maxPagesToShow / 2)); 
+                                    let endPage=Math.min(pagination.totalPages, startPage + maxPagesToShow - 1); // Adjust startPage if we're near the end 
+                                    if (endPage - startPage + 1 < maxPagesToShow) {
+                                        startPage=Math.max(1, endPage - maxPagesToShow + 1); } // Show first page if not in range 
+                                        if (startPage> 1) { %>
+                                    <a href="/blog_list?page=1" class="page-number" data-page="1">1</a>
+                                    <% if (startPage> 2) { %>
+                                        <span class="page-ellipsis">...</span>
+                                        <% } %>
+                                            <% } %>
+
+                                                <% for (let i=startPage; i <=endPage; i++) { %>
+                                                    <a href="/blog_list?page=<%= i %>"
+                                                        class="page-number <%= i === pagination.page ? 'active' : '' %>"
+                                                        data-page="<%= i %>"><%= i %></a>
+                                                    <% } %>
+
+                                                        <% if (endPage < pagination.totalPages) { %>
+                                                            <% if (endPage < pagination.totalPages - 1) { %>
+                                                                <span class="page-ellipsis">...</span>
+                                                                <% } %>
+                                                                    <a href="/blog_list?page=<%= pagination.totalPages %>"
+                                                                        class="page-number"
+                                                                        data-page="<%= pagination.totalPages %>">
+                                                                        <%= pagination.totalPages %>
+                                                                    </a>
+                                                                    <% } %>
+
+                                                                        <% if (pagination.hasNext) { %>
+                                                                            <a href="/blog_list?page=<%= pagination.page + 1 %>"
+                                                                                class="page-nav next"><i
+                                                                                    class="fas fa-angle-right"></i></a>
+                                                                            <% } else { %>
+                                                                                <span class="page-nav next disabled"><i
+                                                                                        class="fas fa-angle-right"></i></span>
+                                                                                <% } %>
+                </div>
+                <% } else { %>
+                <div class="no-blogs">
+                    <div class="empty-state">
+                        <i class="fas fa-newspaper fa-3x"></i>
+                        <h3>No Articles Yet</h3>
+                        <p>We're working on creating great content for you. Check back soon!</p>
+                        <% if (locals.user && locals.user.role === 'admin') { %>
+                            <a href="/blog/add" class="btn-add-first-blog">
+                                <i class="fas fa-plus-circle"></i> Create Your First Blog
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter" data-aos="fade-up" data-aos-duration="800">
+            <div class="container">
+                <div class="newsletter-content">
+                    <div class="newsletter-icon">
+                        <i class="far fa-envelope"></i>
+                    </div>
+                    <div class="newsletter-text">
+                        <h3>Subscribe to Our Newsletter</h3>
+                        <p>Get the latest real estate news, market insights, and exclusive offers delivered to your
+                            inbox.</p>
+                    </div>
+                    <form class="newsletter-form">
+                        <div class="form-group">
+                            <input type="email" placeholder="Enter your email address" required>
+                            <button type="submit">Subscribe <i class="fas fa-paper-plane"></i></button>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="consent" required>
+                            <label for="consent">I agree to receive emails from Home Scape</label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real Estate Stats Section -->
+        <section class="stats-section" data-aos="fade-up" data-aos-duration="800">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fas fa-chart-pie"></i> Real Estate Market Insights</h2>
+                    <p class="section-subtitle">Key statistics from the current real estate market</p>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="stat-number" data-count="15">0</div>
+                        <div class="stat-title">Average Days on Market</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-number" data-count="3.8">0</div>
+                        <div class="stat-title">Mortgage Rate</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-number" data-count="425">0</div>
+                        <div class="stat-title">Avg. Price per Sq Ft</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-number" data-count="12">0</div>
+                        <div class="stat-title">Market Growth (%)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Back to Top Button -->
+        <button id="backToTop" aria-label="Back to top">
+            <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+        </button>
+
+        <%- include('./partials/footer') %>
+
+            <!-- AOS Animation Library -->
+            <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+            <!-- Ionicons -->
+            <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+            <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+            <script>
+                // Initialize AOS with settings to prevent affecting initial scroll
+                AOS.init({
+                    startEvent: 'DOMContentLoaded',
+                    offset: 120,
+                    delay: 100,
+                    once: false,
+                    mirror: false,
+                    disable: 'mobile'
+                });
+
+                // Ensure page starts at the top when loaded or refreshed
+                window.onload = function () {
+                    window.scrollTo(0, 0);
+
+                    // Force scroll to top after a slight delay to override any browser behavior
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                    }, 50);
+                };
+
+                // Back to Top Button
+                const backToTopButton = document.getElementById('backToTop');
+
+                window.addEventListener('scroll', () => {
+                    if (window.pageYOffset > 300) {
+                        backToTopButton.style.display = 'flex';
+                    } else {
+                        backToTopButton.style.display = 'none';
+                    }
+                });
+
+                backToTopButton.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Category Filter
+                const categoryButtons = document.querySelectorAll('.category-btn');
+                const blogCards = document.querySelectorAll('.blog-card');
+
+                categoryButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Remove active class from all buttons
+                        categoryButtons.forEach(btn => btn.classList.remove('active'));
+
+                        // Add active class to clicked button
+                        button.classList.add('active');
+
+                        const filter = button.getAttribute('data-filter');
+
+                        // Show/hide blog cards based on category
+                        document.querySelectorAll('.blog-list li').forEach(item => {
+                            if (filter === 'all') {
+                                item.style.display = 'block';
+                                item.classList.add('fade-in');
+                            } else {
+                                const tags = item.getAttribute('data-tags');
+                                if (tags && tags.includes(filter.toLowerCase())) {
+                                    item.style.display = 'block';
+                                    item.classList.add('fade-in');
+                                } else {
+                                    item.style.display = 'none';
+                                    item.classList.remove('fade-in');
+                                }
+                            }
+                        });
+                    });
+                });
+
+                // Scroll to top when clicking on pagination links
+                document.querySelectorAll('.pagination a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        // Store the href to navigate after scrolling
+                        const href = link.getAttribute('href');
+
+                        // Scroll to top of blog section
+                        document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+
+                        // Small delay to allow smooth scrolling before navigation
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 500);
+
+                        return false; // Prevent default navigation
+                    });
+                });
+
+                // Animate stats counter
+                const statNumbers = document.querySelectorAll('.stat-number');
+
+                const animateStats = () => {
+                    statNumbers.forEach(stat => {
+                        const target = parseFloat(stat.getAttribute('data-count'));
+                        const duration = 2000; // 2 seconds
+                        const step = target / (duration / 16); // 60fps
+                        let current = 0;
+
+                        const updateCounter = () => {
+                            current += step;
+                            if (current < target) {
+                                stat.textContent = current.toFixed(1).replace(/\.0$/, '');
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                stat.textContent = target.toString().replace(/\.0$/, '');
+                            }
+                        };
+
+                        updateCounter();
+                    });
+                };
+
+                // Trigger stats animation when section is in view
+                const statsSection = document.querySelector('.stats-section');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateStats();
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                });
+
+                observer.observe(statsSection);
+            </script>
+</body>
+
+</html>

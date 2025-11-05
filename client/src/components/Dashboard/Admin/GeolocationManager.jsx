@@ -1,0 +1,324 @@
+import React, { useState, useEffect } from 'react';
+import './GeolocationManager.css';
+
+const GeolocationManager = () => {
+    const [properties, setProperties] = useState([]);
+    const [agents, setAgents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('properties');
+    const [selectedProperty, setSelectedProperty] = useState(null);
+    const [selectedAgent, setSelectedAgent] = useState(null);
+    const [coordinates, setCoordinates] = useState({ latitude: '', longitude: '', address: '' });
+    const [agentCoordinates, setAgentCoordinates] = useState({ latitude: '', longitude: '', serviceRadius: 50 });
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            
+            // Fetch properties without geolocation
+            const propertiesResponse = await fetch('/api/property/admin/missing-geolocation', {
+                credentials: 'include'
+            });
+            const propertiesData = await propertiesResponse.json();
+            
+            // Fetch agents geolocation info
+            const agentsResponse = await fetch('/api/property/admin/agents/geolocation-info', {
+                credentials: 'include'
+            });
+            const agentsData = await agentsResponse.json();
+            
+            if (propertiesData.success) {
+                setProperties(propertiesData.properties);
+            }
+            
+            if (agentsData.success) {
+                setAgents(agentsData.agents);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const updatePropertyGeolocation = async (propertyId) => {
+        try {
+            if (!coordinates.latitude || !coordinates.longitude) {
+                alert('Please enter both latitude and longitude');
+                return;
+            }
+
+            const response = await fetch(`/api/property/admin/geolocation/${propertyId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(coordinates)
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Property geolocation updated successfully!');
+                setSelectedProperty(null);
+                setCoordinates({ latitude: '', longitude: '', address: '' });
+                fetchData(); // Refresh the list
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error updating property geolocation:', error);
+            alert('Failed to update property geolocation');
+        }
+    };
+
+    const updateAgentGeolocation = async (agentId) => {
+        try {
+            if (!agentCoordinates.latitude || !agentCoordinates.longitude) {
+                alert('Please enter both latitude and longitude');
+                return;
+            }
+
+            const response = await fetch(`/api/property/admin/agents/geolocation/${agentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(agentCoordinates)
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Agent geolocation updated successfully!');
+                setSelectedAgent(null);
+                setAgentCoordinates({ latitude: '', longitude: '', serviceRadius: 50 });
+                fetchData(); // Refresh the list
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error updating agent geolocation:', error);
+            alert('Failed to update agent geolocation');
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="geolocation-manager">
+                <div className="loading">Loading geolocation data...</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="geolocation-manager">
+            <h2>Geolocation Manager</h2>
+            
+            <div className="tabs">
+                <button 
+                    className={activeTab === 'properties' ? 'active' : ''}
+                    onClick={() => setActiveTab('properties')}
+                >
+                    Properties ({properties.length} missing)
+                </button>
+                <button 
+                    className={activeTab === 'agents' ? 'active' : ''}
+                    onClick={() => setActiveTab('agents')}
+                >
+                    Agents ({agents.filter(a => !a.hasGeolocation).length} missing)
+                </button>
+            </div>
+
+            {activeTab === 'properties' && (
+                <div className="properties-section">
+                    <h3>Properties Missing Geolocation</h3>
+                    <p className="description">
+                        Add latitude and longitude coordinates to enable geolocation-based agent assignment.
+                    </p>
+                    
+                    {properties.length === 0 ? (
+                        <div className="no-data">All properties have geolocation data!</div>
+                    ) : (
+                        <div className="properties-list">
+                            {properties.map(property => (
+                                <div key={property._id} className="property-item">
+                                    <div className="property-info">
+                                        <h4>{property.title}</h4>
+                                        <p className="location">{property.location}</p>
+                                    </div>
+                                    <button 
+                                        className="add-location-btn"
+                                        onClick={() => setSelectedProperty(property)}
+                                    >
+                                        Add Location
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {selectedProperty && (
+                        <div className="modal-overlay">
+                            <div className="modal">
+                                <h3>Add Geolocation for {selectedProperty.title}</h3>
+                                <div className="form-group">
+                                    <label>Latitude:</label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={coordinates.latitude}
+                                        onChange={(e) => setCoordinates({...coordinates, latitude: e.target.value})}
+                                        placeholder="e.g., 28.6139"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Longitude:</label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={coordinates.longitude}
+                                        onChange={(e) => setCoordinates({...coordinates, longitude: e.target.value})}
+                                        placeholder="e.g., 77.2090"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Address (optional):</label>
+                                    <input
+                                        type="text"
+                                        value={coordinates.address}
+                                        onChange={(e) => setCoordinates({...coordinates, address: e.target.value})}
+                                        placeholder="Detailed address"
+                                    />
+                                </div>
+                                <div className="modal-actions">
+                                    <button 
+                                        className="save-btn"
+                                        onClick={() => updatePropertyGeolocation(selectedProperty._id)}
+                                    >
+                                        Save
+                                    </button>
+                                    <button 
+                                        className="cancel-btn"
+                                        onClick={() => {
+                                            setSelectedProperty(null);
+                                            setCoordinates({ latitude: '', longitude: '', address: '' });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {activeTab === 'agents' && (
+                <div className="agents-section">
+                    <h3>Agent Geolocation Management</h3>
+                    <p className="description">
+                        Set agent locations and service radius for optimal property assignment.
+                    </p>
+                    
+                    <div className="agents-list">
+                        {agents.map(agent => (
+                            <div key={agent.id} className="agent-item">
+                                <div className="agent-info">
+                                    <h4>{agent.name}</h4>
+                                    <p className="location">{agent.location}</p>
+                                    <div className="agent-stats">
+                                        <span className={`status ${agent.verified ? 'verified' : 'unverified'}`}>
+                                            {agent.verified ? 'Verified' : 'Unverified'}
+                                        </span>
+                                        <span className="workload">Workload: {agent.workload} properties</span>
+                                        <span className={`geolocation-status ${agent.hasGeolocation ? 'has-location' : 'missing-location'}`}>
+                                            {agent.hasGeolocation ? 'Has Location' : 'Missing Location'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <button 
+                                    className="edit-location-btn"
+                                    onClick={() => {
+                                        setSelectedAgent(agent);
+                                        if (agent.hasGeolocation) {
+                                            setAgentCoordinates({
+                                                latitude: agent.geolocation.latitude || '',
+                                                longitude: agent.geolocation.longitude || '',
+                                                serviceRadius: agent.geolocation.serviceRadius || 50
+                                            });
+                                        }
+                                    }}
+                                >
+                                    {agent.hasGeolocation ? 'Edit Location' : 'Add Location'}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {selectedAgent && (
+                        <div className="modal-overlay">
+                            <div className="modal">
+                                <h3>Set Geolocation for {selectedAgent.name}</h3>
+                                <div className="form-group">
+                                    <label>Latitude:</label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={agentCoordinates.latitude}
+                                        onChange={(e) => setAgentCoordinates({...agentCoordinates, latitude: e.target.value})}
+                                        placeholder="e.g., 28.6139"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Longitude:</label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={agentCoordinates.longitude}
+                                        onChange={(e) => setAgentCoordinates({...agentCoordinates, longitude: e.target.value})}
+                                        placeholder="e.g., 77.2090"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Service Radius (km):</label>
+                                    <input
+                                        type="number"
+                                        value={agentCoordinates.serviceRadius}
+                                        onChange={(e) => setAgentCoordinates({...agentCoordinates, serviceRadius: parseInt(e.target.value) || 50})}
+                                        placeholder="50"
+                                    />
+                                </div>
+                                <div className="modal-actions">
+                                    <button 
+                                        className="save-btn"
+                                        onClick={() => updateAgentGeolocation(selectedAgent.id)}
+                                    >
+                                        Save
+                                    </button>
+                                    <button 
+                                        className="cancel-btn"
+                                        onClick={() => {
+                                            setSelectedAgent(null);
+                                            setAgentCoordinates({ latitude: '', longitude: '', serviceRadius: 50 });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default GeolocationManager;

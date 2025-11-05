@@ -1,0 +1,1656 @@
+/* Property Overview Page - Refactored CSS */
+
+/* General Overview Styles */
+.prop-overview-main {
+  font-family: Arial, sans-serif;
+  background-color: #f9f6f2;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: -50px;
+  margin-top: -100px;
+}
+
+/* Listing Container */
+.prop-overview-main .prop-overview-listing-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  padding: 50px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Title */
+.prop-overview-main .prop-overview-listing-details h1 {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* For Sale & Location */
+.prop-overview-main .prop-overview-listing-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prop-overview-main .prop-overview-for-sale {
+  background: black;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 15px;
+  text-transform: uppercase;
+}
+
+.prop-overview-main .prop-overview-location {
+  color: #666;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Price Section */
+.prop-overview-main .prop-overview-listing-price {
+  text-align: right;
+}
+
+.prop-overview-main .prop-overview-listing-price h2 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.prop-overview-main .prop-overview-listing-price p {
+  font-size: 16px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.prop-overview-main .prop-overview-listing-price span {
+  font-weight: bold;
+  color: black;
+}
+
+/* Icons Section */
+.prop-overview-main .prop-overview-icons-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: flex-end;
+}
+
+.prop-overview-main .prop-overview-share-icon {
+  font-size: 16px;
+  color: black;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.prop-overview-main .prop-overview-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.prop-overview-main .prop-overview-icons button {
+  border: 1px solid #ddd;
+  background: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.prop-overview-icons button:hover {
+  background: #eee;
+}
+
+/* Gallery Section */
+.prop-overview-gallery-container {
+  display: flex;
+  gap: 20px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+  width: 100%;
+  max-width: 1320px;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+/* Main Image */
+.prop-overview-main-image img {
+  width: 1050px;
+  height: 590px;
+  border-radius: 25px;
+  object-fit: cover;
+}
+
+/* Thumbnails on the Right */
+.prop-overview-thumbnail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prop-overview-thumbnail-container .prop-overview-thumbnail {
+  width: 191px;
+  height: 139px;
+  cursor: pointer;
+  border-radius: 15px;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.prop-overview-thumbnail-container .prop-overview-thumbnail.active {
+  border: 3px solid #2563eb;
+  transform: scale(1.05);
+}
+
+.prop-overview-thumbnail-container .prop-overview-thumbnail:hover {
+  transform: scale(1.1);
+}
+
+/* Property Overview Section */
+.prop-overview-features {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 20px;
+  width: 1320px;
+  max-width: 1320px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  font-family: Poppins;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Individual Overview Items */
+.prop-overview-features-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  min-width: 150px;
+  gap: 8px;
+}
+
+/* Overview Icons */
+.prop-overview-features-item i {
+  font-size: 24px;
+  color: #333;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Overview Text */
+.prop-overview-features-item p {
+  font-size: 14px;
+  color: #444;
+  font-weight: 600;
+  margin: 0;
+}
+
+.prop-overview-features-item span {
+  color: #000;
+  font-weight: bold;
+}
+
+/* Divider */
+.prop-overview-features-divider {
+  width: 1px;
+  height: 40px;
+  background: #ddd;
+  transform: rotate(30deg);
+  margin: 0 10px;
+}
+
+/* Main Layout */
+.prop-overview-layout-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  max-width: 1320px;
+  margin: 40px auto;
+  gap: 20px;
+}
+
+/* Left Container */
+.prop-overview-left-container {
+  width: 3000px;
+}
+
+/* Overview Container (Reusable Box) */
+.prop-overview-section-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  line-height: 2;
+  font-size: 18px;
+}
+
+.prop-overview-section-box p {
+  color: black;
+}
+
+.prop-overview-section-box h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+/* Property Details Dropdown */
+.prop-overview-drop {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.prop-overview-drop:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.prop-overview-drop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.prop-overview-drop-header:hover {
+  background-color: #f8f9fa;
+}
+
+.prop-overview-drop-header span {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 17px;
+  letter-spacing: 0.3px;
+}
+
+.prop-overview-drop-icon {
+  font-size: 22px;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.prop-overview-drop.open .prop-overview-drop-icon {
+  transform: rotate(45deg);
+  background-color: #f8f9fa;
+}
+
+.prop-overview-drop-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  background-color: #fff;
+}
+
+.prop-overview-drop.open .prop-overview-drop-content {
+  max-height: 1000px;
+  padding: 20px 24px;
+  border-top: 1px solid #eef2f7;
+}
+
+.prop-overview-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.prop-overview-details-grid p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.prop-overview-details-grid p:hover {
+  background-color: #f1f5f9;
+  transform: translateX(5px);
+}
+
+.prop-overview-details-grid strong {
+  color: #334155;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+/* Amenities */
+.prop-overview-amenities-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+}
+
+.prop-overview-amenities-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+.prop-overview-amenities-list i {
+  color: #28a745;
+  font-size: 16px;
+}
+
+/* Video Tour */
+.prop-overview-video-tour-container {
+  width: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.prop-overview-video-thumbnail {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.prop-overview-video-thumbnail img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prop-overview-play-button-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+.prop-overview-video-thumbnail:hover .prop-overview-play-button-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.prop-overview-play-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.prop-overview-play-button:hover {
+  transform: scale(1.1);
+  background: white;
+}
+
+.prop-overview-play-button i {
+  font-size: 32px;
+  color: #333;
+  margin-left: 5px; /* Offset to center the play icon visually */
+}
+
+/* Floor Plan */
+.prop-overview-floor-plan-container {
+  width: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #f8f9fa;
+  padding: 20px;
+}
+
+.prop-overview-floor-plan-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Map Container */
+.prop-overview-map-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.prop-overview-map-container iframe {
+  display: block;
+  width: 100%;
+  height: 450px;
+}
+
+/* Map Placeholder (fallback) */
+.prop-overview-map-placeholder {
+  background: #f8f9fa;
+  padding: 60px;
+  border-radius: 12px;
+  text-align: center;
+  color: #666;
+}
+
+.prop-overview-map-placeholder i {
+  font-size: 48px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+/* Nearby Places */
+.prop-overview-nearby-places {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px 60px;
+  row-gap: 25px;
+}
+
+.prop-overview-nearby-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.prop-overview-nearby-item .prop-overview-nearby-label {
+  color: #666;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.prop-overview-nearby-item .prop-overview-nearby-distance {
+  color: #000;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Right Container - Agent Info */
+.prop-overview-right-container {
+  width: 80%;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.prop-overview-agent-details-container {
+  /* This class is on the component, 
+     styles below are for its children */
+}
+
+.prop-overview-agent-info-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.prop-overview-agent-info-section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.prop-overview-agent-card {
+  text-align: center;
+}
+
+.prop-overview-agent-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.prop-overview-agent-details h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0 5px;
+}
+
+.prop-overview-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.prop-overview-agent-properties {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.prop-overview-agent-contact {
+  text-align: left;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.prop-overview-agent-contact p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #444;
+  margin: 8px 0;
+}
+
+.prop-overview-agent-contact i {
+  color: #ff6600;
+  width: 20px;
+}
+
+/* Contact Form */
+.prop-overview-contact-form-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.prop-overview-contact-form-container h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.prop-overview-contact-form .prop-overview-form-group {
+  margin-bottom: 20px;
+}
+
+.prop-overview-contact-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.prop-overview-contact-form input,
+.prop-overview-contact-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.prop-overview-contact-form input:focus,
+.prop-overview-contact-form textarea:focus {
+  outline: none;
+  border-color: #ff6600;
+}
+
+.prop-overview-contact-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.prop-overview-submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: black;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.prop-overview-submit-btn:hover {
+  background: #ff6600;
+}
+
+.prop-overview-submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Reviews Section */
+.prop-overview-reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.prop-overview-average-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prop-overview-stars i {
+  color: #ffc107;
+  font-size: 16px;
+}
+
+.prop-overview-stars i.filled {
+  color: #ffc107;
+}
+
+.prop-overview-review-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.prop-overview-no-reviews {
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+  text-align: center;
+}
+
+.prop-overview-review {
+  margin-bottom: 20px;
+}
+
+.prop-overview-review-content {
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.prop-overview-review-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.prop-overview-review-author strong {
+  font-size: 16px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.prop-overview-review-rating {
+  display: flex;
+  gap: 3px;
+}
+
+.prop-overview-review-rating i {
+  font-size: 14px;
+  color: #ddd;
+}
+
+.prop-overview-review-rating i.filled {
+  color: #ffc107;
+}
+
+.prop-overview-review-date {
+  font-size: 13px;
+  color: #666;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.prop-overview-review-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.prop-overview-review-text {
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Write Review Form */
+.prop-overview-write-review {
+  margin-top: 30px;
+  padding: 40px;
+  background: #f5f5f5;
+  border-radius: 0;
+}
+
+.prop-overview-write-review h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+.prop-overview-write-review .prop-overview-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 0;
+}
+
+.prop-overview-write-review .prop-overview-form-group {
+  margin-bottom: 20px;
+}
+
+.prop-overview-write-review .prop-overview-form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.prop-overview-write-review .prop-overview-form-group input,
+.prop-overview-write-review .prop-overview-form-group select,
+.prop-overview-write-review .prop-overview-form-group textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  background: white;
+  box-sizing: border-box;
+}
+
+.prop-overview-write-review .prop-overview-form-group input:focus,
+.prop-overview-write-review .prop-overview-form-group select:focus,
+.prop-overview-write-review .prop-overview-form-group textarea:focus {
+  outline: none;
+  border-color: #333;
+}
+
+.prop-overview-write-review .prop-overview-form-group input.valid,
+.prop-overview-write-review .prop-overview-form-group select.valid,
+.prop-overview-write-review .prop-overview-form-group textarea.valid {
+  border-color: #28a745;
+  background-color: #f8fff8;
+}
+
+.prop-overview-write-review .prop-overview-form-group input.invalid,
+.prop-overview-write-review .prop-overview-form-group select.invalid,
+.prop-overview-write-review .prop-overview-form-group textarea.invalid {
+  border-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+.prop-overview-write-review .prop-overview-validation-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+}
+
+.prop-overview-write-review .prop-overview-validation-message.show {
+  display: block;
+}
+
+.prop-overview-write-review .prop-overview-form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.prop-overview-write-review .prop-overview-label-with-counter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.prop-overview-write-review .prop-overview-character-counter {
+  font-size: 12px;
+  color: #666;
+  font-weight: 400;
+}
+
+.prop-overview-write-review .prop-overview-character-counter.valid {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.prop-overview-write-review .prop-overview-form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.prop-overview-review-status {
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.prop-overview-review-status.sending {
+  background: #f0f8ff;
+  color: #0066cc;
+}
+
+.prop-overview-review-status.success {
+  background: #edf7ed;
+  color: #2e7d32;
+}
+
+.prop-overview-review-status.error {
+  background: #fdeded;
+  color: #d32f2f;
+}
+
+.prop-overview-post-review-btn {
+  background: #000;
+  color: white;
+  padding: 14px 32px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+.prop-overview-post-review-btn:hover {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Property Actions */
+
+.prop-overview-property-actions {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+}
+
+/* Layout helper to make buttons uniform */
+.prop-overview-action-grid {
+  display: flex;
+  gap: 15px;
+  align-items: center; /* keep all items vertically centered */
+  justify-content: center; /* center the row */
+  flex-wrap: nowrap; /* prevent wrapping - keep all buttons on same line */
+}
+
+.prop-overview-action-btn {
+  /* content-based width but fixed uniform height and alignment */
+  flex: 1 1 0; /* equal width buttons that grow and shrink together */
+  min-width: 0; /* allow shrinking below content size if needed */
+  height: 54px; /* uniform height to keep them level */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px; /* horizontal padding; vertical controlled by height */
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  box-sizing: border-box;
+  line-height: 1; /* prevent baseline shift */
+  margin: 0; /* remove all margins */
+}
+
+.prop-overview-action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Ensure icons and text inside buttons are vertically centered */
+.prop-overview-action-btn i {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* Responsive: allow wrapping on small screens and full-width stacked buttons */
+@media (max-width: 900px) {
+  .prop-overview-action-grid {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .prop-overview-action-btn {
+    flex: 1 1 100%;
+    min-width: 0;
+    width: 100%;
+    max-width: 520px;
+  }
+}
+
+.prop-overview-buy-btn,
+.prop-overview-rent-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.prop-overview-buy-btn:hover,
+.prop-overview-rent-btn:hover {
+  background-color: #3d8b40;
+}
+
+.prop-overview-schedule-btn {
+  background-color: #2c6ecb;
+  color: white;
+}
+
+.prop-overview-schedule-btn:hover {
+  background-color: #235db1;
+}
+
+.prop-overview-compare-btn {
+  background-color: #ff9800;
+  color: white;
+}
+
+.prop-overview-compare-btn:hover {
+  background-color: #e68a00;
+}
+
+.prop-overview-neighborhood-btn {
+  background-color: #9c27b0;
+  color: white;
+}
+
+.prop-overview-neighborhood-btn:hover {
+  background-color: #7b1fa2;
+}
+
+/* Sidebar Action Buttons (in listing-price section) */
+.prop-overview-buyer-actions-sidebar {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prop-overview-balance-info-sidebar {
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border: 1px solid #333;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.prop-overview-refresh-balance-btn {
+  background: transparent;
+  border: none;
+  color: #4caf50;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prop-overview-refresh-balance-btn:hover {
+  background: rgba(76, 175, 80, 0.1);
+  color: #45a049;
+  transform: rotate(180deg);
+}
+
+.prop-overview-refresh-balance-btn:active {
+  transform: rotate(180deg) scale(0.95);
+}
+
+.prop-overview-insufficient-funds-sidebar {
+  padding: 12px 20px;
+  background: #fff3cd;
+  border: 1px solid #856404;
+  color: #856404;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.prop-overview-action-btn-sidebar {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.prop-overview-action-btn-sidebar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-buy-btn,
+.prop-overview-action-btn-sidebar.prop-overview-rent-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-buy-btn:hover,
+.prop-overview-action-btn-sidebar.prop-overview-rent-btn:hover {
+  background-color: #45a049;
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-schedule-btn {
+  background-color: #2c6ecb;
+  color: white;
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-schedule-btn:hover {
+  background-color: #2561b3;
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-add-funds-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-add-funds-btn:hover {
+  background-color: #218838;
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-cancel-rental-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.prop-overview-action-btn-sidebar.prop-overview-cancel-rental-btn:hover {
+  background-color: #c82333;
+}
+
+.prop-overview-property-status-sidebar {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.prop-overview-property-status-sidebar.sold {
+  background-color: #dc3545;
+  color: white;
+}
+
+.prop-overview-property-status-sidebar.rented {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.prop-overview-rent-status-sidebar {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.prop-overview-rent-status-sidebar.rent-due {
+  background-color: #ffc107;
+  color: #856404;
+}
+
+.prop-overview-rent-status-sidebar.rent-paid {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Balance Info */
+.prop-overview-balance-info {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Insufficient Funds Warning */
+.prop-overview-insufficient-funds {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+}
+
+.prop-overview-insufficient-funds i {
+  font-size: 18px;
+}
+
+/* Property Status (Sold/Rented) */
+.prop-overview-property-status {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.prop-overview-property-status.sold {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+}
+
+.prop-overview-property-status.rented {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.prop-overview-property-status i {
+  font-size: 22px;
+}
+
+/* Rent Status */
+.prop-overview-rent-status {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.prop-overview-rent-status.rent-due {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: #8b4513;
+  box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
+}
+
+.prop-overview-rent-status.rent-paid {
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(48, 207, 208, 0.3);
+}
+
+.prop-overview-rent-status i {
+  font-size: 18px;
+}
+
+/* Cancel Rental Button */
+.prop-overview-cancel-rental-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+}
+
+.prop-overview-cancel-rental-btn:hover {
+  background: linear-gradient(135deg, #e55555 0%, #d44a5f 100%);
+  transform: translateY(-3px);
+}
+
+/* Back to Top Button */
+#prop-overview-backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+#prop-overview-backToTop a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#prop-overview-backToTop:hover {
+  background: #e55a00;
+  transform: translateY(-5px);
+}
+
+/* Form Validation and Messages - from propertyoverview.css */
+.prop-overview-form-message {
+  margin-bottom: 15px;
+}
+
+.prop-overview-sending-message,
+.prop-overview-success-message,
+.prop-overview-error-message {
+  padding: 12px 15px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.prop-overview-form-group input.invalid,
+.prop-overview-form-group textarea.invalid {
+  border-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+.prop-overview-form-group input.valid,
+.prop-overview-form-group textarea.valid {
+  border-color: #28a745;
+  background-color: #f8fff8;
+}
+
+.prop-overview-validation-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+}
+
+.prop-overview-validation-message.show {
+  display: block;
+}
+
+.prop-overview-sending-message {
+  background-color: #f0f8ff;
+  color: #0066cc;
+  border-left: 4px solid #0066cc;
+}
+
+.prop-overview-success-message {
+  background-color: #edf7ed;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.prop-overview-success-message i {
+  color: #2e7d32;
+  font-size: 18px;
+}
+
+.prop-overview-error-message {
+  background-color: #fdeded;
+  color: #d32f2f;
+  border-left: 4px solid #d32f2f;
+}
+
+.prop-overview-error-message i {
+  color: #d32f2f;
+  font-size: 18px;
+}
+
+/* Share Modal - from propertyoverview.css */
+.prop-overview-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  animation: prop-overview-fadeIn 0.3s ease;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.prop-overview-modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 480px;
+  position: relative;
+  animation: prop-overview-slideIn 0.3s ease;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.prop-overview-close-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: #aaa;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.prop-overview-close-modal:hover {
+  color: #333;
+}
+
+.prop-overview-modal h3 {
+  margin-top: 0;
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.prop-overview-share-link-container {
+  display: flex;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#prop-overview-shareLink {
+  flex-grow: 1;
+  padding: 10px 12px;
+  border: none;
+  outline: none;
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 13px;
+}
+
+#prop-overview-copyLinkBtn {
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+#prop-overview-copyLinkBtn:hover {
+  background-color: #388e3c;
+}
+
+.prop-overview-share-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.prop-overview-share-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.prop-overview-share-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.prop-overview-whatsapp {
+  background-color: #25d366;
+}
+
+.prop-overview-email {
+  background-color: #ea4335;
+}
+
+.prop-overview-qr-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.prop-overview-qr-code-container h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.prop-overview-qr-subtitle {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+#prop-overview-qrCode {
+  margin-bottom: 12px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#prop-overview-qrCode img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.prop-overview-qr-download-btn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.prop-overview-qr-download-btn:hover {
+  background-color: #0b7dda;
+}
+
+.prop-overview-qr-download-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.prop-overview-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prop-overview-toast.prop-overview-show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -10px);
+}
+
+@keyframes prop-overview-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes prop-overview-slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

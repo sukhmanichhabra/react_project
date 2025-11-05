@@ -1,0 +1,121 @@
+/* "My Properties" Page Styles */
+
+.my-properties-section {
+  width: 100%;
+  padding: 2rem; /* 32px */
+}
+
+.my-properties-header {
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.my-properties-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+
+.my-properties-header p {
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* 3-column grid for the cards */
+.my-properties-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+/* On medium screens and up, go to 2 columns */
+@media (min-width: 768px) {
+  .my-properties-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* On extra-large screens and up, go to 3 columns */
+@media (min-width: 1280px) {
+  .my-properties-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* "Empty state" message when no properties are found */
+.dash-empty-state {
+  grid-column: 1 / -1; /* Make it span all columns */
+  text-align: center;
+  padding: 3rem; /* 48px */
+  background-color: #fff;
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dash-empty-state i {
+  font-size: 2.25rem; /* text-4xl */
+  color: #d1d5db; /* text-gray-300 */
+  margin-bottom: 1rem; /* 16px */
+}
+
+.dash-empty-state h3 {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600;
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 0.5rem; /* 8px */
+}
+
+.dash-empty-state p {
+  color: #6b7280; /* text-gray-500 */
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.dash-empty-state .dash-cta-button {
+  background-color: #dc2626; /* bg-red-600 */
+  color: #fff;
+  padding: 0.75rem 1.25rem; /* px-5 py-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* space-x-2 */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dash-empty-state .dash-cta-button:hover {
+  background-color: #b91c1c; /* hover:bg-red-700 */
+}
+
+/* Enhanced Property Cards in Buyer Dashboard */
+.my-properties-section .enhanced-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 2rem; /* 32px */
+}
+
+@media (min-width: 768px) {
+  .my-properties-section .enhanced-dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .my-properties-section .enhanced-dashboard-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.my-properties-section .enhanced-property-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.my-properties-section .enhanced-property-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Hide agent info in buyer dashboard since they own the properties */
+.my-properties-section .enhanced-agent-info {
+  display: none;
+}

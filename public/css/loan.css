@@ -1,0 +1,2692 @@
+/* Reset and Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+body {
+  background-color: rgb(255, 255, 255);
+  color: #333;
+  line-height: 1.6;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Container and Layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* About Section Styles */
+.about-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: 60px;
+}
+
+.left-column {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.right-column {
+  flex: 1;
+  background: #fff;
+  padding: 35px;
+  margin-top: 50px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  transition: transform 0.3s ease;
+}
+
+.right-column:hover {
+  transform: translateY(-5px);
+}
+
+/* Typography */
+.about-us {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+.main-heading {
+  font-size: 52px;
+  margin-bottom: 25px;
+  position: relative;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.underline {
+  position: absolute;
+  bottom: 5px;
+  width: 120px;
+  height: 3px;
+  background: #ff5722;
+  transition: width 0.3s ease;
+}
+
+.main-heading:hover .underline {
+  width: 180px;
+}
+
+/* Button Styles */
+.contact-btn {
+  display: inline-block;
+  padding: 16px 32px;
+  background: #ff5722;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  margin: 25px 0;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.2);
+}
+
+/* Stats Section */
+.stats {
+  display: flex;
+  gap: 60px;
+  margin-top: 60px;
+}
+
+.stat-item h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+  color: #222;
+  font-weight: 700;
+}
+
+.stat-item p {
+  color: #666;
+  font-size: 16px;
+}
+
+/* Right Column Content */
+.section-title {
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #222;
+  font-weight: 600;
+}
+
+.section-content {
+  color: #666;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 35px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .about-section {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .main-heading {
+    font-size: 42px;
+  }
+
+  .stats {
+    gap: 40px;
+  }
+
+  .stat-item h2 {
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 20px;
+  }
+
+  .main-heading {
+    font-size: 32px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .right-column {
+    padding: 25px;
+  }
+
+  .section-title {
+    font-size: 22px;
+  }
+}
+
+/* Animation Effects */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.about-section {
+  animation: fadeIn 0.8s ease-out;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.calculator-container {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 30px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+/* .logo {
+  max-width: 150px;
+  margin-bottom: 30px;
+} */
+
+.input-group {
+  position: relative;
+  margin-bottom: 35px;
+  min-height: 48px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.currency {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+label {
+  display: block;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+input[type="number"] {
+  padding-left: 25px;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.recalculate-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 25px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.result-section {
+  background: #f8fbff;
+  padding: 30px;
+  border-radius: 12px;
+}
+
+.emi-result {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.emi-result h2 {
+  color: #333;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.emi-amount {
+  color: #333;
+  font-size: 36px;
+}
+
+.chart-container {
+  margin: 30px 0;
+  height: 200px;
+}
+
+.amount-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.principal-dot {
+  background: #00a19c;
+}
+
+.interest-dot {
+  background: #ffb800;
+}
+
+.amount {
+  display: block;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.bank-offers h3 {
+  margin-bottom: 20px;
+}
+
+.bank-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.bank-card {
+  min-width: 300px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-card:hover {
+  transform: translateY(-5px);
+}
+
+.bank-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  position: relative;
+  width: 100%;
+}
+
+.bank-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.bank-header h3 {
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.recommended-tag {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #fff5e5;
+  color: #ffb800;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.loan-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.detail-item {
+  text-align: center;
+}
+
+.detail-item .value {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.detail-item .label {
+  font-size: 12px;
+  color: #666;
+}
+
+.disbursement-info {
+  text-align: center;
+  color: #505c66;
+  font-size: 14px;
+  margin: 15px 0;
+  padding: 12px;
+  background: #f8fbff;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.reward-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff5e5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.reward-amount {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.upto {
+  font-size: 10px;
+  color: #666;
+  font-weight: 500;
+}
+
+.amount {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.text {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.claim-btn {
+  background: #e32726;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.claim-btn:hover {
+  background: #d32f2f;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(227, 39, 38, 0.3);
+}
+
+/* Ensure consistent spacing between sections */
+.bank-card > * + * {
+  margin-top: 15px;
+}
+
+/* Scrollbar Styling */
+.banks-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.banks-carousel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.banks-carousel::-webkit-scrollbar-thumb {
+  background: #e32726;
+  border-radius: 4px;
+}
+
+.banks-carousel::-webkit-scrollbar-thumb:hover {
+  background: #d32f2f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .calculator-container {
+    grid-template-columns: 1fr;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .bank-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .bank-card {
+    min-width: 280px;
+    padding: 15px;
+  }
+
+  .reward-section {
+    padding: 12px;
+  }
+
+  .amount {
+    font-size: 18px;
+  }
+
+  .claim-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+.col-md-8 {
+  padding: 20px;
+}
+
+canvas {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.amortization-table-container {
+  margin-top: 60px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  padding: 40px 20px;
+  margin: 0 auto;
+}
+
+.year-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.year-navigation button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #e32726;
+}
+
+#currentYear {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+#amortizationTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#amortizationTable th,
+#amortizationTable td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+#amortizationTable th {
+  background-color: #f8fbff;
+  font-weight: 600;
+}
+
+#amortizationTable tr:hover {
+  background-color: #f8fbff;
+}
+
+/* Loan Information Styles */
+.loan-info-container {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.loan-info-container h1 {
+  font-size: 36px;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.loan-info-container h2 {
+  font-size: 28px;
+  color: #2c3e50;
+  margin: 40px 0 20px;
+  font-weight: 600;
+}
+
+.info-section {
+  margin-bottom: 40px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.info-section p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #505c66;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 18px;
+  color: #666;
+  line-height: 1.7;
+  margin-bottom: 25px;
+}
+
+.instruction {
+  font-size: 17px;
+  color: #505c66;
+  background: #f8fbff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e32726;
+  margin: 30px 0;
+}
+
+/* Animation for content sections */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .loan-info-container {
+    margin: 40px auto;
+  }
+
+  .loan-info-container h1 {
+    font-size: 28px;
+  }
+
+  .loan-info-container h2 {
+    font-size: 24px;
+  }
+
+  .description {
+    font-size: 16px;
+  }
+
+  .instruction {
+    font-size: 15px;
+    padding: 15px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .loan-info-container {
+    margin: 20px auto;
+  }
+
+  .instruction {
+    border: 1px solid #ddd;
+    background: none;
+  }
+}
+
+/* Bank Offers Section */
+.bank-offers-container {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.offers-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.offers-header h2 {
+  font-size: 36px;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.new-tag {
+  background: #ffb800;
+  color: #000;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.offers-subtitle {
+  font-size: 24px;
+  color: #505c66;
+}
+
+.loan-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.stat-pill {
+  background: #f5f5f5;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  color: #505c66;
+}
+
+.banks-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 20px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bank-card {
+  min-width: 300px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-card:hover {
+  transform: translateY(-5px);
+}
+
+.bank-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  position: relative;
+  width: 100%;
+}
+
+.bank-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.bank-header h3 {
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.recommended-tag {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #fff5e5;
+  color: #ffb800;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.loan-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.detail-item {
+  text-align: center;
+}
+
+.detail-item .value {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.detail-item .label {
+  font-size: 12px;
+  color: #666;
+}
+
+.disbursement-info {
+  text-align: center;
+  color: #505c66;
+  font-size: 14px;
+  margin: 15px 0;
+  padding: 12px;
+  background: #f8fbff;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.reward-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff5e5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.reward-amount {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.upto {
+  font-size: 10px;
+  color: #666;
+  font-weight: 500;
+}
+
+.amount {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.text {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.claim-btn {
+  background: #e32726;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.claim-btn:hover {
+  background: #d32f2f;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(227, 39, 38, 0.3);
+}
+
+/* Ensure consistent spacing between sections */
+.bank-card > * + * {
+  margin-top: 15px;
+}
+
+/* Scrollbar Styling */
+.banks-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.banks-carousel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.banks-carousel::-webkit-scrollbar-thumb {
+  background: #e32726;
+  border-radius: 4px;
+}
+
+.banks-carousel::-webkit-scrollbar-thumb:hover {
+  background: #d32f2f;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .offers-header h2 {
+    font-size: 28px;
+  }
+
+  .offers-subtitle {
+    font-size: 20px;
+  }
+
+  .bank-card {
+    min-width: 280px;
+    padding: 15px;
+  }
+
+  .loan-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .reward-section {
+    padding: 12px;
+  }
+
+  .amount {
+    font-size: 18px;
+  }
+
+  .claim-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+.explore-more {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.explore-btn {
+  background: none;
+  border: 2px solid #e32726;
+  color: #e32726;
+  padding: 15px 40px;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+  background: #e32726;
+  color: white;
+}
+
+.view-btn {
+  background: none;
+  border: 2px solid #e32726;
+  color: #e32726;
+  margin: 5px auto;
+  padding: 5px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+  background: #e32726;
+  color: white;
+}
+
+.bank-info {
+  margin-bottom: 10px;
+}
+
+.bank-info p {
+  font-size: 14px;
+  color: #666;
+}
+
+.bank-info h4 {
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+/* Pricing Section Styles */
+.pricing-container {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.pricing-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.pricing-title {
+  font-size: 42px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+}
+
+.pricing-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: #e32726;
+}
+
+.title-highlight {
+  margin-top: 30px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.highlight-tag {
+  background: #ffb800;
+  color: #000;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 184, 0, 0.2);
+}
+
+.subtitle {
+  font-size: 32px;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.title-description {
+  font-size: 18px;
+  color: #505c66;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pricing-title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 24px;
+  }
+
+  .title-description {
+    font-size: 16px;
+    padding: 0 20px;
+  }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pricing-cards {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pricing-card {
+  flex: 1;
+  min-width: 300px;
+  max-width: 350px;
+  padding: 40px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-10px);
+}
+
+.pricing-card.free {
+  background: #f8f9fa;
+}
+
+.pricing-card.standard {
+  border: 1px solid #dee2e6;
+  background: #fff;
+}
+
+.pricing-card.business {
+  border: 1px solid #dee2e6;
+  background: #fff;
+}
+
+.pricing-card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.price {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.price .amount {
+  font-size: 48px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.price .period {
+  display: block;
+  color: #6c757d;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.divider {
+  height: 1px;
+  background: #dee2e6;
+  margin: 30px 0;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.features li .check {
+  color: #2c3e50;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.features li .cross {
+  color: #6c757d;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.features li.unavailable {
+  color: #6c757d;
+}
+
+.subscribe-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 30px;
+}
+
+.subscribe-btn.free {
+  background: #000;
+  color: #fff;
+  border: none;
+}
+
+.subscribe-btn.standard {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+}
+
+.subscribe-btn.business {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+}
+
+.subscribe-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.subscribe-btn.free:hover {
+  background: #2c3e50;
+}
+
+.subscribe-btn.standard:hover,
+.subscribe-btn.business:hover {
+  background: #f8f9fa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pricing-card {
+    min-width: 100%;
+  }
+
+  .pricing-title {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+}
+
+/* Animation for cards */
+.pricing-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* FAQ Section Styles */
+.faq-container {
+  max-width: 1200px;
+  margin: 80px auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 60px;
+}
+
+.faq-left {
+  flex: 0 0 300px;
+}
+
+.faq-left h2 {
+  font-size: 32px;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.faq-image {
+  width: 100%;
+  max-width: 300px;
+  display: block;
+}
+
+.faq-right {
+  flex: 1;
+}
+
+.faq-item {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.faq-question {
+  width: 100%;
+  text-align: left;
+  padding: 20px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #2c3e50;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+  color: var(--primary);
+}
+
+.arrow {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.faq-question.active .arrow {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding: 0 20px;
+}
+
+.faq-answer.active {
+  max-height: 500px;
+  padding: 0 20px 20px;
+}
+
+.faq-answer p {
+  color: #505c66;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.faq-answer .formula {
+  background: #f8fbff;
+  padding: 15px;
+  border-radius: 6px;
+  font-family: monospace;
+  margin: 15px 0;
+}
+
+.faq-answer ul {
+  list-style: none;
+  padding-left: 20px;
+}
+
+.faq-answer ul li {
+  color: #505c66;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.faq-answer ul li::before {
+  content: "•";
+  color: var(--primary);
+  font-weight: bold;
+  position: absolute;
+  left: -15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .faq-container {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .faq-left {
+    text-align: center;
+  }
+
+  .faq-image {
+    margin: 0 auto;
+  }
+
+  .faq-question {
+    font-size: 15px;
+    padding: 15px;
+  }
+}
+
+/* Animation for answer expansion */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.check-offers-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-left: 240px;
+  margin-top: 20px;
+}
+
+.check-offers-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(227, 39, 38, 0.3);
+}
+
+/* Loan Application Form Styles */
+.loan-application-container {
+  max-width: 1200px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.application-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.application-header h2 {
+  font-size: 32px;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.application-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.loan-form {
+  width: 100%;
+  position: relative;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+  align-items: start;
+}
+
+.form-section {
+  padding: 20px;
+  background: #f8fbff;
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-section h3 {
+  font-size: 18px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 35px;
+  min-height: 48px;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  background: #fff;
+  transition: all 0.3s ease;
+  height: 48px;
+  position: relative;
+}
+
+/* .input-group label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  pointer-events: none;
+  transition: all 0.3s ease;
+} */
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #e32726;
+  box-shadow: 0 0 0 3px rgba(227, 39, 38, 0.1);
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label,
+.input-group select:focus + label,
+.input-group select:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 10px;
+  font-size: 12px;
+  background: #fff;
+  padding: 0 5px;
+  color: #e32726;
+}
+
+.error-message {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  color: #e32726;
+  font-size: 12px;
+  display: none;
+  white-space: nowrap;
+  line-height: 1;
+  height: 15px;
+}
+
+.error-message.show {
+  display: block;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  height: 20px;
+  width: 20px;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+  border-color: var(--primary);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.submit-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: #d32f2f;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(227, 39, 38, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .loan-application-container {
+    padding: 20px;
+    margin: 40px auto;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-footer {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+
+  .input-group {
+    margin-bottom: 35px;
+  }
+
+  .error-message {
+    white-space: normal;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .form-section {
+    height: auto;
+  }
+}
+
+/* Animation */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.input-group.error input {
+  border-color: #e32726;
+  animation: shake 0.3s ease-in-out;
+}
+
+/* Updated Header and Navbar Styles */
+.site-header {
+  background: rgba(251, 227, 215, 1);
+  padding: 20px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.logo img {
+  height: 28px;
+}
+
+.logo span {
+  font-size: 30px;
+  font-weight: 700;
+  color: #1d1d1d; */
+
+.main-nav {
+  display: flex;
+  gap: 48px;
+  align-items: center;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #1d1d1d;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 8px 0;
+  position: relative;
+}
+
+/* Special style for Dashboard with fire emoji */
+.nav-item[href="/dashboard"] {
+  color: #ff6b2c;
+}
+
+.nav-item::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ff6b2c;
+  transition: width 0.3s ease;
+}
+
+.nav-item:hover::after {
+  width: 100%;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Updated Button Styles */
+.login-btn {
+  height: 44px;
+  padding: 0 24px;
+  border: 1px solid #e8ecef;
+  border-radius: 8px;
+  background: transparent;
+  color: #1d1d1d;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #f7f9fb;
+  border-color: #d3d7da;
+}
+
+.add-listing-btn {
+  height: 44px;
+  padding: 0 24px;
+  background: #ff6b2c;
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.add-listing-btn:hover {
+  background: #e85a1f;
+  transform: translateY(-1px);
+}
+
+.add-listing-btn .arrow {
+  font-size: 16px;
+  margin-top: -2px;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item::before {
+  content: "";
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3L4 6L7 3' stroke='%231D1D1D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.5;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .site-header {
+    padding: 16px 0;
+  }
+
+  .main-nav {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .login-btn,
+  .add-listing-btn {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  /* .logo img {
+    height: 24px;
+  }
+
+  .logo span {
+    font-size: 18px;
+  } */
+}
+
+/* Page Header Styles */
+.page-header {
+  position: relative;
+  height: 300px;
+  background: var(--background);
+  margin-top: 70px; /* Height of fixed header */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breadcrumb {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  justify-content: center;
+}
+
+.breadcrumb a {
+  color: var(--text-medium);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+  color: var(--primary);
+}
+
+.breadcrumb span {
+  color: var(--text-light);
+}
+
+.breadcrumb .current {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Responsive Header */
+@media (max-width: 768px) {
+  .main-nav {
+    display: none; /* You might want to add a mobile menu */
+  }
+
+  .header-actions {
+    gap: var(--spacing-sm);
+  }
+
+  .login-btn {
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+
+  .add-listing-btn {
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+
+  .page-header {
+    height: 200px;
+  }
+}
+
+:root {
+  /* Primary Colors */
+  --primary: #ff6b2c; /* Orange - Primary */
+  --primary-hover: #e85a1f; /* Dark Orange - Hover */
+  --primary-light: #ffe8e0; /* Light Orange - Backgrounds */
+  --primary-border: #ffb088; /* Medium Orange - Borders */
+
+  /* Text Colors */
+  --text-dark: #1d1d1d; /* Almost Black - Main Text */
+  --text-medium: #4d5461; /* Dark Gray - Secondary Text */
+  --text-light: #6f7683; /* Light Gray - Tertiary Text */
+
+  /* Background Colors */
+  --bg-white: #ffffff; /* Pure White */
+  --bg-light: #f7f9fb; /* Light Gray Background */
+  --bg-lighter: #fafbfc; /* Lighter Gray Background */
+
+  /* Border Colors */
+  --border-light: #e8ecef; /* Light Border */
+  --border-medium: #d3d7da; /* Medium Border */
+
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Update existing component colors */
+
+/* Buttons */
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg-white);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-light);
+  border-color: var(--border-medium);
+}
+
+/* Cards */
+.card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-dark);
+}
+
+p {
+  color: var(--text-medium);
+}
+
+.text-light {
+  color: var(--text-light);
+}
+
+/* Form Elements */
+input,
+select,
+textarea {
+  border: 1px solid var(--border-light);
+  background: var(--bg-white);
+  color: var(--text-dark);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.1);
+}
+
+/* Links */
+
+/* Tags */
+.tag {
+  background: var(--bg-light);
+  color: var(--text-medium);
+}
+
+.tag-primary {
+  background: var(--primary);
+  color: var(--bg-white);
+}
+
+/* Pricing Cards */
+.pricing-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+}
+
+.pricing-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Navigation */
+.nav-item {
+  color: var(--text-dark);
+}
+
+.nav-item:hover {
+  color: var(--primary);
+}
+
+/* Header */
+.site-header {
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+  color: var(--text-light);
+}
+
+.breadcrumb a {
+  color: var(--text-medium);
+}
+
+.breadcrumb a:hover {
+  color: var(--primary);
+}
+
+/* Form Validation */
+.error-message {
+  color: var(--primary);
+}
+
+/* Background Utilities */
+.bg-light {
+  background: var(--bg-light);
+}
+
+.bg-lighter {
+  background: var(--bg-lighter);
+}
+
+.bg-white {
+  background: var(--bg-white);
+}
+
+/* Update button styles */
+.submit-btn,
+.claim-btn,
+.subscribe-btn {
+  background: var(--primary);
+  color: var(--bg-white);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover,
+.claim-btn:hover,
+.subscribe-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* Update form validation */
+.input-group.error input {
+  border-color: var(--primary);
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.1);
+}
+
+/* Update pricing cards */
+.pricing-card:hover {
+  border-color: var(--primary);
+}
+
+.pricing-title::after {
+  background: var(--primary);
+}
+
+/* Update links and text highlights */
+.text-highlight,
+.current-page,
+.active-link {
+  color: var(--primary);
+}
+
+/* Update tags and badges */
+.tag-primary,
+.badge-primary {
+  background: var(--primary);
+}
+
+.tag-outline,
+.badge-outline {
+  color: var(--primary);
+  border-color: var(--primary-border);
+  background: var(--primary-light);
+}
+
+/* Update alerts and notifications */
+.alert-error {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+  color: var(--primary-hover);
+}
+
+/* Update icons and indicators */
+.required-indicator,
+.status-indicator.error {
+  color: var(--primary);
+}
+
+/* Update checkmarks and validation icons */
+.check-icon.error,
+.validation-icon.error {
+  color: var(--primary);
+}
+
+/* Update progress bars and loading states */
+.progress-bar.error {
+  background: var(--primary);
+}
+
+/* Update borders and outlines */
+.border-error {
+  border-color: var(--primary);
+}
+
+.outline-error {
+  outline-color: var(--primary);
+}
+
+/* Update hover and focus states */
+.hover-error:hover {
+  color: var(--primary);
+}
+
+.focus-error:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.1);
+}
+
+/* Update text selection */
+::selection {
+  background: var(--primary-light);
+  color: var(--primary-hover);
+}
+
+/* Update scrollbar */
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+/* Loan Category Cards */
+.loan-categories-container {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.categories-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.categories-subtitle {
+  font-size: 16px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.loan-category-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.category-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.category-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  transition: all 0.3s ease;
+}
+
+.category-card.affordable::before {
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+}
+
+.category-card.premium::before {
+  background: linear-gradient(90deg, #2196f3, #03a9f4);
+}
+
+.category-card.luxury::before {
+  background: linear-gradient(90deg, #ff9800, #ffc107);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.loan-amount h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.amount-range {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.affordable .amount-range {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.premium .amount-range {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.luxury .amount-range {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.affordable .card-icon {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.premium .card-icon {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.luxury .card-icon {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.card-details {
+  margin-bottom: 25px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.detail-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.affordable .detail-value {
+  color: #4caf50;
+}
+
+.premium .detail-value {
+  color: #2196f3;
+}
+
+.luxury .detail-value {
+  color: #ff9800;
+}
+
+.card-features {
+  margin-bottom: 25px;
+}
+
+.card-features h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.card-features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.card-features li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.card-features li i {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.affordable .card-features li i {
+  color: #4caf50;
+}
+
+.premium .card-features li i {
+  color: #2196f3;
+}
+
+.luxury .card-features li i {
+  color: #ff9800;
+}
+
+.apply-now-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.affordable .apply-now-btn {
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+}
+
+.premium .apply-now-btn {
+  background: linear-gradient(90deg, #2196f3, #03a9f4);
+}
+
+.luxury .apply-now-btn {
+  background: linear-gradient(90deg, #ff9800, #ffc107);
+}
+
+.apply-now-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.affordable .apply-now-btn:hover {
+  background: linear-gradient(90deg, #43a047, #7cb342);
+}
+
+.premium .apply-now-btn:hover {
+  background: linear-gradient(90deg, #1e88e5, #039be5);
+}
+
+.luxury .apply-now-btn:hover {
+  background: linear-gradient(90deg, #f57c00, #ffb300);
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.category-card {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.category-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.category-card:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.category-card:nth-child(3) {
+  animation-delay: 0.5s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .loan-category-cards {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .loan-category-cards {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .categories-title {
+    font-size: 28px;
+  }
+
+  .categories-subtitle {
+    font-size: 15px;
+    margin-bottom: 30px;
+  }
+}
+
+/* Back to Top Button */
+#backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 999;
+  padding: 0;
+}
+
+#backToTop a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: white;
+  text-decoration: none;
+}
+
+#backToTop:hover {
+  background-color: #e64a19;
+  transform: translateY(-5px);
+}
+
+/* Document upload section styles */
+.upload-info {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.document-group {
+    margin-top: 15px;
+}
+
+.document-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.document-item {
+    flex: 1;
+}
+
+.document-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+input[type="file"] {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+input[type="file"]:hover {
+    background-color: #f0f0f0;
+}
+
+.file-info {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Application status styles */
+.application-status {
+    margin-top: 30px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.application-status .loading,
+.application-status .success,
+.application-status .error {
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.application-status .loading {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.application-status .success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.application-status .error {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.application-status i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.application-status h3 {
+    margin: 10px 0;
+    font-size: 1.5rem;
+}
+
+.application-status p {
+    margin: 5px 0;
+    line-height: 1.6;
+}
+
+.status-link {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #1976d2;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.status-link:hover {
+    background-color: #1565c0;
+}
+
+/* Login required message */
+.login-required {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.login-required i {
+    font-size: 3rem;
+    color: #ffb800;
+    margin-bottom: 20px;
+}
+
+.login-required h3 {
+    margin: 10px 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.login-required p {
+    margin: 10px 0 20px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.login-link {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #1976d2;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.login-link:hover {
+    background-color: #1565c0;
+}

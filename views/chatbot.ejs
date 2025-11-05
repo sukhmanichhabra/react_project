@@ -1,0 +1,835 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+</head>
+<%- include('partials/header') %>
+
+<div class="container-fluid p-0">
+    <div class="row g-0">
+        <!-- Sidebar with categories -->
+        <div class="col-md-3 border-end bg-light">
+            <div class="p-4">
+                <h5 class="mb-4">AI Chatbot Assistant</h5>
+                <p class="text-muted mb-4">Ask me anything about our real estate platform, properties, buying, selling, or getting help.</p>
+                
+                <h6 class="mb-3">Choose a Topic</h6>
+                <div class="list-group mb-4">
+                    <% categories.forEach(category => { %>
+                        <a href="javascript:void(0);" class="list-group-item list-group-item-action category-item" data-category="<%= category.id %>">
+                            <i class="fas <%= category.icon %> me-2"></i> <%= category.name %>
+                        </a>
+                    <% }) %>
+                </div>
+                
+                <h6 class="mb-3">Popular Questions</h6>
+                <div class="list-group popular-questions">
+                    <% popularQuestions.forEach(question => { %>
+                        <a href="javascript:void(0);" class="list-group-item list-group-item-action popular-question" data-question="<%= question.question %>">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            <%= question.question %>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main chat area -->
+        <div class="col-md-9 d-flex flex-column" style="height: calc(100vh - 72px);">
+            <!-- Chat messages area -->
+            <div class="flex-grow-1 p-4 chat-messages-container" id="chatMessages">
+                <!-- Welcome message -->
+                <div class="chat-message bot-message">
+                    <div class="chat-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p>Hello! I'm your AI assistant. How can I help you today with real estate?</p>
+                            <p>You can ask me about buying, selling, renting properties, or getting a loan.</p>
+                        </div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                
+                <!-- Previous chat history if available -->
+                <% if (chatHistory && chatHistory.length > 0) { %>
+                    <div class="text-center mb-4">
+                        <small class="text-muted">Previous conversation</small>
+                    </div>
+                    
+                    <% chatHistory.forEach(interaction => { %>
+                        <!-- User question -->
+                        <div class="chat-message user-message">
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    <p><%= interaction.query %></p>
+                                </div>
+                                <div class="message-time">
+                                    <%= new Date(interaction.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                                </div>
+                            </div>
+                            <div class="chat-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Bot response -->
+                        <div class="chat-message bot-message">
+                            <div class="chat-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    <p><%= interaction.response %></p>
+                                </div>
+                                <div class="message-time">
+                                    <%= new Date(interaction.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+            
+            <!-- Category questions section (hidden by default) -->
+            <div class="p-4 border-top d-none" id="categoryQuestions">
+                <h6 class="mb-3">Common Questions in <span id="categoryName">General</span></h6>
+                <div class="row" id="questionsGrid"></div>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-secondary" id="closeCategory">
+                        <i class="fas fa-times me-1"></i> Close
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat input area -->
+            <div class="p-3 border-top">
+                <form id="chatForm" class="d-flex">
+                    <input type="text" class="form-control" id="messageInput" placeholder="Type your question here..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary ms-2">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="text-muted mt-2 small">
+                    <i class="fas fa-info-circle me-1"></i> Not finding what you need? Contact our <a href="/support">support team</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading indicator -->
+<div class="typing-indicator d-none" id="typingIndicator">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+</div>
+
+<style>
+    /* Enhanced base styles */
+    .chat-messages-container {
+        overflow-y: auto;
+        padding-bottom: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .chat-message {
+        display: flex;
+        margin-bottom: 20px;
+        align-items: flex-start;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .bot-message {
+        justify-content: flex-start;
+    }
+    
+    .user-message {
+        justify-content: flex-end;
+    }
+    
+    .chat-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        animation: pulse 2s infinite ease-in-out;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    .bot-message .chat-avatar {
+        margin-right: 14px;
+        background: linear-gradient(135deg, #1976d2, #64b5f6);
+        color: white;
+    }
+    
+    .user-message .chat-avatar {
+        margin-left: 14px;
+        background: linear-gradient(135deg, #2e7d32, #81c784);
+        color: white;
+    }
+    
+    .chat-avatar i {
+        font-size: 20px;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+    }
+    
+    .message-content {
+        max-width: 70%;
+    }
+    
+    .message-bubble {
+        padding: 14px 18px;
+        border-radius: 18px;
+        position: relative;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .message-bubble:hover {
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    
+    .bot-message .message-bubble {
+        background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+        border-bottom-left-radius: 4px;
+    }
+    
+    .user-message .message-bubble {
+        background: linear-gradient(135deg, #1976d2, #42a5f5);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    
+    .message-time {
+        font-size: 12px;
+        color: #9e9e9e;
+        margin-top: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    .user-message .message-time {
+        text-align: right;
+    }
+    
+    /* Category styles */
+    .list-group-item {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .list-group-item:hover {
+        border-left: 4px solid #1976d2;
+        background-color: #f5f9ff;
+        transform: translateX(5px);
+    }
+    
+    .category-item i, .popular-question i {
+        transition: all 0.3s ease;
+    }
+    
+    .list-group-item:hover i {
+        transform: scale(1.2);
+    }
+    
+    /* Category cards */
+    .category-question-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        border-left: 4px solid #1976d2;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .category-question-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+    
+    /* Typing indicator */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        margin: 0 0 20px 52px;
+        opacity: 0;
+        animation: fadeIn 0.3s forwards;
+    }
+    
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .typing-indicator .dot {
+        width: 10px;
+        height: 10px;
+        margin: 0 3px;
+        background-color: #1976d2;
+        border-radius: 50%;
+        animation: typingBounce 1.5s infinite ease-in-out;
+    }
+    
+    .typing-indicator .dot:nth-child(1) {
+        animation-delay: 0s;
+    }
+    
+    .typing-indicator .dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-indicator .dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typingBounce {
+        0%, 20%, 100% {
+            transform: translateY(0);
+        }
+        
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+    
+    /* Popular questions */
+    .popular-questions .list-group-item {
+        padding: 10px 14px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .popular-questions .list-group-item:hover {
+        background-color: #e3f2fd;
+    }
+    
+    /* Chat input area */
+    #chatForm {
+        position: relative;
+    }
+    
+    #messageInput {
+        padding-right: 50px;
+        border-radius: 30px;
+        border: 2px solid #e0e0e0;
+        padding: 12px 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    #messageInput:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+    }
+    
+    #chatForm button {
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #1976d2, #42a5f5);
+        border: none;
+        box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+    }
+    
+    #chatForm button:hover {
+        transform: rotate(15deg);
+        box-shadow: 0 6px 12px rgba(25, 118, 210, 0.4);
+    }
+    
+    #chatForm button i {
+        font-size: 18px;
+    }
+    
+    /* Sidebar styling */
+    .col-md-3.border-end {
+        box-shadow: 5px 0 15px rgba(0,0,0,0.05);
+        background: linear-gradient(to bottom, #f9f9f9, #ffffff);
+    }
+    
+    h5, h6 {
+        position: relative;
+        padding-bottom: 10px;
+    }
+    
+    h5:after, h6:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(to right, #1976d2, transparent);
+        border-radius: 3px;
+    }
+    
+    /* Suggested questions styling */
+    .suggested-questions {
+        margin-top: 10px;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 10px;
+    }
+    
+    .suggested-link {
+        display: block;
+        padding: 8px 10px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .suggested-link:hover {
+        background-color: #e3f2fd;
+        text-decoration: none;
+        transform: translateX(5px);
+    }
+    
+    /* Scroll buttons */
+    .scroll-btn {
+        position: absolute;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+        opacity: 0.7;
+    }
+    
+    .scroll-btn:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    
+    .scroll-to-bottom {
+        bottom: 80px;
+    }
+    
+    /* Animation for new messages */
+    .new-message {
+        animation: newMessage 0.5s ease-out forwards;
+    }
+    
+    @keyframes newMessage {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .message-content {
+            max-width: 85%;
+        }
+        
+        .col-md-3.border-end {
+            height: 300px;
+            overflow-y: auto;
+        }
+        
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .chat-avatar i {
+            font-size: 16px;
+        }
+    }
+</style>
+
+<div class="scroll-btn scroll-to-bottom d-none" id="scrollToBottom">
+    <i class="fas fa-arrow-down"></i>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatForm = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const categoryItems = document.querySelectorAll('.category-item');
+        const popularQuestions = document.querySelectorAll('.popular-question');
+        const categoryQuestions = document.getElementById('categoryQuestions');
+        const categoryName = document.getElementById('categoryName');
+        const questionsGrid = document.getElementById('questionsGrid');
+        const closeCategory = document.getElementById('closeCategory');
+        const scrollToBottomBtn = document.getElementById('scrollToBottom');
+        
+        // Scroll to the bottom of the chat
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Add a message to the chat (user or bot)
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user-message' : 'bot-message'} new-message`;
+            
+            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p>${message}</p>
+                        </div>
+                        <div class="message-time">${currentTime}</div>
+                    </div>
+                    <div class="chat-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="chat-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p>${message}</p>
+                        </div>
+                        <div class="message-time">${currentTime}</div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            
+            // Add fade-in animation
+            setTimeout(() => {
+                messageDiv.classList.remove('new-message');
+            }, 500);
+        }
+        
+        // Add related questions as suggestions
+        function addRelatedQuestions(questions) {
+            if (!questions || questions.length === 0) return;
+            
+            const div = document.createElement('div');
+            div.className = 'chat-message bot-message new-message';
+            
+            let html = `
+                <div class="chat-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <p class="mb-2">You might also be interested in:</p>
+                        <div class="suggested-questions">
+            `;
+            
+            questions.forEach(q => {
+                html += `
+                    <div class="suggested-question mb-1">
+                        <a href="javascript:void(0);" class="text-primary suggested-link" data-question="${q.question}">
+                            <i class="fas fa-question-circle me-1"></i> ${q.question}
+                        </a>
+                    </div>
+                `;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                    <div class="message-time">Just now</div>
+                </div>
+            `;
+            
+            div.innerHTML = html;
+            chatMessages.appendChild(div);
+            
+            // Add click events for suggested questions
+            div.querySelectorAll('.suggested-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    askQuestion(question);
+                });
+            });
+            
+            scrollToBottom();
+            
+            // Add fade-in animation
+            setTimeout(() => {
+                div.classList.remove('new-message');
+            }, 500);
+        }
+        
+        // Show typing indicator
+        function showTypingIndicator() {
+            typingIndicator.classList.remove('d-none');
+            chatMessages.appendChild(typingIndicator);
+            scrollToBottom();
+        }
+        
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            typingIndicator.classList.add('d-none');
+        }
+        
+        // Ask a question to the chatbot
+        async function askQuestion(question) {
+            // Add user message
+            addMessage(question, true);
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Simulate network delay for more realistic typing effect
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Send question to server
+                const response = await fetch('/chatbot/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question })
+                });
+                
+                const data = await response.json();
+                
+                // Hide typing indicator
+                hideTypingIndicator();
+                
+                if (data.success) {
+                    // Add bot response
+                    addMessage(data.answer);
+                    
+                    // Add related questions if available
+                    if (data.relatedQuestions && data.relatedQuestions.length > 0) {
+                        await new Promise(resolve => setTimeout(resolve, 500)); // Slight delay for better UX
+                        addRelatedQuestions(data.relatedQuestions);
+                    }
+                } else {
+                    addMessage("I'm sorry, I couldn't process your question at this time. Please try again.");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                addMessage("I'm having trouble connecting. Please check your internet connection and try again.");
+            }
+            
+            // Clear input field
+            messageInput.value = '';
+        }
+        
+        // Load questions for a category
+        async function loadCategoryQuestions(categoryId, categoryDisplayName) {
+            try {
+                const response = await fetch(`/chatbot/category/${categoryId}`);
+                const data = await response.json();
+                
+                if (data.success && data.questions.length > 0) {
+                    categoryName.textContent = categoryDisplayName;
+                    
+                    // Clear previous questions
+                    questionsGrid.innerHTML = '';
+                    
+                    // Add questions to grid
+                    data.questions.forEach((q, index) => {
+                        const col = document.createElement('div');
+                        col.className = 'col-md-6 mb-3';
+                        col.innerHTML = `
+                            <div class="card category-question-card" style="animation-delay: ${index * 0.1}s">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-question-circle text-primary me-2"></i>
+                                        ${q.question}
+                                    </h6>
+                                </div>
+                            </div>
+                        `;
+                        
+                        questionsGrid.appendChild(col);
+                        
+                        // Add animation
+                        setTimeout(() => {
+                            col.querySelector('.card').style.opacity = '1';
+                            col.querySelector('.card').style.transform = 'translateY(0)';
+                        }, index * 100);
+                        
+                        // Add click event
+                        col.querySelector('.card').addEventListener('click', function() {
+                            askQuestion(q.question);
+                            categoryQuestions.classList.add('d-none');
+                        });
+                    });
+                    
+                    // Show questions section with animation
+                    categoryQuestions.style.display = 'block';
+                    categoryQuestions.style.opacity = '0';
+                    categoryQuestions.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        categoryQuestions.classList.remove('d-none');
+                        categoryQuestions.style.opacity = '1';
+                        categoryQuestions.style.transform = 'translateY(0)';
+                    }, 50);
+                    
+                    scrollToBottom();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Show/hide scroll to bottom button
+        chatMessages.addEventListener('scroll', function() {
+            const isScrollable = chatMessages.scrollHeight > chatMessages.clientHeight;
+            const isScrolledUp = chatMessages.scrollTop < chatMessages.scrollHeight - chatMessages.clientHeight - 100;
+            
+            if (isScrollable && isScrolledUp) {
+                scrollToBottomBtn.classList.remove('d-none');
+            } else {
+                scrollToBottomBtn.classList.add('d-none');
+            }
+        });
+        
+        // Scroll to bottom button click
+        scrollToBottomBtn.addEventListener('click', scrollToBottom);
+        
+        // Handle form submission
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const question = messageInput.value.trim();
+            if (question) {
+                askQuestion(question);
+            }
+        });
+        
+        // Handle category clicks
+        categoryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-category');
+                const categoryDisplayName = this.textContent.trim();
+                
+                // Add active class
+                categoryItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                loadCategoryQuestions(categoryId, categoryDisplayName);
+            });
+        });
+        
+        // Handle popular question clicks
+        popularQuestions.forEach(item => {
+            item.addEventListener('click', function() {
+                const question = this.getAttribute('data-question');
+                
+                // Add active class temporarily
+                popularQuestions.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Reset active state after a delay
+                setTimeout(() => {
+                    this.classList.remove('active');
+                }, 1000);
+                
+                askQuestion(question);
+            });
+        });
+        
+        // Handle close category button
+        closeCategory.addEventListener('click', function() {
+            // Animate closing
+            categoryQuestions.style.opacity = '0';
+            categoryQuestions.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                categoryQuestions.classList.add('d-none');
+            }, 300);
+        });
+        
+        // Add placeholder text cycling
+        const placeholders = [
+            "Ask about buying a property...",
+            "Need help with mortgage rates?",
+            "How to sell my property?",
+            "Questions about renting?",
+            "Ask me anything about real estate..."
+        ];
+        
+        let placeholderIndex = 0;
+        setInterval(() => {
+            messageInput.setAttribute('placeholder', placeholders[placeholderIndex]);
+            placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+        }, 3000);
+        
+        // Press Enter to submit
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+        
+        // Add focus effect to input
+        messageInput.addEventListener('focus', function() {
+            this.parentElement.classList.add('input-focused');
+        });
+        
+        messageInput.addEventListener('blur', function() {
+            this.parentElement.classList.remove('input-focused');
+        });
+        
+        // Initial scroll to bottom
+        scrollToBottom();
+        
+        // Initial animation for welcome message
+        setTimeout(() => {
+            document.querySelector('.chat-message').classList.remove('new-message');
+        }, 500);
+    });
+</script>
+
+<%- include('partials/footer') %> 

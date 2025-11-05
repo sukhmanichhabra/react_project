@@ -1,0 +1,247 @@
+/* "Update Profile" Page Styles */
+.profile-section {
+  width: 100%;
+  padding: 2rem; /* 32px */
+}
+
+.profile-header {
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.profile-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+
+/* Status Message (e.g., "Profile updated successfully") */
+.profile-status-message {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+.profile-status-message.success {
+  background-color: #dcfce7; /* bg-green-100 */
+  color: #15803d; /* text-green-700 */
+}
+.profile-status-message.error {
+  background-color: #fee2e2; /* bg-red-100 */
+  color: #b91c1c; /* text-red-700 */
+}
+
+/* The main white card */
+.profile-card {
+  background-color: #fff;
+  padding: 2rem; /* p-8 */
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.profile-card__form {
+  width: 100%;
+}
+
+/* Avatar + Name header block */
+.profile-card__header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* space-x-6 */
+  margin-bottom: 2rem; /* mb-8 */
+  padding-bottom: 1.5rem; /* pb-6 */
+  border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+}
+
+.profile-card__avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-card__avatar-img {
+  width: 5rem; /* w-20 */
+  height: 5rem; /* h-20 */
+  border-radius: 9999px; /* rounded-full */
+  object-fit: cover;
+  border: 4px solid #f3f4f6; /* border-4 border-gray-100 */
+}
+
+.profile-card__avatar-label {
+  position: absolute;
+  bottom: -0.25rem; /* -bottom-1 */
+  right: -0.25rem; /* -right-1 */
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+  background-color: #dc2626; /* bg-red-600 */
+  color: white;
+  border-radius: 9999px; /* rounded-full */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.profile-card__avatar-label:hover {
+  background-color: #b91c1c; /* hover:bg-red-700 */
+}
+
+.profile-card__avatar-label i {
+  font-size: 0.875rem; /* text-sm */
+}
+
+.profile-card__info h3 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+
+.profile-card__info p {
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* Main 2-column form grid */
+.profile-card__grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* gap-6 */
+}
+
+@media (min-width: 768px) {
+  .profile-card__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.profile-card__form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-card__form-group--full {
+  grid-column: 1 / -1;
+}
+
+.profile-card__label {
+  margin-bottom: 0.5rem; /* mb-2 */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #374151; /* text-gray-700 */
+}
+
+/* Shared style for input and textarea */
+.profile-card__input,
+.profile-card__textarea {
+  border: 1px solid #d1d5db; /* border border-gray-300 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.75rem 1rem; /* px-4 py-2 */
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.profile-card__input:focus,
+.profile-card__textarea:focus {
+  outline: none;
+  border-color: #ef4444; /* focus:ring-red-500 */
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.4); /* focus:ring-2 */
+}
+
+.profile-card__textarea {
+  min-height: 80px;
+}
+
+/* Social links section */
+.profile-card__divider {
+  margin-top: 2rem; /* mt-8 */
+  border-top: 1px solid #e5e7eb; /* border-t border-gray-200 */
+  padding-top: 1.5rem; /* pt-6 */
+}
+
+.profile-card__subheader {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600; /* font-semibold */
+  margin-bottom: 1rem; /* mb-4 */
+  color: #1f2937; /* text-gray-800 */
+}
+
+.profile-card__social-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space-x-2 */
+}
+
+/* Form action buttons (Save, Reset) */
+.profile-card__actions {
+  margin-top: 2rem; /* mt-8 */
+  display: flex;
+  justify-content: flex-end; /* justify-end */
+  gap: 1rem; /* space-x-4 */
+}
+
+.profile-card__btn {
+  padding: 0.75rem 1.5rem; /* px-6 py-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-weight: 500; /* font-medium */
+  transition: background-color 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+}
+
+.profile-card__btn--secondary {
+  background-color: #e5e7eb; /* bg-gray-200 */
+  color: #1f2937; /* text-gray-800 */
+}
+.profile-card__btn--secondary:hover {
+  background-color: #d1d5db; /* hover:bg-gray-300 */
+}
+
+.profile-card__btn--primary {
+  background-color: #ef4444; /* bg-red-600 */
+  color: white;
+}
+.profile-card__btn--primary:hover {
+  background-color: #dc2626; /* hover:bg-red-700 */
+}
+
+.profile-card__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Geolocation subsection styles */
+.profile-card__subsection-title {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  color: #2563eb; /* text-blue-600 */
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-card__help-text {
+  font-size: 0.875rem; /* text-sm */
+  color: #6b7280; /* text-gray-500 */
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+/* Enhanced form group for geolocation section */
+.profile-card__form-group--geolocation {
+  background-color: #f8fafc; /* bg-slate-50 */
+  border: 1px solid #e2e8f0; /* border-slate-200 */
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile responsiveness for geolocation fields */
+@media (max-width: 768px) {
+  .profile-card__subsection-title {
+    font-size: 1rem;
+  }
+  
+  .profile-card__help-text {
+    font-size: 0.8125rem; /* text-xs */
+  }
+}

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Prediction</title>
+    <link rel="stylesheet" href="/css/model.css">
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>When it comes to property valuation,<br>knowledge is power</h1>
+                <p class="hero-subtitle">With our advanced AI-powered insights, use your property dashboard to stay on
+                    top of:</p>
+
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <h3>How much your property's worth</h3>
+                        <p>Get an estimated property value in less than a minute using our advanced prediction model.
+                        </p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span class="feature-icon">📈</span>
+                        <h3>Latest insights and data</h3>
+                        <p>Monitor the market trends to make informed property decisions.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span class="feature-icon">🏠</span>
+                        <h3>Comparative Analysis</h3>
+                        <p>Check out recently evaluated properties in your area for better insights.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span class="feature-icon">💰</span>
+                        <h3>Accurate Predictions</h3>
+                        <p>Track property values with our AI-powered prediction system for better investment decisions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <div class="prediction-card-preview">
+                    <div class="preview-header">
+                        <h3>Sample Property Valuation</h3>
+                        <span class="confidence-badge">High Confidence</span>
+                    </div>
+                    <div class="preview-price">₹1,20,00,000</div>
+                    <div class="preview-details">
+                        <div class="detail-row">
+                            <span>Location</span>
+                            <span>Premium Area</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Property Type</span>
+                            <span>3 BHK Apartment</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Area</span>
+                            <span>1500 sq.ft</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Furnishing</span>
+                            <span>Fully Furnished</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Age of Property</span>
+                            <span>2 Years</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Floor</span>
+                            <span>12th of 15</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Parking</span>
+                            <span>2 Covered</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Amenities</span>
+                            <span>Pool, Gym, Park</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Last Updated</span>
+                            <span>2 days ago</span>
+                        </div>
+                    </div>
+                    <div class="prediction-footer">
+                        <div class="accuracy-meter">
+                            <div class="accuracy-label">Prediction Accuracy</div>
+                            <div class="accuracy-bar">
+                                <div class="accuracy-fill" style="width: 95%"></div>
+                            </div>
+                            <div class="accuracy-value">95%</div>
+                        </div>
+                        <div class="market-trend">
+                            <span class="trend-icon">📈</span>
+                            <span class="trend-text">Market trending upward</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="progress-bar">
+            <div class="progress-line"></div>
+            <div class="progress-line-filled" id="progressLineFilled"></div>
+
+            <div class="progress-step active">
+                <div class="progress-circle active">1</div>
+                <div class="progress-label">House<br>Details</div>
+            </div>
+
+            <div class="progress-step">
+                <div class="progress-circle">2</div>
+                <div class="progress-label">Neighbourhood</div>
+            </div>
+
+
+            <div class="progress-step">
+                <div class="progress-circle">3</div>
+                <div class="progress-label">Misc</div>
+            </div>
+        </div>
+
+
+
+        <div class="cards-grid">
+            <div class="card" onclick="selectCard(this)">
+                <div class="card-icon">🏠</div>
+                <div class="card-title">Single Family</div>
+            </div>
+            <div class="card" onclick="selectCard(this)">
+                <div class="card-icon">🏘️</div>
+                <div class="card-title">Town Home</div>
+            </div>
+            <div class="card" onclick="selectCard(this)">
+                <div class="card-icon">🏢</div>
+                <div class="card-title">Condominium</div>
+            </div>
+            <div class="card" onclick="selectCard(this)">
+                <div class="card-icon">🏗️</div>
+                <div class="card-title">Multi-Family</div>
+            </div>
+            <div class="card" onclick="selectCard(this)">
+                <div class="card-icon">🏡</div>
+                <div class="card-title">Mobile / Manufactured</div>
+            </div>
+            <div class="card" onclick="selectCard(this)">
+                <div class="card-icon">👷</div>
+                <div class="card-title">New Construction</div>
+            </div>
+        </div>
+
+        <div class="slider-container" id="sliderPage">
+            <div class="content-header">
+                <h1>Tell us more about your requirements</h1>
+                <p>Use the sliders to select your preferences</p>
+            </div>
+
+            <div class="slider-wrapper">
+                <div class="slider-value" id="bedroomValue">3 Bedrooms</div>
+                <div class="slider-label">Number of Bedrooms</div>
+                <input type="range" min="1" max="6" value="3" class="slider" id="bedroomSlider">
+            </div>
+
+            <div class="slider-wrapper">
+                <div class="slider-value" id="bathroomValue">2 Bathrooms</div>
+                <div class="slider-label">Number of Bathrooms</div>
+                <input type="range" min="1" max="4" value="2" class="slider" id="bathroomSlider">
+            </div>
+
+            <div class="slider-wrapper">
+                <div class="slider-value" id="parkingValue">1 Parking</div>
+                <div class="slider-label">Number of Parking Spaces</div>
+                <input type="range" min="0" max="3" value="1" class="slider" id="parkingSlider">
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="next-button" onclick="nextPage()">Next</button>
+                <button class="back-button" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+
+        <div class="area-slider-container" id="areaPage">
+            <div class="content-header">
+                <h1>What is the area of your house?</h1>
+                <p>Use the slider to select the approximate area in square feet</p>
+            </div>
+
+            <div class="slider-wrapper">
+                <div class="area-value" id="areaValue">2000 sq ft</div>
+                <input type="range" min="500" max="5000" step="100" value="2000" class="slider" id="areaSlider">
+            </div>
+
+            <h2 style="text-align: center; margin: 40px 0 20px;">Furnishing Status</h2>
+
+            <div class="furnishing-cards">
+                <div class="furnishing-card" onclick="selectFurnishing(this)">
+                    <div class="furnishing-icon">🪑</div>
+                    <div class="furnishing-title">Fully Furnished</div>
+                </div>
+                <div class="furnishing-card" onclick="selectFurnishing(this)">
+                    <div class="furnishing-icon">📦</div>
+                    <div class="furnishing-title">Semi Furnished</div>
+                </div>
+                <div class="furnishing-card" onclick="selectFurnishing(this)">
+                    <div class="furnishing-icon">🏠</div>
+                    <div class="furnishing-title">Unfurnished</div>
+                </div>
+                <div class="furnishing-card" onclick="selectFurnishing(this)">
+                    <div class="furnishing-icon">🔨</div>
+                    <div class="furnishing-title">Under Construction</div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="next-button" onclick="nextPage()">Next</button>
+                <button class="back-button" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+
+        <div class="condition-page" id="conditionPage">
+            <div class="content-header">
+                <h1>Tell us about your house condition</h1>
+                <p>Please provide the construction year and overall condition</p>
+            </div>
+
+            <div class="year-input">
+                <h3>Construction Year</h3>
+                <input type="number" id="constructionYear" min="1900" max="2024" placeholder="YYYY"
+                    onchange="validateYear(this)">
+            </div>
+
+            <div class="condition-selector">
+                <h3 style="text-align: center; margin-bottom: 20px;">Overall Condition</h3>
+                <div class="condition-options">
+                    <div class="condition-option" onclick="selectCondition(this, 'Poor')">
+                        <div class="condition-icon">😟</div>
+                        <div class="condition-label">Poor</div>
+                    </div>
+                    <div class="condition-option" onclick="selectCondition(this, 'Fair')">
+                        <div class="condition-icon">😐</div>
+                        <div class="condition-label">Fair</div>
+                    </div>
+                    <div class="condition-option" onclick="selectCondition(this, 'Good')">
+                        <div class="condition-icon">🙂</div>
+                        <div class="condition-label">Good</div>
+                    </div>
+                    <div class="condition-option" onclick="selectCondition(this, 'Very Good')">
+                        <div class="condition-icon">😊</div>
+                        <div class="condition-label">Very Good</div>
+                    </div>
+                    <div class="condition-option" onclick="selectCondition(this, 'Excellent')">
+                        <div class="condition-icon">🤩</div>
+                        <div class="condition-label">Excellent</div>
+                    </div>
+                </div>
+                <div class="condition-description" id="conditionDescription">
+                    Select a condition to see description
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="next-button" onclick="nextPage()">Next</button>
+                <button class="back-button" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+
+        <div class="city-page" id="cityPage">
+            <div class="content-header">
+                <h1>Select Your City</h1>
+                <p>Choose the city where your property is located</p>
+            </div>
+
+            <div class="city-cards">
+                <div class="city-card" onclick="selectCity(this)">
+                    <div class="city-icon">🏙️</div>
+                    <div class="city-name">Mumbai</div>
+                    <div class="city-info">Financial Capital</div>
+                </div>
+                <div class="city-card" onclick="selectCity(this)">
+                    <div class="city-icon">🏛️</div>
+                    <div class="city-name">Delhi</div>
+                    <div class="city-info">National Capital</div>
+                </div>
+                <div class="city-card" onclick="selectCity(this)">
+                    <div class="city-icon">💻</div>
+                    <div class="city-name">Bangalore</div>
+                    <div class="city-info">Tech Hub</div>
+                </div>
+                <div class="city-card" onclick="selectCity(this)">
+                    <div class="city-icon">🎬</div>
+                    <div class="city-name">Hyderabad</div>
+                    <div class="city-info">City of Pearls</div>
+                </div>
+                <div class="city-card" onclick="selectCity(this)">
+                    <div class="city-icon">🎨</div>
+                    <div class="city-name">Chennai</div>
+                    <div class="city-info">Cultural Capital</div>
+                </div>
+                <div class="city-card" onclick="selectCity(this)">
+                    <div class="city-icon">🏭</div>
+                    <div class="city-name">Pune</div>
+                    <div class="city-info">Oxford of the East</div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="next-button" onclick="nextPage()">Next</button>
+                <button class="back-button" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+
+        <div class="locality-page" id="localityPage">
+            <div class="content-header">
+                <h1>Select Your Locality</h1>
+                <p>Choose the area where your property is located</p>
+            </div>
+
+            <div class="locality-cards" id="localityCards">
+                <!-- Localities will be dynamically inserted here -->
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="next-button" onclick="nextPage()">Next</button>
+                <button class="back-button" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+
+        <div class="proximity-page" id="proximityPage">
+            <div class="content-header">
+                <h1>Distance from Transport Hubs</h1>
+                <p>Indicate the approximate distance to major transportation points</p>
+            </div>
+
+            <div class="proximity-slider-wrapper">
+                <div class="proximity-header">
+                    <div class="proximity-label">
+                        <span class="proximity-icon">✈️</span>
+                        Airport Distance
+                    </div>
+                    <div class="proximity-value" id="airportValue">15 km</div>
+                </div>
+                <input type="range" min="1" max="50" value="15" class="proximity-slider" id="airportSlider"
+                    oninput="updateProximityValue('airport')">
+                <div class="proximity-description" id="airportDescription">
+                    Moderate distance from airport, balanced for convenience and noise
+                </div>
+            </div>
+
+            <div class="proximity-slider-wrapper">
+                <div class="proximity-header">
+                    <div class="proximity-label">
+                        <span class="proximity-icon">🚂</span>
+                        Railway Station Distance
+                    </div>
+                    <div class="proximity-value" id="railwayValue">5 km</div>
+                </div>
+                <input type="range" min="1" max="20" value="5" class="proximity-slider" id="railwaySlider"
+                    oninput="updateProximityValue('railway')">
+                <div class="proximity-description" id="railwayDescription">
+                    Good access to railway station for daily commute
+                </div>
+            </div>
+
+            <div class="proximity-slider-wrapper">
+                <div class="proximity-header">
+                    <div class="proximity-label">
+                        <span class="proximity-icon">🚌</span>
+                        Bus Stand Distance
+                    </div>
+                    <div class="proximity-value" id="busValue">2 km</div>
+                </div>
+                <input type="range" min="0.1" max="10" step="0.1" value="2" class="proximity-slider" id="busSlider"
+                    oninput="updateProximityValue('bus')">
+                <div class="proximity-description" id="busDescription">
+                    Walking distance to bus stand, convenient for public transport
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="next-button" onclick="nextPage()">Next</button>
+                <button class="back-button" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+
+        <div class="amenities-page" id="amenitiesPage">
+            <div class="content-header">
+                <h1>Nearby Essential Amenities</h1>
+                <p>Select the approximate distance to various facilities</p>
+            </div>
+
+            <div class="amenities-grid">
+                <div class="amenity-card">
+                    <div class="amenity-header">
+                        <span class="amenity-icon">🏥</span>
+                        <span class="amenity-title">Hospital/Clinic</span>
+                    </div>
+                    <div class="distance-options" data-type="hospital">
+                        <div class="distance-option" onclick="selectDistance(this, 'hospital')">
+                            < 500m</div>
+                                <div class="distance-option" onclick="selectDistance(this, 'hospital')">500m - 1km</div>
+                                <div class="distance-option" onclick="selectDistance(this, 'hospital')">1km - 2km</div>
+                        </div>
+                        <div class="amenity-description" id="hospitalDesc">Select distance to nearest medical facility
+                        </div>
+                    </div>
+
+                    <div class="amenity-card">
+                        <div class="amenity-header">
+                            <span class="amenity-icon">🛒</span>
+                            <span class="amenity-title">Supermarket</span>
+                        </div>
+                        <div class="distance-options" data-type="market">
+                            <div class="distance-option" onclick="selectDistance(this, 'market')">
+                                < 200m</div>
+                                    <div class="distance-option" onclick="selectDistance(this, 'market')">200m - 500m
+                                    </div>
+                                    <div class="distance-option" onclick="selectDistance(this, 'market')">500m - 1km
+                                    </div>
+                            </div>
+                            <div class="amenity-description" id="marketDesc">Select distance to nearest supermarket
+                            </div>
+                        </div>
+
+                        <div class="amenity-card">
+                            <div class="amenity-header">
+                                <span class="amenity-icon">📚</span>
+                                <span class="amenity-title">School/College</span>
+                            </div>
+                            <div class="distance-options" data-type="school">
+                                <div class="distance-option" onclick="selectDistance(this, 'school')">
+                                    < 500m</div>
+                                        <div class="distance-option" onclick="selectDistance(this, 'school')">500m - 1km
+                                        </div>
+                                        <div class="distance-option" onclick="selectDistance(this, 'school')">1km - 2km
+                                        </div>
+                                </div>
+                                <div class="amenity-description" id="schoolDesc">Select distance to nearest educational
+                                    institution</div>
+                            </div>
+
+                            <div class="amenity-card">
+                                <div class="amenity-header">
+                                    <span class="amenity-icon">🏬</span>
+                                    <span class="amenity-title">Shopping Mall</span>
+                                </div>
+                                <div class="distance-options" data-type="mall">
+                                    <div class="distance-option" onclick="selectDistance(this, 'mall')">
+                                        < 1km</div>
+                                            <div class="distance-option" onclick="selectDistance(this, 'mall')">1km -
+                                                3km</div>
+                                            <div class="distance-option" onclick="selectDistance(this, 'mall')">3km -
+                                                5km</div>
+                                    </div>
+                                    <div class="amenity-description" id="mallDesc">Select distance to nearest shopping
+                                        mall</div>
+                                </div>
+
+                                <div class="amenity-card">
+                                    <div class="amenity-header">
+                                        <span class="amenity-icon">📮</span>
+                                        <span class="amenity-title">Convenience Store</span>
+                                    </div>
+                                    <div class="distance-options" data-type="store">
+                                        <div class="distance-option" onclick="selectDistance(this, 'store')">
+                                            < 100m</div>
+                                                <div class="distance-option" onclick="selectDistance(this, 'store')">
+                                                    100m - 300m</div>
+                                                <div class="distance-option" onclick="selectDistance(this, 'store')">
+                                                    300m - 500m</div>
+                                        </div>
+                                        <div class="amenity-description" id="storeDesc">Select distance to nearest
+                                            convenience store</div>
+                                    </div>
+
+                                    <div class="amenity-card">
+                                        <div class="amenity-header">
+                                            <span class="amenity-icon">💊</span>
+                                            <span class="amenity-title">Pharmacy</span>
+                                        </div>
+                                        <div class="distance-options" data-type="pharmacy">
+                                            <div class="distance-option" onclick="selectDistance(this, 'pharmacy')">
+                                                < 200m</div>
+                                                    <div class="distance-option"
+                                                        onclick="selectDistance(this, 'pharmacy')">200m - 500m</div>
+                                                    <div class="distance-option"
+                                                        onclick="selectDistance(this, 'pharmacy')">500m - 1km</div>
+                                            </div>
+                                            <div class="amenity-description" id="pharmacyDesc">Select distance to
+                                                nearest pharmacy</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="navigation-buttons">
+                                        <button class="next-button" onclick="nextPage()">Next</button>
+                                        <button class="back-button" onclick="goBack()">← Back</button>
+                                    </div>
+                                </div>
+
+                                <div class="hoa-page" id="hoaPage">
+                                    <div class="content-header">
+                                        <h1>HOA Fee Details</h1>
+                                        <p>Please provide information about your Homeowners Association fees</p>
+                                    </div>
+
+                                    <div class="hoa-input-section">
+                                        <div class="fee-input-group">
+                                            <h3>Monthly HOA Fee</h3>
+                                            <div class="fee-input-wrapper">
+                                                <!-- <span class="currency-symbol">₹</span> -->
+                                                <input type="number" class="fee-input" id="hoaFee" placeholder="0"
+                                                    onchange="updateHOADetails()">
+                                                <span class="fee-period">/month</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="fee-options">
+                                            <div class="fee-option" onclick="selectFeeOption(this, 'basic')">
+                                                <div class="fee-option-title">Basic Maintenance</div>
+                                                <div class="fee-option-desc">Includes essential building maintenance and
+                                                    security</div>
+                                            </div>
+                                            <div class="fee-option" onclick="selectFeeOption(this, 'standard')">
+                                                <div class="fee-option-title">Standard Package</div>
+                                                <div class="fee-option-desc">Includes basic maintenance plus common
+                                                    amenities</div>
+                                            </div>
+                                            <div class="fee-option" onclick="selectFeeOption(this, 'premium')">
+                                                <div class="fee-option-title">Premium Services</div>
+                                                <div class="fee-option-desc">Full access to all amenities and premium
+                                                    services</div>
+                                            </div>
+                                            <div class="fee-option" onclick="selectFeeOption(this, 'luxury')">
+                                                <div class="fee-option-title">Luxury Package</div>
+                                                <div class="fee-option-desc">Elite services with exclusive amenities
+                                                    access</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="included-amenities">
+                                            <h3>Included Amenities</h3>
+                                            <div class="amenity-checkbox">
+                                                <input type="checkbox" id="security" onchange="updateHOADetails()">
+                                                <label for="security">24/7 Security</label>
+                                            </div>
+                                            <div class="amenity-checkbox">
+                                                <input type="checkbox" id="cleaning" onchange="updateHOADetails()">
+                                                <label for="cleaning">Common Area Cleaning</label>
+                                            </div>
+                                            <div class="amenity-checkbox">
+                                                <input type="checkbox" id="gym" onchange="updateHOADetails()">
+                                                <label for="gym">Gym Access</label>
+                                            </div>
+                                            <div class="amenity-checkbox">
+                                                <input type="checkbox" id="pool" onchange="updateHOADetails()">
+                                                <label for="pool">Swimming Pool</label>
+                                            </div>
+                                            <div class="amenity-checkbox">
+                                                <input type="checkbox" id="parking" onchange="updateHOADetails()">
+                                                <label for="parking">Reserved Parking</label>
+                                            </div>
+                                            <div class="amenity-checkbox">
+                                                <input type="checkbox" id="clubhouse" onchange="updateHOADetails()">
+                                                <label for="clubhouse">Club House Access</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="navigation-buttons">
+                                        <button class="next-button" onclick="nextPage()">Next</button>
+                                        <button class="back-button" onclick="goBack()">← Back</button>
+                                    </div>
+                                </div>
+
+                                <div class="view-page" id="viewPage">
+                                    <div class="content-header">
+                                        <h1>Property View Classification</h1>
+                                        <p>Select the type of view your property offers</p>
+                                    </div>
+
+                                    <div class="view-cards">
+                                        <div class="view-card" onclick="selectView(this, 'cityscape')">
+                                            <div class="view-image"
+                                                style="background-image: url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df')">
+                                                <span class="view-tag">Premium</span>
+                                            </div>
+                                            <div class="view-content">
+                                                <div class="view-title">
+                                                    <span>🌆</span> City Skyline View
+                                                </div>
+                                                <div class="view-description">
+                                                    Panoramic view of the city skyline with modern buildings and urban
+                                                    landscape
+                                                </div>
+                                                <div class="view-rating">
+                                                    <span class="star">★★★★★</span>
+                                                    <span>High Value Impact</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="view-card" onclick="selectView(this, 'waterfront')">
+                                            <div class="view-image"
+                                                style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')">
+                                                <span class="view-tag">Premium</span>
+                                            </div>
+                                            <div class="view-content">
+                                                <div class="view-title">
+                                                    <span>🌊</span> Waterfront View
+                                                </div>
+                                                <div class="view-description">
+                                                    Scenic water view with natural beauty and calming atmosphere
+                                                </div>
+                                                <div class="view-rating">
+                                                    <span class="star">★★★★★</span>
+                                                    <span>High Value Impact</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="view-card" onclick="selectView(this, 'garden')">
+                                            <div class="view-image"
+                                                style="background-image: url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae')">
+                                                <span class="view-tag">Pleasant</span>
+                                            </div>
+                                            <div class="view-content">
+                                                <div class="view-title">
+                                                    <span>🌳</span> Garden/Park View
+                                                </div>
+                                                <div class="view-description">
+                                                    Overlooking well-maintained gardens or public parks
+                                                </div>
+                                                <div class="view-rating">
+                                                    <span class="star">★★★★</span>
+                                                    <span>Good Value Impact</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="view-card" onclick="selectView(this, 'street')">
+                                            <div class="view-image"
+                                                style="background-image: url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae')">
+                                                <span class="view-tag">Standard</span>
+                                            </div>
+                                            <div class="view-content">
+                                                <div class="view-title">
+                                                    <span>🛣️</span> Street View
+                                                </div>
+                                                <div class="view-description">
+                                                    Regular street view with urban surroundings
+                                                </div>
+                                                <div class="view-rating">
+                                                    <span class="star">★★★</span>
+                                                    <span>Moderate Impact</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="view-card" onclick="selectView(this, 'landmark')">
+                                            <div class="view-image"
+                                                style="background-image: url('https://images.unsplash.com/photo-1567157577867-05ccb1388e66')">
+                                                <span class="view-tag">Premium</span>
+                                            </div>
+                                            <div class="view-content">
+                                                <div class="view-title">
+                                                    <span>🏛️</span> Landmark View
+                                                </div>
+                                                <div class="view-description">
+                                                    View of significant city landmarks or monuments
+                                                </div>
+                                                <div class="view-rating">
+                                                    <span class="star">★★★★★</span>
+                                                    <span>High Value Impact</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="view-card" onclick="selectView(this, 'courtyard')">
+                                            <div class="view-image"
+                                                style="background-image: url('https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6')">
+                                                <span class="view-tag">Standard</span>
+                                            </div>
+                                            <div class="view-content">
+                                                <div class="view-title">
+                                                    <span>🏘️</span> Courtyard View
+                                                </div>
+                                                <div class="view-description">
+                                                    Internal courtyard or community area view
+                                                </div>
+                                                <div class="view-rating">
+                                                    <span class="star">★★★</span>
+                                                    <span>Moderate Impact</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="navigation-buttons">
+                                        <button class="next-button" onclick="nextPage()">Next</button>
+                                        <button class="back-button" onclick="goBack()">← Back</button>
+                                    </div>
+                                </div>
+
+                                <div class="pollution-page" id="pollutionPage">
+                                    <div class="content-header">
+                                        <h1>Environmental Quality Assessment</h1>
+                                        <p>Rate the air and noise pollution levels in your area</p>
+                                    </div>
+
+                                    <div class="pollution-section">
+                                        <div class="pollution-type">
+                                            <div class="pollution-header">
+                                                <span class="pollution-icon">💨</span>
+                                                <span class="pollution-title">Air Quality Level</span>
+                                            </div>
+
+                                            <div class="scale-container">
+                                                <div class="scale-labels">
+                                                    <span class="scale-label">Excellent</span>
+                                                    <span class="scale-label">Good</span>
+                                                    <span class="scale-label">Moderate</span>
+                                                    <span class="scale-label">Poor</span>
+                                                    <span class="scale-label">Very Poor</span>
+                                                </div>
+                                                <input type="range" class="scale-slider" id="airQualitySlider" min="0"
+                                                    max="100" value="50"
+                                                    oninput="updatePollutionLevel('air', this.value)">
+                                                <div class="scale-value" id="airQualityValue">Moderate</div>
+                                                <div class="pollution-description" id="airQualityDesc">
+                                                    Moderate air quality with occasional pollution during peak hours
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="pollution-type">
+                                            <div class="pollution-header">
+                                                <span class="pollution-icon">🔊</span>
+                                                <span class="pollution-title">Noise Level</span>
+                                            </div>
+
+                                            <div class="scale-container">
+                                                <div class="scale-labels">
+                                                    <span class="scale-label">Very Quiet</span>
+                                                    <span class="scale-label">Quiet</span>
+                                                    <span class="scale-label">Moderate</span>
+                                                    <span class="scale-label">Noisy</span>
+                                                    <span class="scale-label">Very Noisy</span>
+                                                </div>
+                                                <input type="range" class="scale-slider" id="noiseLevelSlider" min="0"
+                                                    max="100" value="50"
+                                                    oninput="updatePollutionLevel('noise', this.value)">
+                                                <div class="scale-value" id="noiseLevelValue">Moderate</div>
+                                                <div class="pollution-description" id="noiseLevelDesc">
+                                                    Average urban noise levels with periodic traffic sounds
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="navigation-buttons">
+                                        <button class="next-button" onclick="nextPage()">Next</button>
+                                        <button class="back-button" onclick="goBack()">← Back</button>
+                                    </div>
+                                </div>
+
+                                <div class="utilities-page" id="utilitiesPage">
+                                    <div class="utilities-section">
+                                        <div class="utility-type">
+                                            <div class="utility-header">
+                                                <span class="utility-icon">⚡</span>
+                                                <span class="utility-title">Electricity Consumption</span>
+                                            </div>
+
+                                            <div class="cost-input-group">
+                                                <div class="cost-input">
+                                                    <span class="currency-symbol">₹</span>
+                                                    <input type="number" id="electricityCost"
+                                                        placeholder="Enter monthly electricity cost" min="0">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="utility-type">
+                                            <div class="utility-header">
+                                                <span class="utility-icon">💧</span>
+                                                <span class="utility-title">Water Consumption</span>
+                                            </div>
+
+                                            <div class="cost-input-group">
+                                                <div class="cost-input">
+                                                    <span class="currency-symbol">₹</span>
+                                                    <input type="number" id="waterCost"
+                                                        placeholder="Enter monthly water cost" min="0">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="navigation-buttons">
+                                        <button class="next-button" onclick="nextPage()">Next</button>
+                                        <button class="back-button" onclick="goBack()">← Back</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add the prediction result page -->
+                            <div class="prediction-page" id="predictionPage">
+                                <div class="prediction-card">
+                                    <div class="prediction-header">
+                                        <h1 class="prediction-title">Estimated Property Value</h1>
+                                        <p class="prediction-subtitle">Based on your provided information</p>
+                                    </div>
+
+                                    <div class="predicted-price">
+                                        ₹ 1,00,00,000
+                                    </div>
+
+                                    <div class="prediction-details">
+                                        <h3>Selected Property Details</h3>
+                                        <div id="propertyDetails">
+                                            <!-- Details will be populated here -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="navigation-buttons">
+                                    <button class="back-button" onclick="goBack()">← Back</button>
+                                    <button class="next-button" onclick="startOver()">Start New Prediction</button>
+                                </div>
+                                
+                            </div>
+                            <%- include('./partials/footer') %>
+                            
+                            <!-- Back to Top Button -->
+                            <button id="backToTop" aria-label="Back to top">
+                                <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+                            </button>
+
+                            <script>
+                                // Back to Top Button
+                                const backToTopButton = document.getElementById('backToTop');
+                                
+                                backToTopButton.addEventListener('click', () => {
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: 'smooth'
+                                    });
+                                });
+
+                                window.addEventListener('scroll', () => {
+                                    if (window.pageYOffset > 300) {
+                                        backToTopButton.style.display = 'flex';
+                                    } else {
+                                        backToTopButton.style.display = 'none';
+                                    }
+                                });
+
+                                // Ensure page starts at the top when loaded or refreshed
+                                window.onload = function() {
+                                    window.scrollTo(0, 0);
+                                    
+                                    // Force scroll to top after a slight delay to override any browser behavior
+                                    setTimeout(() => {
+                                        window.scrollTo(0, 0);
+                                    }, 50);
+                                    
+                                    // Initialize back to top button
+                                    backToTopButton.style.display = 'none';
+                                };
+                            </script>
+                            <script src="/js/model.js"></script>
+</body>
+
+</html>

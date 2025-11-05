@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Sign In' %></title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/signin_signup.css">
+    <script src="https://kit.fontawesome.com/21a1c82f31.js" crossorigin="anonymous"></script>
+    <style>
+        /* Additional styles for 2FA */
+        .verification-code {
+            letter-spacing: 3px;
+            font-family: monospace;
+            font-size: 18px;
+            text-align: center;
+        }
+        .code-help {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left">
+            <h1>Welcome back</h1>
+            <img src="/assets/house.svg" alt="Illustration">
+        </div>
+
+        <div class="right">
+            <% if (typeof alert !== 'undefined' && alert) { %>
+                <div class="alert-message">
+                    <%= alert %>
+                </div>
+            <% } %>
+            
+            <% if (typeof showTwoFactor !== 'undefined' && showTwoFactor) { %>
+                <!-- 2FA Verification Form -->
+                <form id="verification-form" action="/auth/verify-2fa" method="POST">
+                    <h2>Two-Factor Authentication</h2>
+                    <p>Please enter the verification code from your Google Authenticator app.</p>
+                    
+                    <label for="token">Verification Code</label>
+                    <input type="text" id="token" name="token" class="verification-code" required 
+                           placeholder="000000" maxlength="6" minlength="6" autocomplete="one-time-code">
+                    <p class="code-help">Enter the 6-digit code from your authenticator app</p>
+
+                    <button type="submit">Verify</button>
+                </form>
+            <% } else { %>
+                <!-- Regular Login Form -->
+                <form id="login-form" action="/auth/signin" method="POST">
+                    <h2>Log in</h2>
+
+                    <label for="email">Email address*</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+
+                    <label for="password">Password*</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+
+                    <a href="#" class="forgot-password">Forgot password?</a>
+
+                    <button type="submit">Log in</button>
+
+                    <p>Don't have an account? <a href="/auth/signup">Sign up</a></p>
+
+                    <div class="or">OR</div>
+
+                    <button type="button" class="google">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                    <button type="button" class="facebook">
+                        <i class="fab fa-facebook"></i> Continue with Facebook
+                    </button>
+                </form>
+            <% } %>
+        </div>
+    </div>
+
+    <footer>
+        <p>By creating an account, you agree to Realtor.com's <a href="#">Privacy notice</a> and <a href="#">Terms of
+                use</a>.</p>
+    </footer>
+
+</body>
+
+</html>

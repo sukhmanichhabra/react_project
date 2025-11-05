@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Property Visit</title>
+    <link rel="shortcut icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="/css/schedulevisit.css">
+</head>
+
+<body>
+    <!-- Include navbar partial -->
+    <%- include('partials/header') %>
+
+    <div class="container">
+        <h1 class="page-title">Schedule a Property Visit</h1>
+        
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success">
+                <%= message %>
+            </div>
+        <% } %>
+        
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <div class="visit-form-container">
+            <form id="visitForm" action="/visit/schedule" method="POST">
+                <div class="form-section">
+                    <h2 class="section-title">1. Select a Property</h2>
+                    
+                    <% if (typeof property !== 'undefined') { %>
+                        <!-- Single property mode -->
+                        <input type="hidden" id="propertyId" name="propertyId" value="<%= property._id %>">
+                        
+                        <div class="property-card selected">
+                            <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-1.jpg' %>" 
+                                alt="<%= property.title %>" class="property-image">
+                            <div class="property-details">
+                                <h3 class="property-title"><%= property.title %></h3>
+                                <p class="property-location"><i class="fas fa-map-marker-alt"></i> <%= property.location %></p>
+                                <p class="property-price">$<%= property.price %></p>
+                                <div class="property-features">
+                                    <span class="property-feature"><i class="fas fa-bed"></i> <%= property.features.beds %> Beds</span>
+                                    <span class="property-feature"><i class="fas fa-bath"></i> <%= property.features.baths %> Baths</span>
+                                    <span class="property-feature"><i class="fas fa-ruler-combined"></i> <%= property.features.sqft %> sqft</span>
+                                </div>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <!-- Multiple properties mode -->
+                        <div class="form-group">
+                            <label for="propertySelect">Choose a property:</label>
+                            <select id="propertySelect" name="propertyId" class="form-control" required>
+                                <option value="">-- Select a property --</option>
+                                <% if (properties && properties.length > 0) { %>
+                                    <% properties.forEach(property => { %>
+                                        <option value="<%= property._id %>"><%= property.title %> - <%= property.location %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        
+                        <div class="property-cards">
+                            <% if (properties && properties.length > 0) { %>
+                                <% properties.forEach(property => { %>
+                                    <div class="property-card" data-property-id="<%= property._id %>">
+                                        <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/property-1.jpg' %>" 
+                                            alt="<%= property.title %>" class="property-image">
+                                        <div class="property-details">
+                                            <h3 class="property-title"><%= property.title %></h3>
+                                            <p class="property-location"><i class="fas fa-map-marker-alt"></i> <%= property.location %></p>
+                                            <p class="property-price">$<%= property.price %></p>
+                                            <div class="property-features">
+                                                <span class="property-feature"><i class="fas fa-bed"></i> <%= property.features.beds %> Beds</span>
+                                                <span class="property-feature"><i class="fas fa-bath"></i> <%= property.features.baths %> Baths</span>
+                                                <span class="property-feature"><i class="fas fa-ruler-combined"></i> <%= property.features.sqft %> sqft</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <p>No properties available for scheduling at this time.</p>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">2. Choose Visit Date</h2>
+                    <div class="form-group">
+                        <label for="visitDate">Visit Date:</label>
+                        <input type="text" id="visitDate" name="visitDate" class="form-control" placeholder="Select a date" required>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">3. Select Time Slot</h2>
+                    <div class="form-group">
+                        <label>Available Time Slots:</label>
+                        <input type="hidden" id="timeSlot" name="timeSlot" required>
+                        <div id="timeSlotGrid" class="time-slot-grid">
+                            <div class="time-slot" data-slot="09:00 - 10:00">9:00 - 10:00</div>
+                            <div class="time-slot" data-slot="10:00 - 11:00">10:00 - 11:00</div>
+                            <div class="time-slot" data-slot="11:00 - 12:00">11:00 - 12:00</div>
+                            <div class="time-slot" data-slot="12:00 - 13:00">12:00 - 13:00</div>
+                            <div class="time-slot" data-slot="13:00 - 14:00">1:00 - 2:00</div>
+                            <div class="time-slot" data-slot="14:00 - 15:00">2:00 - 3:00</div>
+                            <div class="time-slot" data-slot="15:00 - 16:00">3:00 - 4:00</div>
+                            <div class="time-slot" data-slot="16:00 - 17:00">4:00 - 5:00</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">4. Additional Notes</h2>
+                    <div class="form-group">
+                        <label for="notes">Notes for the agent (optional):</label>
+                        <textarea id="notes" name="notes" class="form-control" rows="3" placeholder="Any specific questions or requirements for your visit?"></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="scheduleButton" disabled>Schedule Visit</button>
+            </form>
+        </div>
+        
+        <div class="visits-section">
+            <h2 class="section-title">Your Scheduled Visits</h2>
+            <div class="visit-list">
+                <% if (typeof visits !== 'undefined' && visits.length > 0) { %>
+                    <% visits.forEach(visit => { %>
+                        <div class="visit-card">
+                            <div class="visit-details">
+                                <div class="visit-property"><%= visit.propertyId.title %></div>
+                                <div class="visit-date">
+                                    <i class="far fa-calendar"></i> 
+                                    <%= new Date(visit.visitDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+                                </div>
+                                <div class="visit-time">
+                                    <i class="far fa-clock"></i> <%= visit.timeSlot %>
+                                </div>
+                                <span class="visit-status <%= visit.status %>"><%= visit.status %></span>
+                            </div>
+                            <!-- <div class="visit-actions">
+                                <% if (visit.status === 'pending' || visit.status === 'approved') { %>
+                                    <form action="/visit/cancel/<%= visit._id %>" method="POST">
+                                        <button type="submit" class="cancel-btn">Cancel Visit</button>
+                                    </form>
+                                <% } %>
+                            </div> -->
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-visits-message">
+                        <p>You have no scheduled visits yet.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include footer partial -->
+    <%- include('partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize date picker
+            const today = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 30); // Allow booking up to 30 days in advance
+            
+            flatpickr("#visitDate", {
+                minDate: "today",
+                maxDate: maxDate,
+                dateFormat: "Y-m-d",
+                disable: [
+                    function(date) {
+                        // Disable Sundays
+                        return date.getDay() === 0;
+                    }
+                ],
+                onChange: function(selectedDates, dateStr) {
+                    updateTimeSlots(dateStr);
+                }
+            });
+            
+            // Handle property selection from cards
+            const propertyCards = document.querySelectorAll('.property-card');
+            const propertySelect = document.getElementById('propertySelect');
+            
+            if (propertyCards && propertySelect) {
+                propertyCards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        const propertyId = this.dataset.propertyId;
+                        propertySelect.value = propertyId;
+                        
+                        // Update selected card UI
+                        propertyCards.forEach(c => c.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        validateForm();
+                        updateTimeSlots(document.getElementById('visitDate').value);
+                    });
+                });
+            }
+            
+            // Handle time slot selection
+            const timeSlots = document.querySelectorAll('.time-slot');
+            const timeSlotInput = document.getElementById('timeSlot');
+            
+            timeSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    if (!this.classList.contains('unavailable')) {
+                        // Update selected slot UI
+                        timeSlots.forEach(s => s.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        // Update hidden input
+                        timeSlotInput.value = this.dataset.slot;
+                        validateForm();
+                    }
+                });
+            });
+            
+            // Form validation
+            function validateForm() {
+                const scheduleButton = document.getElementById('scheduleButton');
+                const propertyId = propertySelect ? propertySelect.value : document.getElementById('propertyId').value;
+                const visitDate = document.getElementById('visitDate').value;
+                const timeSlot = timeSlotInput.value;
+                
+                if (propertyId && visitDate && timeSlot) {
+                    scheduleButton.disabled = false;
+                } else {
+                    scheduleButton.disabled = true;
+                }
+            }
+            
+            // Update time slots based on date and property selection
+            function updateTimeSlots(dateStr) {
+                const propertyId = propertySelect ? propertySelect.value : document.getElementById('propertyId').value;
+                
+                if (!dateStr || !propertyId) return;
+                
+                const agentId = '<%= typeof agent !== "undefined" ? agent._id : "" %>';
+                
+                // Reset time slots
+                timeSlots.forEach(slot => {
+                    slot.classList.remove('selected', 'unavailable');
+                });
+                timeSlotInput.value = '';
+                validateForm();
+                
+                // Fetch available time slots using XMLHttpRequest
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', `/visit/api/time-slots?date=${dateStr}&propertyId=${propertyId}&agentId=${agentId}`, true);
+                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 201 || xhr.status === 200) {
+                            try {
+                                const data = JSON.parse(xhr.responseText);
+                                const availableSlots = data.timeSlots;
+                                const allSlots = ['09:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00', '12:00 - 13:00', 
+                                                '13:00 - 14:00', '14:00 - 15:00', '15:00 - 16:00', '16:00 - 17:00'];
+                                
+                                // Mark unavailable slots
+                                allSlots.forEach(slot => {
+                                    const slotElement = document.querySelector(`.time-slot[data-slot="${slot}"]`);
+                                    if (slotElement) {
+                                        if (!availableSlots.includes(slot)) {
+                                            slotElement.classList.add('unavailable');
+                                        }
+                                    }
+                                });
+                            } catch (error) {
+                                console.error('Error parsing time slots response:', error);
+                            }
+                        } else {
+                            console.error('Error fetching time slots:', xhr.status, xhr.statusText);
+                        }
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    console.error('Network error while fetching time slots');
+                };
+                
+                xhr.send();
+            }
+            
+            // Initialize form validation
+            document.getElementById('visitForm').addEventListener('submit', function(e) {
+                const propertyId = propertySelect ? propertySelect.value : document.getElementById('propertyId').value;
+                const visitDate = document.getElementById('visitDate').value;
+                const timeSlot = timeSlotInput.value;
+                
+                if (!propertyId || !visitDate || !timeSlot) {
+                    e.preventDefault();
+                    alert('Please complete all required fields');
+                }
+            });
+            
+            // Initial validation
+            validateForm();
+        });
+    </script>
+</body>
+
+</html> 

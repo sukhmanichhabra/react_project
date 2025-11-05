@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Your Property</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/AgentList_property.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <div class="container">
+        <div class="property-listing-form">
+            <h2>List Your Property</h2>
+            <form action="/property/listing" method="POST" enctype="multipart/form-data">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3>Basic Information</h3>
+                    <div class="form-group">
+                        <label for="title">Property Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Property Type</label>
+                        <select id="type" name="type" required>
+                            <option value="">Select Type</option>
+                            <option value="House">House</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Cottage">Cottage</option>
+                            <option value="Loft">Loft</option>
+                            <option value="Studio">Studio</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tag">Listing Type</label>
+                        <select id="tag" name="tag" required>
+                            <option value="">Select Type</option>
+                            <option value="sale">For Sale</option>
+                            <option value="rent">For Rent</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Price Information -->
+                <div class="form-section">
+                    <h3>Price Information</h3>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" id="price" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="estPayment">Estimated Monthly Payment</label>
+                        <input type="text" id="estPayment" name="estPayment" readonly>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="form-section">
+                    <h3>Location</h3>
+                    <div class="form-group">
+                        <label for="location">Full Address</label>
+                        <input type="text" id="location" name="location" required>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="form-section">
+                    <h3>Features</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sqft">Square Footage</label>
+                            <input type="number" id="sqft" name="sqft" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="beds">Bedrooms</label>
+                            <input type="number" id="beds" name="beds" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="baths">Bathrooms</label>
+                            <input type="number" id="baths" name="baths" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchen">Kitchens</label>
+                            <input type="number" id="kitchen" name="kitchen" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amenities -->
+                <div class="form-section">
+                    <h3>Amenities</h3>
+                    <div class="amenities-grid">
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="A/C & Heating">
+                            A/C & Heating
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Swimming Pool">
+                            Swimming Pool
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Garden">
+                            Garden
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Security">
+                            Security
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Parking">
+                            Parking
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Wifi">
+                            Wifi
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Pet Friendly">
+                            Pet Friendly
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Elevator">
+                            Elevator
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Fireplace">
+                            Fireplace
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Gym">
+                            Gym
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Play Ground">
+                            Play Ground
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" name="amenities" value="Disabled Access">
+                            Disabled Access
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-section">
+                    <h3>Description</h3>
+                    <div class="form-group">
+                        <label for="description">Property Description</label>
+                        <textarea id="description" name="description" rows="5" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div class="form-section">
+                    <h3>Property Images</h3>
+                    <div class="form-group">
+                        <label for="images">Upload Images (Max 5)</label>
+                        <input type="file" id="images" name="images" multiple accept="image/*" required>
+                    </div>
+                    <div id="image-preview" class="image-preview-grid"></div>
+                </div>
+
+                <button type="submit" class="submit-btn">List Property</button>
+            </form>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Calculate estimated monthly payment
+        document.getElementById('price').addEventListener('input', function() {
+            const price = parseFloat(this.value) || 0;
+            const monthlyPayment = (price * 0.05).toFixed(2);
+            document.getElementById('estPayment').value = `$${monthlyPayment}/mo*`;
+        });
+
+        // Image preview
+        document.getElementById('images').addEventListener('change', function(e) {
+            const preview = document.getElementById('image-preview');
+            preview.innerHTML = '';
+            
+            for(let i = 0; i < Math.min(this.files.length, 5); i++) {
+                const file = this.files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'preview-image';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <span class="remove-image">&times;</span>
+                    `;
+                    preview.appendChild(div);
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Remove image preview
+        document.getElementById('image-preview').addEventListener('click', function(e) {
+            if(e.target.classList.contains('remove-image')) {
+                e.target.parentElement.remove();
+            }
+        });
+    </script>
+</body>
+</html> 

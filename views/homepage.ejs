@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homeverse - Find your dream house</title>
+
+    <!-- 
+    - favicon
+  -->
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+
+    <!-- 
+    - custom css link
+  -->
+    <link rel="stylesheet" href="./css/homepage.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+
+    <!-- 
+    - google font link
+  -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <%- include('./partials/navbar') %>
+
+        <style>
+            /* Adjust hero section to account for navbar */
+            .hero {
+                padding-top: 120px;
+                /* Add padding to account for fixed navbar */
+                margin-top: 0 !important;
+                /* Override the negative margin in the original CSS */
+                position: relative;
+                overflow: hidden;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            }
+
+            /* Make sure navbar is visible on all pages */
+            .navbar {
+                background-color: white;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Ensure proper spacing for the first section */
+            main {
+                margin-top: 0;
+            }
+
+            /* Enhanced Hero Section Styles */
+            .hero::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ff6634' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+                opacity: 0.5;
+                z-index: 0;
+            }
+
+            .hero .container {
+                position: relative;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 30px;
+                padding-block: 60px;
+            }
+
+            .hero-content {
+                flex: 1;
+                max-width: 600px;
+                margin-bottom: 0;
+                animation: fadeInUp 0.8s ease-out forwards;
+            }
+
+            .hero-subtitle {
+                background: rgba(255, 102, 52, 0.1);
+                border-radius: 50px;
+                padding: 8px 16px;
+                display: inline-flex;
+                align-items: center;
+                margin-bottom: 25px;
+                border-left: none;
+                animation: slideInRight 0.6s ease-out forwards;
+            }
+
+            .hero-subtitle ion-icon {
+                color: var(--orange-soda);
+                margin-right: 8px;
+                font-size: 18px;
+            }
+
+            .hero-subtitle span {
+                color: var(--orange-soda);
+                font-weight: 600;
+                font-size: 14px;
+                letter-spacing: 0.5px;
+            }
+
+            .hero-title {
+                font-size: 3.5rem;
+                line-height: 1.2;
+                margin-bottom: 25px;
+                color: #2d3748;
+                font-weight: 700;
+                position: relative;
+            }
+
+            .hero-title::after {
+                content: "";
+                position: absolute;
+                bottom: -15px;
+                left: 0;
+                width: 80px;
+                height: 4px;
+                background: var(--orange-soda);
+                border-radius: 2px;
+            }
+
+            .hero-text {
+                color: #4a5568;
+                font-size: 1.1rem;
+                line-height: 1.8;
+                margin-bottom: 35px;
+                border-left: none;
+                padding-left: 0;
+            }
+
+            .hero-stats {
+                display: flex;
+                gap: 30px;
+                margin-top: 40px;
+                animation: fadeInUp 1s ease-out 0.3s forwards;
+                opacity: 0;
+            }
+
+            .stat-item {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--orange-soda);
+                margin-bottom: 5px;
+            }
+
+            .stat-text {
+                font-size: 0.9rem;
+                color: #4a5568;
+            }
+
+            .hero-buttons {
+                display: flex;
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            .btn {
+                padding: 15px 30px;
+                border-radius: 50px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+                z-index: 1;
+            }
+
+            .btn-primary {
+                background: var(--orange-soda);
+                color: white;
+                border: none;
+            }
+
+            .btn-secondary {
+                background: transparent;
+                color: #2d3748;
+                border: 2px solid #e2e8f0;
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(255, 102, 52, 0.3);
+            }
+
+            .btn-secondary:hover {
+                background: #f8f9fa;
+                border-color: #cbd5e0;
+                transform: translateY(-3px);
+            }
+
+            .hero-banner {
+                flex: 1;
+                position: relative;
+                animation: floatAnimation 6s ease-in-out infinite;
+            }
+
+            .hero-banner img {
+                max-width: 100%;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                position: relative;
+                z-index: 1;
+            }
+
+            .shape-1 {
+                position: absolute;
+                top: -30px;
+                right: -30px;
+                width: 150px;
+                height: 150px;
+                background: rgba(255, 102, 52, 0.1);
+                border-radius: 50%;
+                z-index: 0;
+                animation: pulse 4s infinite;
+            }
+
+            .shape-2 {
+                position: absolute;
+                bottom: -20px;
+                left: -20px;
+                width: 100px;
+                height: 100px;
+                background: rgba(66, 153, 225, 0.1);
+                border-radius: 50%;
+                z-index: 0;
+                animation: pulse 4s infinite 1s;
+            }
+
+            .trusted-by {
+                margin-top: 60px;
+                text-align: center;
+                opacity: 0;
+                animation: fadeInUp 1s ease-out 0.6s forwards;
+            }
+
+            .trusted-by h4 {
+                font-size: 0.9rem;
+                color: #718096;
+                margin-bottom: 20px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .partner-logos {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 40px;
+                flex-wrap: wrap;
+            }
+
+            .partner-logo {
+                opacity: 0.7;
+                transition: opacity 0.3s ease;
+                height: 30px;
+                filter: grayscale(100%);
+            }
+
+            .partner-logo:hover {
+                opacity: 1;
+                filter: grayscale(0%);
+            }
+
+            /* Animations */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(-30px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes floatAnimation {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-15px);
+                }
+            }
+
+            @keyframes pulse {
+
+                0%,
+                100% {
+                    transform: scale(1);
+                    opacity: 0.5;
+                }
+
+                50% {
+                    transform: scale(1.1);
+                    opacity: 0.8;
+                }
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 992px) {
+                .hero .container {
+                    flex-direction: column;
+                    text-align: center;
+                    padding-block: 40px;
+                }
+
+                .hero-content {
+                    max-width: 100%;
+                }
+
+                .hero-title::after {
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+
+                .hero-stats {
+                    justify-content: center;
+                }
+
+                .stat-item {
+                    align-items: center;
+                }
+
+                .hero-buttons {
+                    justify-content: center;
+                }
+
+                .hero-banner {
+                    margin-top: 40px;
+                    max-width: 80%;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .hero-title {
+                    font-size: 2.5rem;
+                }
+
+                .hero-stats {
+                    flex-wrap: wrap;
+                    gap: 20px;
+                }
+
+                .hero-banner {
+                    max-width: 100%;
+                }
+            }
+        </style>
+
+        <main>
+            <article>
+
+                <!-- 
+        - #HERO
+      -->
+
+                <section class="hero" id="home">
+                    <div class="container">
+
+                        <div class="hero-content">
+
+                            <p class="hero-subtitle">
+                                <ion-icon name="home"></ion-icon>
+                                <span>PREMIUM REAL ESTATE</span>
+                            </p>
+
+                            <h2 class="h1 hero-title">Find Your Perfect Property With Us</h2>
+
+                            <p class="hero-text">
+                                We help you find your dream home with our curated selection of premium properties.
+                                Our expert agents provide personalized guidance throughout your real estate journey.
+                            </p>
+
+                            <div class="hero-buttons">
+                                <button class="btn btn-primary"
+                                    onclick="window.location.href='/property_list';">ExploreProperties</button>
+                                <button class="btn btn-secondary" onclick="window.location.href='/contact';">Contact
+                                    Us</button>
+
+                            </div>
+
+                            <div class="hero-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">2,500+</span>
+                                    <span class="stat-text">Properties Listed</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">1,800+</span>
+                                    <span class="stat-text">Happy Clients</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">99%</span>
+                                    <span class="stat-text">Client Satisfaction</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <figure class="hero-banner">
+                            <div class="shape-1"></div>
+                            <div class="shape-2"></div>
+                            <img src="./assets/heroimg.png" alt="Modern house model" class="w-100">
+                        </figure>
+
+                    </div>
+
+                    <div class="trusted-by">
+                        <h4>Trusted By</h4>
+                        <div class="partner-logos">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5969/5969002.png" alt="Partner 1"
+                                class="partner-logo">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" alt="Partner 2"
+                                class="partner-logo">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968919.png" alt="Partner 3"
+                                class="partner-logo">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968705.png" alt="Partner 4"
+                                class="partner-logo">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968853.png" alt="Partner 5"
+                                class="partner-logo">
+                        </div>
+                    </div>
+                </section>
+
+
+
+
+
+                <!-- 
+        - #ABOUT
+      -->
+
+                <section class="about" id="about">
+                    <div class="container">
+
+                        <figure class="about-banner">
+                            <img src="./assets/about-banner-1.png" alt="House interior">
+
+                            <img src="./assets/about-banner-2.jpg" alt="House interior" class="abs-img">
+                        </figure>
+
+                        <div class="about-content">
+
+                            <p class="section-subtitle">About Us</p>
+
+                            <h2 class="h2 section-title">The Leading Real Estate Rental-Selling Marketplace.</h2>
+
+                            <p class="about-text">
+                                Over 39,000 people work for us in more than 70 countries all over the This breadth of
+                                global
+                                coverage,
+                                combined with
+                                specialist services
+                            </p>
+
+                            <ul class="about-list">
+
+                                <li class="about-item">
+                                    <div class="about-item-icon">
+                                        <ion-icon name="home-outline"></ion-icon>
+                                    </div>
+
+                                    <p class="about-item-text">No Collateral Loans</p>
+                                </li>
+
+                                <li class="about-item">
+                                    <div class="about-item-icon">
+                                        <ion-icon name="leaf-outline"></ion-icon>
+                                    </div>
+
+                                    <p class="about-item-text">Competetive Prices</p>
+                                </li>
+
+                                <li class="about-item">
+                                    <div class="about-item-icon">
+                                        <ion-icon name="wine-outline"></ion-icon>
+                                    </div>
+
+                                    <p class="about-item-text">Exceptional Lifestyle</p>
+                                </li>
+
+                                <li class="about-item">
+                                    <div class="about-item-icon">
+                                        <ion-icon name="shield-checkmark-outline"></ion-icon>
+                                    </div>
+
+                                    <p class="about-item-text">24/7 Agent Support</p>
+                                </li>
+
+                            </ul>
+
+                            <p class="callout">
+                                "You are not buying a house, you are buying a lifestyle"
+                            </p>
+
+                            <a href="#service" class="btn">Our Services</a>
+
+                        </div>
+
+                    </div>
+                </section>
+
+
+
+
+
+                <!-- 
+        - #SERVICE
+      -->
+
+                <section class="service" id="service">
+                    <div class="container">
+
+                        <p class="section-subtitle">Our Services</p>
+
+                        <h2 class="h2 section-title">Our Main Focus</h2>
+
+                        <ul class="service-list">
+
+                            <li>
+                                <div class="service-card">
+
+                                    <div class="card-icon">
+                                        <img src="./assets/service-1.png" alt="Service icon">
+                                    </div>
+
+                                    <h3 class="h3 card-title">
+                                        <a href="/property_list">Buy a home</a>
+                                    </h3>
+
+                                    <p class="card-text">
+                                        over 1 million+ homes for sale available on the website, we can match you with a
+                                        house you will want
+                                        to call home.
+                                    </p>
+
+                                    <a href="/property_list" class="card-link">
+                                        <span>Find A Home</span>
+
+                                        <ion-icon name="arrow-forward-outline"></ion-icon>
+                                    </a>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="service-card">
+
+                                    <div class="card-icon">
+                                        <img src="./assets/service-2.png" alt="Service icon">
+                                    </div>
+
+                                    <h3 class="h3 card-title">
+                                        <a href="/property_list">Rent a home</a>
+                                    </h3>
+
+                                    <p class="card-text">
+                                        over 1 million+ homes for sale available on the website, we can match you with a
+                                        house you will want
+                                        to call home.
+                                    </p>
+
+                                    <a href="/property_list" class="card-link">
+                                        <span>Find A Home</span>
+
+                                        <ion-icon name="arrow-forward-outline"></ion-icon>
+                                    </a>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="service-card">
+
+                                    <div class="card-icon">
+                                        <img src="./assets/service-3.png" alt="Service icon">
+                                    </div>
+
+                                    <h3 class="h3 card-title">
+                                        <a href="/property_list">Sell a home</a>
+                                    </h3>
+
+                                    <p class="card-text">
+                                        over 1 million+ homes for sale available on the website, we can match you with a
+                                        house you will want
+                                        to call home.
+                                    </p>
+
+                                    <a href="/property_list" class="card-link">
+                                        <span>Find A Home</span>
+
+                                        <ion-icon name="arrow-forward-outline"></ion-icon>
+                                    </a>
+
+                                </div>
+                            </li>
+
+                        </ul>
+
+                    </div>
+                </section>
+
+
+
+
+
+                <!-- 
+        - #PROPERTY
+      -->
+
+                <!-- views/partials/featured.ejs -->
+                <section class="property" id="property">
+                    <div class="container">
+                        <p class="section-subtitle">Properties</p>
+                        <h2 class="h2 section-title">Featured Listings</h2>
+
+                        <ul class="property-list has-scrollbar">
+                            <% if (typeof featuredProperties !=='undefined' && featuredProperties.length> 0) { %>
+                                <% featuredProperties.forEach(property=> { %>
+                                    <%- include('./partials/featured.ejs', property) %>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <!-- Fallback properties if no featured properties are available -->
+                                                <%- include('./partials/featured.ejs', { badge: 'green' ,
+                                                    badgeText: 'FOR RENT' , location: 'Belmont Gardens, Chicago' ,
+                                                    imagesCount: 4, videosCount: 2, imageUrl: '/assets/property-1.jpg' ,
+                                                    title: 'New Apartment Nice View' ,
+                                                    description: 'Beautiful Huge 1 Family House In Heart Of Westbury. Newly Renovated With New Wood'
+                                                    , bedrooms: 3, bathrooms: 2, squareFeet: 3450, price: '$34,900' ,
+                                                    period: 'Month' , overviewLink: '/property_overview' ,
+                                                    agentImage: '/assets/author.jpg' , agentName: 'William Seklo' ,
+                                                    agentTitle: 'Estate Agents' , agentLink: '#' }) %>
+
+                                                    <%- include('./partials/featured.ejs', { badge: 'orange' ,
+                                                        badgeText: 'FOR SALES' , location: 'Belmont Gardens, Chicago' ,
+                                                        imagesCount: 4, videosCount: 2,
+                                                        imageUrl: '/assets/property-2.jpg' , title: 'Modern Apartments'
+                                                        ,
+                                                        description: 'Beautiful Huge 1 Family House In Heart Of Westbury. Newly Renovated With New Wood'
+                                                        , bedrooms: 3, bathrooms: 2, squareFeet: 3450, price: '$34,900'
+                                                        , period: 'Month' , overviewLink: '/property_overview' ,
+                                                        agentImage: '/assets/author.jpg' , agentName: 'William Seklo' ,
+                                                        agentTitle: 'Estate Agents' , agentLink: '#' }) %>
+                                                        <% } %>
+                        </ul>
+                    </div>
+                </section>
+
+
+
+
+
+                <!-- 
+                    - #FEATURES
+                  -->
+
+                <section class="features">
+                    <div class="container">
+
+                        <p class="section-subtitle">Our Testimonial</p>
+
+                        <h2 class="h2 section-title">Clients Feedback</h2>
+
+                        <ul class="features-list">
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">Jacob William</h3>
+                                    <p class="author-title">SELLING AGENTS</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "Excellent service! Found my dream home in just two weeks. The team was
+                                        professional and attentive."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">Kelian Anderson</h3>
+                                    <p class="author-title">SELLING AGENTS</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "The property listings were accurate and detailed. Made my decision-making
+                                        process much easier."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">Adam Joseph</h3>
+                                    <p class="author-title">SELLING AGENTS</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "Transparent pricing and no hidden fees. I appreciate the honesty and
+                                        professionalism."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">Emma Thompson</h3>
+                                    <p class="author-title">HOME BUYER</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "The virtual tours saved me so much time. I could narrow down my choices before
+                                        visiting in person."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">Michael Rodriguez</h3>
+                                    <p class="author-title">HOME BUYER</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "Their knowledge of the local market is impressive. Got me a great deal in a
+                                        competitive area."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">Sophia Chen</h3>
+                                    <p class="author-title">HOME BUYER</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "The mortgage assistance program they recommended saved me thousands. Truly a
+                                        full-service agency."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">David Wilson</h3>
+                                    <p class="author-title">PROPERTY INVESTOR</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "From listing to closing, everything was handled efficiently. Would definitely
+                                        use their services again."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="features-card">
+
+                                    <div class="card-icon">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </div>
+
+                                    <h3 class="card-title">Olivia Parker</h3>
+                                    <p class="author-title">FIRST-TIME BUYER</p>
+                                    <p class="card-text">
+                                        <ion-icon name="quote-outline" class="quote-icon"></ion-icon>
+                                        "As a first-time buyer, I appreciated how they explained every step of the
+                                        process. Felt supported throughout."
+                                    </p>
+
+                                    <div class="card-btn">
+                                        <ion-icon name="star"></ion-icon>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                        </ul>
+
+                    </div>
+                </section>
+
+
+
+
+
+                <!-- 
+        - #BLOG
+      -->
+
+                <!-- views/partials/blog.ejs -->
+                <section class="blog" id="blog">
+                    <div class="container">
+                        <p class="section-subtitle">News & Blogs</p>
+                        <h2 class="h2 section-title">Latest News Feeds</h2>
+
+                        <ul class="blog-list has-scrollbar">
+                            <% if (recentBlogs && recentBlogs.length> 0) { %>
+                                <% recentBlogs.forEach(blog=> { %>
+                                    <%- include('./partials/featured_blog', { imageUrl: blog.imageUrl
+                                        || './assets/house.jpg' , imageAlt: blog.title, author: blog.author, tag:
+                                        blog.tags && blog.tags.length> 0 ? blog.tags[0] : 'General',
+                                        title: blog.title,
+                                        dateTime: blog.createdOn,
+                                        dateFormatted: new Date(blog.createdOn).toLocaleDateString('en-US', { year:
+                                        'numeric', month: 'short', day: '2-digit' }),
+                                        blogLink: `/blog_desc/${blog._id}`
+                                        }) %>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <li class="blog-card">
+                                                    <p>No recent blogs available.</p>
+                                                </li>
+                                                <% } %>
+                        </ul>
+                    </div>
+                </section>
+
+
+
+
+
+                <!-- 
+        - #CTA
+      -->
+
+                <section class="cta">
+                    <div class="container">
+
+                        <div class="cta-card">
+                            <div class="card-content">
+                                <h2 class="h2 card-title">Looking for a dream home?</h2>
+
+                                <p class="card-text">We can help you realize your dream of a new home</p>
+                            </div>
+
+                            <button class="btn cta-btn" onclick="window.location.href='/property_list';">
+                                <span>Explore Properties</span>
+
+                                <ion-icon name="arrow-forward-outline"></ion-icon>
+                            </button>
+                        </div>
+
+                    </div>
+                </section>
+
+            </article>
+        </main>
+
+        <%- include('./partials/footer') %>
+
+            <!-- Back to Top Button -->
+            <button id="backToTop" aria-label="Back to top">
+                <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+            </button>
+
+            <script>
+                // Back to Top Button
+                const backToTopButton = document.getElementById('backToTop');
+
+                backToTopButton.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                window.addEventListener('scroll', () => {
+                    if (window.pageYOffset > 300) {
+                        backToTopButton.style.display = 'flex';
+                    } else {
+                        backToTopButton.style.display = 'none';
+                    }
+                });
+
+                // Ensure page starts at the top when loaded or refreshed
+                window.onload = function () {
+                    window.scrollTo(0, 0);
+
+                    // Force scroll to top after a slight delay to override any browser behavior
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                    }, 50);
+
+                    // Initialize back to top button
+                    backToTopButton.style.display = 'none';
+                };
+            </script>
+
+            <!-- 
+    - custom js link
+  -->
+            <script src="./js/homepage.js"></script>
+
+            <!-- 
+    - ionicon link
+  -->
+            <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+            <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Blog | Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/add_blog.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+
+<body>
+    <%- include('./partials/navbar') %>
+
+        <div class="container">
+            <div class="page-header animate_animated animate_fadeIn">
+                <h1><i class="fas fa-edit"></i> Update Blog Post</h1>
+                <p>Edit your blog content</p>
+            </div>
+
+            <div class="blog-form-container animate_animated animatefadeInUp animate_delay-1s">
+                <form id="updateBlogForm" class="blog-form" enctype="multipart/form-data">
+                    <% if (locals.alert) { %>
+                        <div class="alert <%= locals.alertType || 'error' %>">
+                            <i
+                                class="fas <%= locals.alertType === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle' %>"></i>
+                            <%= alert %>
+                        </div>
+                        <% } %>
+
+                            <input type="hidden" id="blogId" value="<%= blog._id %>">
+
+                            <div class="form-group animate_animated animatefadeInLeft animate_delay-1s">
+                                <label for="title">
+                                    Title <span class="required">*</span>
+                                    <span class="tooltip" data-tooltip="Enter a descriptive title for your blog post">
+                                        <i class="fas fa-question-circle"></i>
+                                    </span>
+                                </label>
+                                <input type="text" id="title" name="title" required minlength="5" maxlength="100"
+                                    placeholder="Enter blog title" class="input-field" value="<%= blog.title %>">
+                                <div class="validation-message" id="title-validation"></div>
+                            </div>
+
+                            <div class="form-group animate_animated animatefadeInRight animate_delay-1s">
+                                <label for="author">
+                                    Author <span class="required">*</span>
+                                </label>
+                                <input type="text" id="author" name="author" required minlength="2" maxlength="50"
+                                    placeholder="Enter author name" class="input-field" value="<%= blog.author %>">
+                                <div class="validation-message" id="author-validation"></div>
+                            </div>
+
+                            <div class="form-row animate_animated animatefadeInLeft animate_delay-2s">
+                                <div class="form-group">
+                                    <label>
+                                        Tags <span class="required">*</span>
+                                        <span class="tooltip" data-tooltip="Select at least one category for your blog">
+                                            <i class="fas fa-question-circle"></i>
+                                        </span>
+                                    </label>
+                                    <div class="tag-container">
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="residential" name="tags" value="residential"
+                                                <%=blog.tags.includes('residential') ? 'checked' : '' %>>
+                                            <label for="residential" class="tag-label">
+                                                <i class="fas fa-home"></i> Residential
+                                            </label>
+                                        </div>
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="commercial" name="tags" value="commercial"
+                                                <%=blog.tags.includes('commercial') ? 'checked' : '' %>>
+                                            <label for="commercial" class="tag-label">
+                                                <i class="fas fa-building"></i> Commercial
+                                            </label>
+                                        </div>
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="investment" name="tags" value="investment"
+                                                <%=blog.tags.includes('investment') ? 'checked' : '' %>>
+                                            <label for="investment" class="tag-label">
+                                                <i class="fas fa-chart-line"></i> Investment
+                                            </label>
+                                        </div>
+                                        <div class="tag-option">
+                                            <input type="checkbox" id="market-trends" name="tags" value="market-trends"
+                                                <%=blog.tags.includes('market-trends') ? 'checked' : '' %>>
+                                            <label for="market-trends" class="tag-label">
+                                                <i class="fas fa-chart-bar"></i> Market Trends
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="validation-message" id="tags-validation"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="createdOn">
+                                        Publication Date <span class="required">*</span>
+                                    </label>
+                                    <input type="date" id="createdOn" name="createdOn" required class="input-field"
+                                        value="<%= blog.createdOn %>">
+                                    <div class="validation-message" id="date-validation"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group animate_animated animatefadeInUp animate_delay-2s">
+                                <label for="image">
+                                    Featured Image
+                                    <span class="tooltip" data-tooltip="Upload a high-quality image for your blog post">
+                                        <i class="fas fa-question-circle"></i>
+                                    </span>
+                                </label>
+                                <div class="file-upload">
+                                    <input type="file" id="image" name="image" accept="image/*"
+                                        class="file-input">
+                                    <label for="image" class="file-label">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span class="file-text">Change image</span>
+                                    </label>
+                                    <div class="file-preview" id="imagePreview">
+                                        <img src="<%= blog.imageUrl %>" alt="Current image">
+                                        <span class="current-image-label">Current image</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group animate_animated animatefadeInUp animate_delay-3s">
+                                <label for="content">
+                                    Content <span class="required">*</span>
+                                    <span class="tooltip"
+                                        data-tooltip="Write your blog content here. Rich text formatting is supported.">
+                                        <i class="fas fa-question-circle"></i>
+                                    </span>
+                                </label>
+                                <div id="editor-container"></div>
+                                <textarea id="content" name="content" style="display:none"></textarea>
+                                <div class="validation-message" id="content-validation"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="featured">
+                                    Featured Blog
+                                </label>
+                                <div class="switch-container">
+                                    <label class="switch">
+                                        <input type="checkbox" id="featured" name="featured" <%=blog.featured
+                                            ? 'checked' : '' %>>
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span class="switch-label">Set as featured blog</span>
+                                </div>
+                            </div>
+
+                            <div class="form-actions animate_animated animatefadeInUp animate_delay-3s">
+                                <button type="button" class="btn btn-secondary"
+                                    onclick="window.location.href='/blog_desc/<%= blog._id %>'">
+                                    <i class="fas fa-arrow-left"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <i class="fas fa-save"></i> Update Blog
+                                </button>
+                            </div>
+                </form>
+            </div>
+        </div>
+
+        <%- include('./partials/footer') %>
+
+            <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Initialize Quill editor
+                    const quill = new Quill('#editor-container', {
+                        modules: {
+                            toolbar: [
+                                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                [{ 'color': [] }, { 'background': [] }],
+                                ['link', 'image'],
+                                ['clean']
+                            ]
+                        },
+                        placeholder: 'Write your blog content here...',
+                        theme: 'snow'
+                    });
+
+                    // Set initial content
+                    quill.root.innerHTML = `<%= blog.content.replace(/'/g, "\\'").replace(/\n/g, "\\n") %>`;
+
+                    // Form validation
+                    const blogForm = document.getElementById('updateBlogForm');
+                    const blogId = document.getElementById('blogId').value;
+                    const titleInput = document.getElementById('title');
+                    const authorInput = document.getElementById('author');
+                    const contentInput = document.getElementById('content');
+                    const tagCheckboxes = document.querySelectorAll('input[name="tags"]');
+                    const dateInput = document.getElementById('createdOn');
+                    const imageInput = document.getElementById('image');
+                    const imagePreview = document.getElementById('imagePreview');
+                    const featuredCheckbox = document.getElementById('featured');
+
+                    // Image preview
+                    imageInput.addEventListener('change', function () {
+                        const file = this.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">
+                                                <span class="remove-image" title="Remove image">×</span>`;
+
+                                // Add event listener to remove button
+                                document.querySelector('.remove-image').addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    imagePreview.innerHTML = '';
+                                    imageInput.value = '';
+                                    document.querySelector('.file-text').textContent = 'Choose an image';
+                                });
+                            }
+                            reader.readAsDataURL(file);
+                            document.querySelector('.file-text').textContent = file.name;
+                        }
+                    });
+
+                    // Update hidden content field with Quill content before submit
+                    blogForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
+
+                        // Validate form
+                        let isValid = true;
+
+                        // Title validation
+                        if (!titleInput.value.trim() || titleInput.value.length < 5) {
+                            document.getElementById('title-validation').textContent = 'Title must be at least 5 characters';
+                            titleInput.classList.add('invalid');
+                            isValid = false;
+                        } else {
+                            document.getElementById('title-validation').textContent = '';
+                            titleInput.classList.remove('invalid');
+                        }
+
+                        // Author validation
+                        if (!authorInput.value.trim() || authorInput.value.length < 2) {
+                            document.getElementById('author-validation').textContent = 'Author name is required';
+                            authorInput.classList.add('invalid');
+                            isValid = false;
+                        } else {
+                            document.getElementById('author-validation').textContent = '';
+                            authorInput.classList.remove('invalid');
+                        }
+
+                        // Tags validation
+                        let tagsChecked = false;
+                        const selectedTags = [];
+                        tagCheckboxes.forEach(checkbox => {
+                            if (checkbox.checked) {
+                                tagsChecked = true;
+                                selectedTags.push(checkbox.value);
+                            }
+                        });
+
+                        if (!tagsChecked) {
+                            document.getElementById('tags-validation').textContent = 'Select at least one tag';
+                            isValid = false;
+                        } else {
+                            document.getElementById('tags-validation').textContent = '';
+                        }
+
+                        // Date validation
+                        if (!dateInput.value) {
+                            document.getElementById('date-validation').textContent = 'Publication date is required';
+                            dateInput.classList.add('invalid');
+                            isValid = false;
+                        } else {
+                            document.getElementById('date-validation').textContent = '';
+                            dateInput.classList.remove('invalid');
+                        }
+
+                        // Content validation
+                        const quillContent = quill.root.innerHTML;
+                        if (quill.getText().trim().length < 50) {
+                            document.getElementById('content-validation').textContent = 'Content must be at least 50 characters';
+                            document.querySelector('.ql-editor').classList.add('invalid-editor');
+                            isValid = false;
+                        } else {
+                            document.getElementById('content-validation').textContent = '';
+                            document.querySelector('.ql-editor').classList.remove('invalid-editor');
+                            // Set the content value here, but don't rely on the required attribute
+                            contentInput.value = quillContent;
+                        }
+
+                        // Submit if valid
+                        if (isValid) {
+                            // Show loading state
+                            const submitBtn = document.getElementById('submitBtn');
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                            submitBtn.disabled = true;
+                            
+                            // Create FormData object for file uploads
+                            const formData = new FormData(blogForm);
+                            
+                            // Add Quill content
+                            formData.set('content', quillContent);
+                            
+                            // Add featured flag
+                            formData.set('featured', featuredCheckbox.checked);
+                            
+                            // Submit via XMLHttpRequest
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('PUT', `/blog/update/${blogId}`, true);
+                            
+                            xhr.onreadystatechange = function() {
+                                if (xhr.readyState === 4) {
+                                    if (xhr.status === 201 || xhr.status === 200) {
+                                        try {
+                                            const data = JSON.parse(xhr.responseText);
+                                            if (data.success) {
+                                                // Redirect to blog description page with success message
+                                                window.location.href = `/blog_desc/${blogId}?success=Blog updated successfully`;
+                                            } else {
+                                                // Show error
+                                                alert('Error: ' + (data.error || 'Failed to update blog'));
+                                                submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Blog';
+                                                submitBtn.disabled = false;
+                                            }
+                                        } catch (error) {
+                                            console.error('Error parsing response:', error);
+                                            alert('An error occurred while updating the blog');
+                                            submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Blog';
+                                            submitBtn.disabled = false;
+                                        }
+                                    } else {
+                                        console.error('HTTP Error:', xhr.status, xhr.statusText);
+                                        alert('An error occurred while updating the blog');
+                                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Blog';
+                                        submitBtn.disabled = false;
+                                    }
+                                }
+                            };
+                            
+                            xhr.onerror = function() {
+                                console.error('Network error occurred');
+                                alert('An error occurred while updating the blog');
+                                submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Blog';
+                                submitBtn.disabled = false;
+                            };
+                            
+                            xhr.ontimeout = function() {
+                                console.error('Request timeout');
+                                alert('Request timeout. Please try again.');
+                                submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Blog';
+                                submitBtn.disabled = false;
+                            };
+                            
+                            // Set timeout
+                            xhr.timeout = 30000; // 30 seconds for file uploads
+                            
+                            // Send the request
+                            xhr.send(formData);
+                        } else {
+                            // Scroll to first error
+                            const firstError = document.querySelector('.validation-message:not(:empty)');
+                            if (firstError) {
+                                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }
+                    });
+
+                    // Input validation on change
+                    titleInput.addEventListener('input', function () {
+                        if (this.value.trim().length >= 5) {
+                            document.getElementById('title-validation').textContent = '';
+                            this.classList.remove('invalid');
+                        }
+                    });
+
+                    authorInput.addEventListener('input', function () {
+                        if (this.value.trim().length >= 2) {
+                            document.getElementById('author-validation').textContent = '';
+                            this.classList.remove('invalid');
+                        }
+                    });
+
+                    tagCheckboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', function () {
+                            let anyChecked = false;
+                            tagCheckboxes.forEach(cb => {
+                                if (cb.checked) anyChecked = true;
+                            });
+
+                            if (anyChecked) {
+                                document.getElementById('tags-validation').textContent = '';
+                            }
+                        });
+                    });
+
+                    // Tooltip functionality
+                    const tooltips = document.querySelectorAll('.tooltip');
+                    tooltips.forEach(tooltip => {
+                        tooltip.addEventListener('mouseenter', function () {
+                            const tooltipText = this.getAttribute('data-tooltip');
+                            const tooltipEl = document.createElement('div');
+                            tooltipEl.className = 'tooltip-text';
+                            tooltipEl.textContent = tooltipText;
+                            this.appendChild(tooltipEl);
+                        });
+
+                        tooltip.addEventListener('mouseleave', function () {
+                            const tooltipText = this.querySelector('.tooltip-text');
+                            if (tooltipText) {
+                                tooltipText.remove();
+                            }
+                        });
+                    });
+                });
+            </script>
+</body>
+
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ Page</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/faq.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+    
+    <div class="faq-wrapper">
+        <div class="faq-content">
+            <div class="container left-container">
+                <ul class="menu-list">
+                    <li><a href="#selling"><i class="fas fa-home"></i> Selling</a></li>
+                    <li><a href="#renting"><i class="fas fa-key"></i> Renting</a></li>
+                    <li><a href="#buying"><i class="fas fa-shopping-cart"></i> Buying</a></li>
+                    <li><a href="#payments"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="#terms"><i class="fas fa-file-contract"></i> Terms & Conditions</a></li>
+                    <li><a href="#account"><i class="fas fa-user"></i> Account</a></li>
+                </ul>
+
+                <div class="contact-section">
+                    <h2>Don't Find Your Answer?</h2>
+                    <button class="contact-btn"><i class="fas fa-envelope"></i> Contact us</button>
+                </div>
+            </div>
+
+            <div class="container right-container">
+                <!-- Selling Section -->
+                <div class="section" id="selling">
+                    <h3 class="section-title">SELLING</h3>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-clock"></i> How does the free trial work?</div>
+                        <div class="faq-answer">Our free trial gives you full access to all selling features for 14 days.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-chart-line"></i> What's the process of selling property?</div>
+                        <div class="faq-answer">The process involves listing your property, scheduling viewings, and managing offers.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-calculator"></i> How do you determine property value?</div>
+                        <div class="faq-answer">We use market analysis, location data, and property condition to determine value.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-money-bill-wave"></i> What fees are involved in selling?</div>
+                        <div class="faq-answer">Standard fees include listing fees, commission, and closing costs.</div>
+                    </div>
+                </div>
+
+                <!-- Renting Section -->
+                <div class="section" id="renting">
+                    <h3 class="section-title">RENTING</h3>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-file-alt"></i> What's the rental application process?</div>
+                        <div class="faq-answer">Submit application, background check, credit check, and security deposit.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-calendar-alt"></i> How long are typical lease terms?</div>
+                        <div class="faq-answer">Most leases are 12 months, but we offer flexible terms from 6-24 months.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-list-ul"></i> What's included in the rent?</div>
+                        <div class="faq-answer">Rent typically includes property use and maintenance. Utilities vary by property.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-shield-alt"></i> How is the security deposit handled?</div>
+                        <div class="faq-answer">Deposits are held in escrow and returned within 30 days of move-out.</div>
+                    </div>
+                </div>
+
+                <!-- Buying Section -->
+                <div class="section" id="buying">
+                    <h3 class="section-title">BUYING</h3>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-tasks"></i> What's the first step in buying?</div>
+                        <div class="faq-answer">Get pre-approved for a mortgage and determine your budget.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-percentage"></i> How much down payment is needed?</div>
+                        <div class="faq-answer">Down payments typically range from 3.5% to 20% of purchase price.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-file-invoice-dollar"></i> What closing costs should I expect?</div>
+                        <div class="faq-answer">Closing costs usually range from 2-5% of the purchase price.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-hourglass-half"></i> How long does buying take?</div>
+                        <div class="faq-answer">The process typically takes 30-60 days from offer acceptance.</div>
+                    </div>
+                </div>
+
+                <!-- Payments Section -->
+                <div class="section" id="payments">
+                    <h3 class="section-title">PAYMENTS</h3>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-credit-card"></i> What payment methods are accepted?</div>
+                        <div class="faq-answer">We accept credit cards, bank transfers, and digital payments.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-calendar-check"></i> When are payments due?</div>
+                        <div class="faq-answer">Payments are typically due on the 1st of each month.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-exclamation-circle"></i> Is there a late payment fee?</div>
+                        <div class="faq-answer">Late fees apply after the 5th of each month.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-sync"></i> How do I set up automatic payments?</div>
+                        <div class="faq-answer">Auto-pay can be set up through your account dashboard.</div>
+                    </div>
+                </div>
+
+                <!-- Terms Section -->
+                <div class="section" id="terms">
+                    <h3 class="section-title">TERMS & CONDITIONS</h3>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-ban"></i> What are the cancellation terms?</div>
+                        <div class="faq-answer">Cancellation policies vary by service type and contract terms.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-lock"></i> How is privacy protected?</div>
+                        <div class="faq-answer">We follow strict data protection and privacy guidelines.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-undo"></i> What's your refund policy?</div>
+                        <div class="faq-answer">Refunds are processed within 30 days of approved requests.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-balance-scale"></i> How do you handle disputes?</div>
+                        <div class="faq-answer">Disputes are handled through our resolution center.</div>
+                    </div>
+                </div>
+
+                <!-- Account Section -->
+                <div class="section" id="account">
+                    <h3 class="section-title">ACCOUNT</h3>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-user-plus"></i> How do I create an account?</div>
+                        <div class="faq-answer">Sign up using email or social media accounts.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-key"></i> How do I reset my password?</div>
+                        <div class="faq-answer">Use the 'Forgot Password' link on the login page.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-users"></i> Can I have multiple profiles?</div>
+                        <div class="faq-answer">One account can manage multiple property profiles.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fas fa-user-minus"></i> How do I delete my account?</div>
+                        <div class="faq-answer">Account deletion can be requested through settings.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('./partials/footer') %>
+    
+    <!-- Back to Top Button -->
+    <button id="backToTop" aria-label="Back to top">
+        <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+    </button>
+
+    <script>
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        // Ensure page starts at the top when loaded or refreshed
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            
+            // Force scroll to top after a slight delay to override any browser behavior
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 50);
+            
+            // Initialize back to top button
+            backToTopButton.style.display = 'none';
+        };
+    </script>
+    <script src="/js/faq.js"></script>
+</body>
+
+</html>

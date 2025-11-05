@@ -1,0 +1,415 @@
+.dash-section-header {
+  margin-bottom: 1.5rem; /* 24px */
+}
+.dash-section-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+  padding: 1rem; /* 32px */
+}
+.dash-section-header p {
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* Status Box */
+.dash-verification-status-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 16px */
+  padding: 1rem; /* 16px */
+  border-radius: 0.5rem; /* 8px */
+  margin-bottom: 2rem; /* 32px */
+  border-left-width: 4px;
+}
+/* Status Box Colors */
+.dash-verification-status-box.success {
+  background-color: #dcfce7; /* bg-green-100 */
+  border-color: #22c55e; /* border-green-500 */
+  color: #15803d; /* text-green-700 */
+}
+.dash-verification-status-box.warning {
+  background-color: #fef9c3; /* bg-yellow-100 */
+  border-color: #f59e0b; /* border-yellow-500 */
+  color: #a16207; /* text-yellow-700 */
+}
+.dash-verification-status-box.error {
+  background-color: #fee2e2; /* bg-red-100 */
+  border-color: #ef4444; /* border-red-500 */
+  color: #b91c1c; /* text-red-700 */
+}
+.dash-verification-status-box.info {
+  background-color: #dbeafe; /* bg-blue-100 */
+  border-color: #3b82f6; /* border-blue-500 */
+  color: #1d4ed8; /* text-blue-700 */
+}
+
+/* Rejection Notice */
+.dash-rejection-notice {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.dash-rejection-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.dash-rejection-header i {
+  font-size: 1.5rem;
+  color: #dc2626;
+}
+.dash-rejection-header h3 {
+  color: #dc2626;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+.dash-rejection-body {
+  color: #7f1d1d;
+}
+.rejection-message {
+  background-color: #fef2f2;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border-left: 4px solid #dc2626;
+  margin: 0.75rem 0;
+  font-weight: 500;
+}
+.rejection-help {
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+  font-style: italic;
+}
+
+/* Pending Notice */
+.dash-pending-notice {
+  background-color: #fef9c3;
+  border: 1px solid #fde047;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.dash-pending-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.dash-pending-header i {
+  font-size: 1.5rem;
+  color: #d97706;
+}
+.dash-pending-header h3 {
+  color: #d97706;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+.dash-pending-body {
+  color: #92400e;
+}
+.dash-pending-body ul {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+}
+.dash-pending-body li {
+  margin-bottom: 0.25rem;
+}
+
+/* Upload Disabled Notice */
+.dash-upload-disabled {
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+.dash-upload-disabled i {
+  font-size: 2rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+.dash-upload-disabled h3 {
+  color: #374151;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.dash-upload-disabled p {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Enhanced Verified Badge */
+.verified-benefits {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+.verified-benefits h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #166534;
+  margin-bottom: 0.75rem;
+}
+.verified-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.verified-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #166534;
+}
+.verified-benefits li i {
+  font-size: 0.75rem;
+  color: #22c55e;
+}
+
+/* Loading States */
+.dash-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+.dash-loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Alert with Close Button */
+.dash-alert {
+  position: relative;
+}
+.dash-alert-close {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.25rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.dash-alert-close:hover {
+  opacity: 1;
+}
+
+/* Admin Verification Specific Styles */
+.av-doc-item.unavailable {
+  opacity: 0.6;
+}
+.av-doc-item .not-provided {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.dash-verification-status-box i {
+  font-size: 1.5rem; /* 24px */
+}
+.dash-status-text strong {
+  font-size: 1rem;
+  font-weight: 600;
+  display: block;
+}
+.dash-status-text p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Form Styles */
+.dash-form-section {
+  background-color: #fff;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  padding: 1.5rem 2rem; /* 24px 32px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+.dash-form-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+.dash-form-section p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.dash-form-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+@media (min-width: 768px) {
+  .dash-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dash-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+.dash-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.dash-form-group label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.dash-form-group input[type="file"] {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  background-color: #fff;
+}
+
+.dash-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.dash-submit-btn {
+  background-color: #dc2626;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+.dash-submit-btn:hover {
+  background-color: #b91c1c;
+}
+.dash-submit-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Alert Messages */
+.dash-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+.dash-alert-success {
+  background-color: #dcfce7;
+  border: 1px solid #22c55e;
+  color: #15803d;
+}
+.dash-alert-error {
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #b91c1c;
+}
+
+/* Form Enhancements */
+.dash-form-group small {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.selected-files {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  color: #4b5563;
+}
+
+.dash-form-group input[type="file"]:disabled {
+  background-color: #f9fafb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Verification Info */
+.dash-verification-info {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  border-left: 4px solid #3b82f6;
+}
+.dash-verification-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+.dash-verification-info ul {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+  color: #4b5563;
+}
+.dash-verification-info li {
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Verified Badge */
+.dash-verified-info {
+  text-align: center;
+  padding: 2rem;
+}
+.dash-verified-badge {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 2px solid #22c55e;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.dash-verified-badge i {
+  font-size: 3rem;
+  color: #22c55e;
+  margin-bottom: 1rem;
+}
+.dash-verified-badge h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #15803d;
+  margin-bottom: 0.75rem;
+}
+.dash-verified-badge p {
+  font-size: 1rem;
+  color: #166534;
+  margin: 0;
+}

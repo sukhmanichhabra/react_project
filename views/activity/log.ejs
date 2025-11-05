@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <%- include('../partials/header') %>
+        <title>User Activity Log | Admin Dashboard</title>
+        <style>
+            .activity-dashboard {
+                padding: 2rem;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+
+            .card {
+                margin-bottom: 1.5rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 0.5rem;
+                border: none;
+            }
+
+            .card-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+                padding: 1rem 1.5rem;
+                font-weight: 600;
+                border-top-left-radius: 0.5rem;
+                border-top-right-radius: 0.5rem;
+                color: #343a40;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .filter-form {
+                background-color: #f8f9fa;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .filter-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.25rem;
+                align-items: flex-end;
+            }
+
+            .filter-group {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .filter-group label {
+                display: block;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+                color: #495057;
+            }
+
+            .filter-group select,
+            .filter-group input {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #ced4da;
+                border-radius: 0.25rem;
+                background-color: white;
+            }
+
+            .btn {
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                border-radius: 0.25rem;
+                border: none;
+                cursor: pointer;
+                font-weight: 500;
+                text-decoration: none;
+                transition: all 0.2s;
+            }
+
+            .btn-primary {
+                background-color: #007bff;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background-color: #0069d9;
+            }
+
+            .btn-secondary {
+                background-color: #6c757d;
+                color: white;
+                margin-left: 0.5rem;
+            }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+            }
+
+            .activity-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                border-radius: 0.5rem;
+                overflow: hidden;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .activity-table th,
+            .activity-table td {
+                padding: 1rem;
+                text-align: left;
+                border-bottom: 1px solid #eaeaea;
+            }
+
+            .activity-table th {
+                background-color: #f5f7f9;
+                font-weight: 600;
+                color: #495057;
+                position: sticky;
+                top: 0;
+            }
+
+            .activity-table tbody tr {
+                transition: background-color 0.2s;
+            }
+
+            .activity-table tr:hover {
+                background-color: #f1f5f9;
+            }
+
+            .activity-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            .pagination {
+                display: flex;
+                justify-content: center;
+                list-style: none;
+                padding: 0;
+                margin-top: 2rem;
+                gap: 0.5rem;
+            }
+
+            .pagination li {
+                margin: 0;
+            }
+
+            .pagination a {
+                display: block;
+                padding: 0.6rem 1rem;
+                border: 1px solid #dee2e6;
+                border-radius: 0.25rem;
+                text-decoration: none;
+                color: #007bff;
+                transition: all 0.2s;
+            }
+
+            .pagination a:hover {
+                background-color: #e9ecef;
+                border-color: #dee2e6;
+            }
+
+            .pagination .active a {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+                font-weight: 500;
+            }
+
+            .badge {
+                padding: 0.35em 0.65em;
+                font-size: 0.75em;
+                font-weight: 600;
+                border-radius: 0.35rem;
+                color: #fff;
+                display: inline-block;
+                margin-right: 0.5rem;
+                text-transform: capitalize;
+                letter-spacing: 0.03em;
+            }
+
+            .badge-page {
+                background-color: #6c757d;
+            }
+
+            .badge-property {
+                background-color: #28a745;
+            }
+
+            .badge-agent {
+                background-color: #17a2b8;
+            }
+
+            .badge-blog {
+                background-color: #fd7e14;
+            }
+
+            .badge-advertisement {
+                background-color: #dc3545;
+            }
+
+            .badge-form {
+                background-color: #6610f2;
+            }
+
+            .badge-chat {
+                background-color: #20c997;
+            }
+
+            .badge-anonymous {
+                background-color: #6c757d;
+            }
+
+            .badge-buyer {
+                background-color: #28a745;
+            }
+
+            .badge-seller {
+                background-color: #fd7e14;
+            }
+
+            .badge-agent-role {
+                background-color: #17a2b8;
+            }
+
+            .badge-admin {
+                background-color: #dc3545;
+            }
+
+            .summary-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .summary-box {
+                text-align: center;
+                padding: 1.5rem;
+                background-color: #f8f9fa;
+                border-radius: 0.5rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+
+            .summary-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .summary-box h3 {
+                margin-bottom: 0.75rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #495057;
+            }
+
+            .summary-box .number {
+                font-size: 2.25rem;
+                font-weight: bold;
+                color: #007bff;
+            }
+
+            .charts-container {
+                width: 100%;
+            }
+
+            .chart-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .chart-row:last-child {
+                margin-bottom: 0;
+            }
+
+            .chart-box {
+                flex: 1;
+                min-width: 300px;
+                background-color: #fff;
+                border-radius: 0.5rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                padding: 1.5rem;
+                position: relative;
+                height: 300px;
+            }
+
+            .chart-box h3 {
+                margin-bottom: 1rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #495057;
+                text-align: center;
+            }
+
+            .bar-chart-container {
+                height: 250px;
+                overflow-y: auto;
+                padding-right: 0.5rem;
+            }
+
+            .bar-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .bar-label {
+                flex: 0 0 150px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                color: #495057;
+            }
+
+            .bar-track {
+                flex: 1;
+                background-color: #e9ecef;
+                height: 12px;
+                border-radius: 6px;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .bar-fill {
+                background-color: #007bff;
+                height: 100%;
+                border-radius: 6px;
+            }
+
+            .bar-value {
+                margin-left: 0.75rem;
+                font-weight: 600;
+                color: #495057;
+                width: 40px;
+                text-align: right;
+            }
+
+            .timestamp {
+                color: #6c757d;
+                font-size: 0.875rem;
+            }
+
+            .details-btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+                border-radius: 0.2rem;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+
+            .details-btn:hover {
+                background-color: #0069d9;
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.4);
+            }
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 10% auto;
+                padding: 20px;
+                border-radius: 0.5rem;
+                width: 80%;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .close:hover {
+                color: black;
+            }
+
+            .metadata-list {
+                list-style: none;
+                padding: 0;
+            }
+
+            .metadata-list li {
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #eee;
+            }
+
+            .metadata-key {
+                font-weight: bold;
+                display: inline-block;
+                min-width: 150px;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('../partials/navbar') %>
+
+        <div class="container activity-dashboard">
+            <h1 class="mb-4">User Activity Log</h1>
+
+            <!-- Summary Statistics -->
+            <div class="card mb-4">
+                <div class="card-header">Summary (Last <%= filter.days || 30 %> Days)</div>
+                <div class="card-body">
+                    <div class="summary-grid">
+                        <div class="summary-box">
+                            <h3>Page Views</h3>
+                            <div class="number">
+                                <%= statistics.totalPageViews %>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <h3>Property Views</h3>
+                            <div class="number">
+                                <%= statistics.propertyViews %>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <h3>Ad Views</h3>
+                            <div class="number">
+                                <%= statistics.advertisementViews %>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <h3>Blog Views</h3>
+                            <div class="number">
+                                <%= statistics.blogViews %>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <h3>Active Users</h3>
+                            <div class="number">
+                                <%= statistics.activeUsers %>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <h3>Ad Clicks</h3>
+                            <div class="number">
+                                <%= statistics.advertisementClicks || 0 %>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <h3>Redirects</h3>
+                            <div class="number">
+                                <%= statistics.redirects || 0 %>
+                            </div>
+                        </div>
+                        <div class="summary-box">
+                            <h3>Unique Visitors</h3>
+                            <div class="number">
+                                <%= statistics.totalUniqueVisitors || 0 %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights and Charts -->
+            <div class="card mb-4">
+                <div class="card-header">Activity Insights</div>
+                <div class="card-body">
+                    <div class="charts-container">
+                        <div class="chart-row">
+                            <div class="chart-box">
+                                <h3>Daily Activity Trends</h3>
+                                <canvas id="activityTrendsChart"></canvas>
+                            </div>
+                            <div class="chart-box">
+                                <h3>User Engagement by Type</h3>
+                                <canvas id="actionTypeChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="chart-box">
+                                <h3>Device Distribution</h3>
+                                <canvas id="deviceChart"></canvas>
+                            </div>
+                            <div class="chart-box">
+                                <h3>Top Viewed Pages</h3>
+                                <div id="topPagesChart" class="bar-chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Form -->
+            <div class="card mb-4">
+                <div class="card-header">Filter Activity Log</div>
+                <div class="card-body">
+                    <form id="filterForm" action="/activity/log" method="GET" class="filter-form">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="userRole">User Role:</label>
+                                <select name="userRole" id="userRole" class="form-control">
+                                    <option value="">All Roles</option>
+                                    <option value="anonymous" <%=filter.userRole==='anonymous' ? 'selected' : '' %>
+                                        >Anonymous</option>
+                                    <option value="buyer" <%=filter.userRole==='buyer' ? 'selected' : '' %>>Buyer
+                                    </option>
+                                    <option value="seller" <%=filter.userRole==='seller' ? 'selected' : '' %>>Seller
+                                    </option>
+                                    <option value="agent" <%=filter.userRole==='agent' ? 'selected' : '' %>>Agent
+                                    </option>
+                                    <option value="admin" <%=filter.userRole==='admin' ? 'selected' : '' %>>Admin
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="targetType">Target Type:</label>
+                                <select name="targetType" id="targetType" class="form-control">
+                                    <option value="">All Targets</option>
+                                    <option value="property" <%=filter.targetType==='property' ? 'selected' : '' %>
+                                        >Property</option>
+                                    <option value="agent" <%=filter.targetType==='agent' ? 'selected' : '' %>>Agent
+                                    </option>
+                                    <option value="blog" <%=filter.targetType==='blog' ? 'selected' : '' %>>Blog
+                                    </option>
+                                    <option value="advertisement" <%=filter.targetType==='advertisement' ? 'selected'
+                                        : '' %>>Advertisement</option>
+                                    <option value="page" <%=filter.targetType==='page' ? 'selected' : '' %>>Page
+                                    </option>
+                                    <option value="form" <%=filter.targetType==='form' ? 'selected' : '' %>>Form
+                                    </option>
+                                    <option value="chatbot" <%=filter.targetType==='chatbot' ? 'selected' : '' %>
+                                        >Chatbot</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="days">Time Period:</label>
+                                <select name="days" id="days" class="form-control">
+                                    <option value="1" <%=filter.days===1 ? 'selected' : '' %>>Last 24 Hours</option>
+                                    <option value="7" <%=filter.days===7 ? 'selected' : '' %>>Last 7 Days</option>
+                                    <option value="30" <%=filter.days===30 ? 'selected' : '' %>>Last 30 Days</option>
+                                    <option value="90" <%=filter.days===90 ? 'selected' : '' %>>Last 90 Days</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="deviceType">Device Type:</label>
+                                <select name="deviceType" id="deviceType" class="form-control">
+                                    <option value="">All Devices</option>
+                                    <option value="desktop" <%=filter.deviceType==='desktop' ? 'selected' : '' %>
+                                        >Desktop</option>
+                                    <option value="mobile" <%=filter.deviceType==='mobile' ? 'selected' : '' %>>Mobile
+                                    </option>
+                                    <option value="tablet" <%=filter.deviceType==='tablet' ? 'selected' : '' %>>Tablet
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                <a href="/activity/log" class="btn btn-secondary ms-2">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Activity Table -->
+            <div class="card">
+                <div class="card-header">
+                    Activity Log
+                    <span class="float-right">
+                        Showing <%= activities.length %> of <%= totalActivities %> activities
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Target</th>
+                                    <th>URL</th>
+                                    <th>Device</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% activities.forEach(activity=> { %>
+                                    <tr>
+                                        <td class="timestamp">
+                                            <%= new Date(activity.timestamp).toLocaleString() %>
+                                        </td>
+                                        <td>
+                                            <% if (activity.userId) { %>
+                                                <a href="/activity/user/<%= activity.userId %>">
+                                                    <%= activity.userName %>
+                                                </a>
+                                                <span
+                                                    class="badge badge-<%= activity.userRole === 'admin' ? 'admin' : activity.userRole === 'agent' ? 'agent-role' : activity.userRole === 'seller' ? 'seller' : activity.userRole === 'buyer' ? 'buyer' : 'anonymous' %>">
+                                                    <%= activity.userRole %>
+                                                </span>
+                                                <% } else { %>
+                                                    Anonymous
+                                                    <span class="badge badge-anonymous">anonymous</span>
+                                                    <% } %>
+                                        </td>
+                                        <td>
+                                            <%= activity.actionType.replace(/_/g, ' ' ) %>
+                                        </td>
+                                        <td>
+                                            <% if (activity.targetType && activity.targetName) { %>
+                                                <span
+                                                    class="badge badge-<%= activity.targetType === 'property' ? 'property' : activity.targetType === 'agent' ? 'agent' : activity.targetType === 'blog' ? 'blog' : activity.targetType === 'advertisement' ? 'advertisement' : activity.targetType === 'form' ? 'form' : activity.targetType === 'chat' ? 'chat' : 'page' %>">
+                                                    <%= activity.targetType %>
+                                                </span>
+                                                <%= activity.targetName %>
+                                                    <% } else if (activity.targetType) { %>
+                                                        <span
+                                                            class="badge badge-<%= activity.targetType === 'property' ? 'property' : activity.targetType === 'agent' ? 'agent' : activity.targetType === 'blog' ? 'blog' : activity.targetType === 'advertisement' ? 'advertisement' : activity.targetType === 'form' ? 'form' : activity.targetType === 'chat' ? 'chat' : 'page' %>">
+                                                            <%= activity.targetType %>
+                                                        </span>
+                                                        <% } else { %>
+                                                            -
+                                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <%= activity.url %>
+                                        </td>
+                                        <td>
+                                            <%= activity.deviceType || 'unknown' %>
+                                        </td>
+                                        <td>
+                                            <button class="details-btn"
+                                                onclick="showActivityDetails('<%= activity._id %>')">View</button>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                        <% if (activities.length===0) { %>
+                                            <tr>
+                                                <td colspan="7" class="text-center">No activities found</td>
+                                            </tr>
+                                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages> 1) { %>
+                        <ul class="pagination">
+                            <% if (currentPage> 1) { %>
+                                <li><a href="/activity/log?page=<%= currentPage - 1 %><%= queryString %>">Previous</a>
+                                </li>
+                                <% } %>
+
+                                    <% for (let i=1; i <=totalPages; i++) { %>
+                                        <li class="<%= i === currentPage ? 'active' : '' %>">
+                                            <a href="/activity/log?page=<%= i %><%= queryString %>">
+                                                <%= i %>
+                                            </a>
+                                        </li>
+                                        <% } %>
+
+                                            <% if (currentPage < totalPages) { %>
+                                                <li><a
+                                                        href="/activity/log?page=<%= currentPage + 1 %><%= queryString %>">Next</a>
+                                                </li>
+                                                <% } %>
+                        </ul>
+                        <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Details Modal -->
+        <div id="activityModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Activity Details</h2>
+                <div id="activityDetails"></div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type="application/json" id="chartData"><%- JSON.stringify({
+        dailyActivity: chartData.dailyActivity || [],
+        actionTypes: chartData.actionTypes || [],
+        devices: chartData.devices || [],
+        topPages: chartData.topPages || []
+    }) %></script>
+        <script>
+            // Chart.js configuration
+            Chart.defaults.color = '#495057';
+            Chart.defaults.font.family = "'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif";
+
+            // Get chart data from script tag
+            const chartDataElement = document.getElementById('chartData');
+            const chartData = JSON.parse(chartDataElement.textContent);
+
+            // Initialize charts when the page loads
+            document.addEventListener('DOMContentLoaded', function () {
+                // Daily Activity Trends Chart
+                const activityTrendsCtx = document.getElementById('activityTrendsChart').getContext('2d');
+
+                // Process the server data for the daily activity chart
+                const dailyData = chartData.dailyActivity;
+                const labels = dailyData.map(day => {
+                    const date = new Date(day._id);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                });
+
+                const pageViewsData = dailyData.map(day => day.pageViews || 0);
+                const propertyViewsData = dailyData.map(day => day.propertyViews || 0);
+
+                new Chart(activityTrendsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Page Views',
+                            data: pageViewsData,
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.05)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: 'Property Views',
+                            data: propertyViewsData,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.05)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Action Type Chart (Doughnut)
+                const actionTypeCtx = document.getElementById('actionTypeChart').getContext('2d');
+
+                // Process the server data for the action type chart
+                const actionTypeData = chartData.actionTypes;
+                const actionLabels = actionTypeData.map(item => {
+                    // Convert action_type to readable format
+                    return item._id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                }).slice(0, 5);
+
+                const actionCounts = actionTypeData.map(item => item.count).slice(0, 5);
+
+                new Chart(actionTypeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: actionLabels,
+                        datasets: [{
+                            data: actionCounts,
+                            backgroundColor: [
+                                '#007bff',
+                                '#28a745',
+                                '#fd7e14',
+                                '#dc3545',
+                                '#6c757d'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Device Distribution Chart (Pie)
+                const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+
+                // Process the server data for the device chart
+                const deviceData = chartData.devices;
+                const deviceLabels = deviceData.map(item => {
+                    // Capitalize first letter of device type
+                    return item._id.charAt(0).toUpperCase() + item._id.slice(1);
+                });
+
+                const deviceCounts = deviceData.map(item => item.count);
+
+                new Chart(deviceCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: deviceLabels,
+                        datasets: [{
+                            data: deviceCounts,
+                            backgroundColor: [
+                                '#20c997',
+                                '#fd7e14',
+                                '#6610f2'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Top Pages Bar Chart
+                // Process the server data for the top pages chart
+                const topPagesData = chartData.topPages;
+                const topPages = topPagesData.map(item => {
+                    let name = item.pageName || item._id;
+
+                    // Clean up URL if needed
+                    if (name.startsWith('/')) {
+                        name = name === '/' ? 'Homepage' : name.slice(1);
+                    }
+
+                    return {
+                        name: name,
+                        count: item.count
+                    };
+                });
+
+                renderTopPagesChart(topPages);
+            });
+
+            // Render the Top Pages bar chart
+            function renderTopPagesChart(data) {
+                const container = document.getElementById('topPagesChart');
+                const maxValue = Math.max(...data.map(item => item.count));
+
+                // Sort data by count descending
+                data.sort((a, b) => b.count - a.count);
+
+                container.innerHTML = '';
+                data.forEach(item => {
+                    const percentage = (item.count / maxValue) * 100;
+
+                    const barItem = document.createElement('div');
+                    barItem.className = 'bar-item';
+
+                    const label = document.createElement('div');
+                    label.className = 'bar-label';
+                    label.title = item.name;
+                    label.textContent = item.name;
+
+                    const track = document.createElement('div');
+                    track.className = 'bar-track';
+
+                    const fill = document.createElement('div');
+                    fill.className = 'bar-fill';
+                    fill.style.width = `${percentage}%`;
+
+                    const value = document.createElement('div');
+                    value.className = 'bar-value';
+                    value.textContent = item.count;
+
+                    track.appendChild(fill);
+                    barItem.appendChild(label);
+                    barItem.appendChild(track);
+                    barItem.appendChild(value);
+                    container.appendChild(barItem);
+                });
+            }
+
+            // Show activity details modal
+            async function showActivityDetails(activityId) {
+                try {
+                    const response = await fetch(`/activity/api/activity/${activityId}`);
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const activity = data.activity;
+                        let html = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Basic Information</h4>
+                                <ul class="metadata-list">
+                                    <li><span class="metadata-key">Action Type:</span> ${activity.actionType.replace(/_/g, ' ')}</li>
+                                    <li><span class="metadata-key">Timestamp:</span> ${new Date(activity.timestamp).toLocaleString()}</li>
+                                    <li><span class="metadata-key">User:</span> ${activity.userName || 'Anonymous'}</li>
+                                    <li><span class="metadata-key">User Role:</span> ${activity.userRole}</li>
+                                    <li><span class="metadata-key">URL:</span> ${activity.url}</li>
+                                    <li><span class="metadata-key">Referrer:</span> ${activity.referrer || 'Direct'}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Target Information</h4>
+                                <ul class="metadata-list">
+                                    <li><span class="metadata-key">Target Type:</span> ${activity.targetType || 'N/A'}</li>
+                                    <li><span class="metadata-key">Target Name:</span> ${activity.targetName || 'N/A'}</li>
+                                    <li><span class="metadata-key">Target ID:</span> ${activity.targetId || 'N/A'}</li>
+                                    <li><span class="metadata-key">Duration:</span> ${activity.duration ? (activity.duration / 1000).toFixed(2) + ' seconds' : 'N/A'}</li>
+                                    <li><span class="metadata-key">Device Type:</span> ${activity.deviceType || 'unknown'}</li>
+                                    <li><span class="metadata-key">IP Address:</span> ${activity.ipAddress || 'N/A'}</li>
+                                </ul>
+                            </div>
+                        </div>`;
+
+                        // Add metadata if it exists
+                        if (activity.metadata && Object.keys(activity.metadata).length > 0) {
+                            html += `<div class="row mt-4">
+                            <div class="col-12">
+                                <h4>Additional Metadata</h4>
+                                <ul class="metadata-list">`;
+
+                            for (const [key, value] of Object.entries(activity.metadata)) {
+                                html += `<li><span class="metadata-key">${key}:</span> ${JSON.stringify(value)}</li>`;
+                            }
+
+                            html += `</ul>
+                            </div>
+                        </div>`;
+                        }
+
+                        // Add user agent details if available
+                        if (activity.userAgent) {
+                            html += `<div class="row mt-4">
+                            <div class="col-12">
+                                <h4>User Agent</h4>
+                                <div class="p-3 bg-light rounded">
+                                    <code>${activity.userAgent}</code>
+                                </div>
+                            </div>
+                        </div>`;
+                        }
+
+                        document.getElementById('activityDetails').innerHTML = html;
+                        document.getElementById('activityModal').style.display = 'block';
+                    } else {
+                        alert('Error loading activity details');
+                    }
+                } catch (error) {
+                    console.error('Error fetching activity details:', error);
+                    alert('Error loading activity details');
+                }
+            }
+
+            // Close modal when clicking the × button
+            document.querySelector('.close').addEventListener('click', function () {
+                document.getElementById('activityModal').style.display = 'none';
+            });
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function (event) {
+                if (event.target === document.getElementById('activityModal')) {
+                    document.getElementById('activityModal').style.display = 'none';
+                }
+            });
+        </script>
+
+        <%- include('../partials/footer') %>
+</body>
+
+</html>

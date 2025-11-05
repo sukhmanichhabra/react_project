@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Visit Management</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/agentvisit.css">
+</head>
+
+<body>
+    <!-- Include navbar partial -->
+    <%- include('partials/header') %>
+
+        <div class="container">
+            <h1 class="page-title">Property Visit Management</h1>
+
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-value stat-pending">
+                        <%= pendingVisits.length %>
+                    </div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value stat-approved">
+                        <%= upcomingVisits.length %>
+                    </div>
+                    <div class="stat-label">Upcoming</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value stat-completed">
+                        <%= allVisits.filter(v=> v.status === 'completed').length %>
+                    </div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value stat-cancelled">
+                        <%= allVisits.filter(v=> v.status === 'cancelled' || v.status === 'rejected').length %>
+                    </div>
+                    <div class="stat-label">Cancelled/Rejected</div>
+                </div>
+            </div>
+
+            <!-- Action buttons for agent -->
+            <div style="text-align: right; margin-bottom: 1rem;">
+                <button id="processOverdueBtn" class="btn btn-outline" style="background-color: #f9f9f9;">
+                    <i class="fas fa-sync"></i> Process Overdue Visits
+                </button>
+            </div>
+
+            <!-- Pending Visits Section -->
+            <div class="visits-container">
+                <h2 class="section-title">
+                    <i class="fas fa-clock"></i> Pending Visit Requests
+                </h2>
+
+                <% if (pendingVisits && pendingVisits.length> 0) { %>
+                    <% pendingVisits.forEach(visit=> { %>
+                        <div class="visit-card pending">
+                            <img src="<%= visit.propertyId.images && visit.propertyId.images.length > 0 ? visit.propertyId.images[0] : '/assets/property-1.jpg' %>"
+                                alt="<%= visit.propertyId.title %>" class="visit-image">
+
+                            <div class="visit-details">
+                                <div class="visit-property">
+                                    <%= visit.propertyId.title %>
+                                </div>
+
+                                <div class="visit-meta">
+                                    <div class="visit-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <%= visit.propertyId.location %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="far fa-calendar"></i>
+                                        <%= new Date(visit.visitDate).toLocaleDateString('en-US', { weekday: 'long' ,
+                                            year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="far fa-clock"></i>
+                                        <%= visit.timeSlot %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="fas fa-tag"></i>
+                                        <span class="visit-status pending">Pending</span>
+                                    </div>
+                                </div>
+
+                                <div class="visit-buyer">
+                                    <div class="buyer-image">
+                                        <%= visit.buyerId.name ? visit.buyerId.name.charAt(0) : 'B' %>
+                                    </div>
+                                    <div class="buyer-details">
+                                        <div class="buyer-name">
+                                            <%= visit.buyerId.name %>
+                                        </div>
+                                        <div class="buyer-contact">
+                                            <i class="fas fa-envelope"></i>
+                                            <%= visit.buyerId.email %> |
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <% if (visit.buyerNotes) { %>
+                                    <div class="visit-notes">
+                                        <div class="notes-title">Buyer Notes:</div>
+                                        <%= visit.buyerNotes %>
+                                    </div>
+                                    <% } %>
+
+                                        <div class="visit-actions">
+                                            <form action="/visit/approve/<%= visit._id %>" method="POST"
+                                                style="flex: 1; max-width: 300px;">
+                                                <div class="form-group">
+                                                    <textarea name="notes" class="form-control"
+                                                        placeholder="Add notes for the buyer (optional)"></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-success"
+                                                    style="width: 100%;">Approve Visit</button>
+                                            </form>
+
+                                            <form action="/visit/reject/<%= visit._id %>" method="POST"
+                                                style="flex: 1; max-width: 300px;">
+                                                <div class="form-group">
+                                                    <textarea name="notes" class="form-control"
+                                                        placeholder="Reason for rejection (optional)"></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-danger" style="width: 100%;">Reject
+                                                    Visit</button>
+                                            </form>
+                                        </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="far fa-calendar-check"></i>
+                                    </div>
+                                    <div class="empty-state-message">
+                                        No pending visit requests at this time.
+                                    </div>
+                                </div>
+                                <% } %>
+            </div>
+
+            <!-- Upcoming Visits Section -->
+            <div class="visits-container">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-alt"></i> Upcoming Approved Visits
+                </h2>
+
+                <% if (upcomingVisits && upcomingVisits.length> 0) { %>
+                    <% upcomingVisits.forEach(visit=> { %>
+                        <div class="visit-card approved">
+                            <img src="<%= visit.propertyId.images && visit.propertyId.images.length > 0 ? visit.propertyId.images[0] : '/assets/property-1.jpg' %>"
+                                alt="<%= visit.propertyId.title %>" class="visit-image">
+
+                            <div class="visit-details">
+                                <div class="visit-property">
+                                    <%= visit.propertyId.title %>
+                                </div>
+
+                                <div class="visit-meta">
+                                    <div class="visit-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <%= visit.propertyId.location %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="far fa-calendar"></i>
+                                        <%= new Date(visit.visitDate).toLocaleDateString('en-US', { weekday: 'long' ,
+                                            year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="far fa-clock"></i>
+                                        <%= visit.timeSlot %>
+                                    </div>
+                                    <div class="visit-meta-item">
+                                        <i class="fas fa-tag"></i>
+                                        <span class="visit-status approved">Approved</span>
+                                    </div>
+                                </div>
+
+                                <div class="visit-buyer">
+                                    <div class="buyer-image">
+                                        <%= visit.buyerId.name ? visit.buyerId.name.charAt(0) : 'B' %>
+                                    </div>
+                                    <div class="buyer-details">
+                                        <div class="buyer-name">
+                                            <%= visit.buyerId.name %>
+                                        </div>
+                                        <div class="buyer-contact">
+                                            <i class="fas fa-envelope"></i>
+                                            <%= visit.buyerId.email %> |
+                                                <i class="fas fa-phone"></i>
+                                                <%= visit.buyerId.phone || 'Not provided' %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <% if (visit.buyerNotes) { %>
+                                    <div class="visit-notes">
+                                        <div class="notes-title">Buyer Notes:</div>
+                                        <%= visit.buyerNotes %>
+                                    </div>
+                                    <% } %>
+
+                                        <% if (visit.agentNotes) { %>
+                                            <div class="visit-notes">
+                                                <div class="notes-title">Your Notes:</div>
+                                                <%= visit.agentNotes %>
+                                            </div>
+                                            <% } %>
+
+                                                <div class="visit-actions">
+                                                    <form action="/visit/complete/<%= visit._id %>" method="POST">
+                                                        <div class="form-group">
+                                                            <textarea name="notes" class="form-control"
+                                                                placeholder="Add completion notes (optional)"></textarea>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Mark as
+                                                            Completed</button>
+                                                    </form>
+
+                                                    <a href="/property_overview/<%= visit.propertyId._id %>"
+                                                        class="btn btn-outline">
+                                                        View Property
+                                                    </a>
+                                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="far fa-calendar"></i>
+                                    </div>
+                                    <div class="empty-state-message">
+                                        No upcoming visits scheduled at this time.
+                                    </div>
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+
+        <!-- Include footer partial -->
+        <%- include('partials/footer') %>
+
+            <script>
+                // Add event listener for processing overdue visits
+                document.addEventListener('DOMContentLoaded', function () {
+                    const processBtn = document.getElementById('processOverdueBtn');
+                    if (processBtn) {
+                        processBtn.addEventListener('click', processOverdueVisits);
+                    }
+                });
+
+                // Function to process overdue visits
+                async function processOverdueVisits() {
+                    const btn = document.getElementById('processOverdueBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                    try {
+                        const response = await fetch('/visit/api/process-overdue', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            alert(`Success! Processed ${data.processedCount} overdue visits.`);
+                            // Reload page to show updated statuses
+                            window.location.reload();
+                        } else {
+                            alert(`Error: ${data.error || 'Unknown error'}`);
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fas fa-sync"></i> Process Overdue Visits';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Failed to process overdue visits. Please try again.');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-sync"></i> Process Overdue Visits';
+                    }
+                }
+            </script>
+</body>
+
+</html>

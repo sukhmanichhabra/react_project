@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/payemi.css">
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">EMI Payments</h1>
+            </div>
+
+            <% if (locals.message) { %>
+                <div class="alert-message">
+                    <p>
+                        <%= message %>
+                    </p>
+                </div>
+                <% } %>
+
+                    <% if (locals.loanSummaries && loanSummaries.some(loan=> loan.pendingEmiCount === 0 &&
+                        loan.paidEmiCount > 0)) { %>
+                        <div class="alert-message"
+                            style="background-color: #e8f5e9; color: #2e7d32; border-left-color: #2e7d32;">
+                            <p><i class="fas fa-check-circle"></i> Congratulations! You have fully paid off your loan.
+                                Your commitment and timely payments have helped you achieve financial freedom.</p>
+                        </div>
+                        <% } %>
+
+                            <% if (locals.emiSummary && emiPayments && emiPayments.length> 0) { %>
+                                <!-- EMI Dashboard -->
+                                <div class="dashboard-section">
+                                    <div class="dashboard-header">
+                                        <h2>Payment Dashboard</h2>
+                                    </div>
+                                    <div class="dashboard-cards">
+                                        <div class="dashboard-card">
+                                            <div class="card-icon">
+                                                <i class="fas fa-wallet"></i>
+                                            </div>
+                                            <div class="card-content">
+                                                <h3 class="card-title">Total Paid</h3>
+                                                <p class="card-value">₹<%= (emiSummary.paidAmount ||
+                                                        0).toLocaleString('en-IN') %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard-card">
+                                            <div class="card-icon warning">
+                                                <i class="fas fa-exclamation-circle"></i>
+                                            </div>
+                                            <div class="card-content">
+                                                <h3 class="card-title">Overdue</h3>
+                                                <p class="card-value">
+                                                    <%= emiSummary.overdueEmis || 0 %> EMIs
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard-card">
+                                            <div class="card-icon success">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="card-content">
+                                                <h3 class="card-title">Paid</h3>
+                                                <p class="card-value">
+                                                    <%= emiSummary.paidEmis || 0 %> EMIs
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard-card">
+                                            <div class="card-icon info">
+                                                <i class="fas fa-calendar"></i>
+                                            </div>
+                                            <div class="card-content">
+                                                <h3 class="card-title">Next Payment</h3>
+                                                <% if (emiSummary.nextDueEmi) { %>
+                                                    <p class="card-value">
+                                                        <%= new
+                                                            Date(emiSummary.nextDueEmi.dueDate).toLocaleDateString('en-IN',
+                                                            { day: 'numeric' , month: 'short' , year: 'numeric' }) %>
+                                                    </p>
+                                                    <% } else { %>
+                                                        <p class="card-value">No upcoming payments</p>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="progress-container">
+                                        <div class="progress-details">
+                                            <h3>Payment Progress</h3>
+                                            <span>
+                                                <%= Math.round(emiSummary.paymentProgress || 0) %>
+                                                    <%='%'%> Complete
+                                            </span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div
+                                                class="progress progress-<%= Math.round((emiSummary.paymentProgress || 0) / 10) * 10 %>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Loan Summaries -->
+                                <div class="loan-summaries-section">
+                                    <h2>Your Active Loans</h2>
+                                    <div class="loan-summary-cards">
+                                        <% loanSummaries.forEach(loan=> { %>
+                                            <div class="loan-summary-card">
+                                                <div class="loan-summary-header">
+                                                    <div class="loan-type-badge">
+                                                        <%= loan.loanType.replace('_', ' ' ).replace(/\b\w/g, l=>
+                                                            l.toUpperCase()) %>
+                                                    </div>
+                                                    <h3 class="loan-amount">₹<%= loan.loanAmount.toLocaleString('en-IN')
+                                                            %>
+                                                    </h3>
+                                                </div>
+                                                <div class="loan-summary-body">
+                                                    <% if (loan.pendingEmiCount===0 && loan.paidEmiCount> 0) { %>
+                                                        <div style="text-align: center; padding: 1rem 0;">
+                                                            <i class="fas fa-medal"
+                                                                style="font-size: 2.5rem; color: #2e7d32; margin-bottom: 0.5rem;"></i>
+                                                            <h3 style="color: #2e7d32; margin-bottom: 1rem;">Loan Fully
+                                                                Paid Off!</h3>
+                                                            <p style="color: #666;">You have successfully paid off this
+                                                                loan.</p>
+                                                        </div>
+                                                        <% } %>
+                                                            <div class="summary-row">
+                                                                <span>Paid:</span>
+                                                                <span>₹<%= loan.totalPaid.toLocaleString('en-IN') %>
+                                                                        </span>
+                                                            </div>
+                                                            <div class="summary-row">
+                                                                <span>Principal Paid:</span>
+                                                                <span>₹<%=
+                                                                        loan.totalPrincipalPaid.toLocaleString('en-IN',
+                                                                        { maximumFractionDigits: 0 }) %></span>
+                                                            </div>
+                                                            <div class="summary-row">
+                                                                <span>Interest Paid:</span>
+                                                                <span>₹<%=
+                                                                        loan.totalInterestPaid.toLocaleString('en-IN', {
+                                                                        maximumFractionDigits: 0 }) %></span>
+                                                            </div>
+                                                            <% if (loan.totalLatePaymentFees> 0) { %>
+                                                                <div class="summary-row">
+                                                                    <span>Late Fees:</span>
+                                                                    <span>₹<%=
+                                                                            loan.totalLatePaymentFees.toLocaleString('en-IN')
+                                                                            %></span>
+                                                                </div>
+                                                                <% } %>
+                                                                    <div class="summary-row highlighted">
+                                                                        <span>Remaining Balance:</span>
+                                                                        <span>₹<%=
+                                                                                loan.remainingBalance.toLocaleString('en-IN',
+                                                                                { maximumFractionDigits: 0 }) %></span>
+                                                                    </div>
+                                                                    <div class="summary-row">
+                                                                        <span>Loan Status:</span>
+                                                                        <span
+                                                                            class="status-badge <%= loan.loanStatus === 'fully_paid' ? 'status-paid' : loan.loanStatus === 'defaulted' ? 'status-overdue' : 'status-pending' %>">
+                                                                            <%= loan.loanStatus==='fully_paid'
+                                                                                ? 'Fully Paid' :
+                                                                                loan.loanStatus==='in_progress'
+                                                                                ? 'In Progress' :
+                                                                                loan.loanStatus==='defaulted'
+                                                                                ? 'Defaulted' :
+                                                                                loan.loanStatus==='not_started'
+                                                                                ? 'Not Started' : 'In Progress' %>
+                                                                        </span>
+                                                                    </div>
+                                                </div>
+                                                <div class="loan-summary-footer">
+                                                    <div class="emi-progress">
+                                                        <div class="progress-bar">
+                                                            <div
+                                                                class="progress progress-<%= Math.round(((loan.paidEmiCount || 0) / Math.max((loan.paidEmiCount || 0) + (loan.pendingEmiCount || 0), 1)) * 10) * 10 %>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="progress-text">
+                                                            <span>
+                                                                <%= loan.paidEmiCount || 0 %> of <%= (loan.paidEmiCount
+                                                                        || 0) + (loan.pendingEmiCount || 0) ||
+                                                                        (loan.loanAmount && loan.interestRate ?
+                                                                        Math.ceil(loan.loanAmount / loan.interestRate) :
+                                                                        240) %> EMIs paid
+                                                            </span>
+                                                            <span>
+                                                                <%= Math.round(((loan.paidEmiCount || 0) /
+                                                                    Math.max((loan.paidEmiCount || 0) +
+                                                                    (loan.pendingEmiCount || 0), 1)) * 100) %>% Complete
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }); %>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <% if (overdueEmis && overdueEmis.length> 0) { %>
+                                        <div class="overdue-section">
+                                            <div class="section-header">
+                                                <h2>Overdue Payments</h2>
+                                                <span class="badge overdue-badge">
+                                                    <%= overdueEmis.length %> Overdue
+                                                </span>
+                                            </div>
+                                            <div class="overdue-cards">
+                                                <% overdueEmis.forEach(emi=> { %>
+                                                    <div class="overdue-card">
+                                                        <div class="overdue-details">
+                                                            <div class="overdue-loan-info">
+                                                                <div class="loan-type-badge">
+                                                                    <%= emi.loanId.loanDetails.loanType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Home Loan' %>
+                                                                </div>
+                                                                <div class="overdue-date">
+                                                                    Due: <strong>
+                                                                        <%= new
+                                                                            Date(emi.dueDate).toLocaleDateString('en-IN',
+                                                                            { day: 'numeric' , month: 'short' ,
+                                                                            year: 'numeric' }) %>
+                                                                    </strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="overdue-amount">
+                                                                <h3>₹<%= emi.amount.toLocaleString('en-IN') %>
+                                                                </h3>
+                                                                <div class="days-overdue">
+                                                                    <%= Math.ceil((new Date() - new Date(emi.dueDate)) /
+                                                                        (1000 * 60 * 60 * 24)) %> days overdue
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="overdue-action">
+                                                            <button class="pay-btn overdue-pay-btn"
+                                                                onclick="openPaymentModal('<%= emi._id %>', '<%= emi.amount %>', true)">Pay
+                                                                Now</button>
+                                                        </div>
+                                                    </div>
+                                                    <% }); %>
+                                            </div>
+                                            <div class="overdue-warning">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                <p>Late payments may affect your credit score. Please clear overdue
+                                                    payments as soon as possible.</p>
+                                            </div>
+                                        </div>
+                                        <% } %>
+
+                                            <div class="tab-container">
+                                                <div class="tabs">
+                                                    <div class="tab active" data-tab="pending-tab">Upcoming EMIs</div>
+                                                    <div class="tab" data-tab="future-tab">Future Installments</div>
+                                                    <div class="tab" data-tab="missed-tab">Missed Payments</div>
+                                                    <div class="tab" data-tab="history-tab">Payment History</div>
+                                                </div>
+
+                                                <div id="pending-tab" class="tab-content active">
+                                                    <% if (emiPayments && emiPayments.length> 0) { %>
+                                                        <% emiPayments.forEach(loan=> { %>
+                                                            <div class="loan-card">
+                                                                <div class="loan-type">
+                                                                    <%= loan.loanType ? loan.loanType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Home Loan' %>
+                                                                </div>
+                                                                <div class="loan-amount">₹<%=
+                                                                        loan.loanAmount.toLocaleString('en-IN') %>
+                                                                </div>
+                                                                <div class="loan-details">
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Interest Rate</span>
+                                                                        <span class="detail-value">
+                                                                            <%= loan.interestRate %>%
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Tenure</span>
+                                                                        <span class="detail-value">
+                                                                            <%= loan.tenure %> years
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Monthly EMI</span>
+                                                                        <span class="detail-value">₹<%=
+                                                                                loan.emi.toLocaleString('en-IN') %>
+                                                                                </span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Loan ID</span>
+                                                                        <span class="detail-value">
+                                                                            <%= loan.loanId.substr(0, 8) %>...
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <table class="emi-table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Due Date</th>
+                                                                        <th>EMI #</th>
+                                                                        <th>Amount</th>
+                                                                        <th>Principal</th>
+                                                                        <th>Interest</th>
+                                                                        <th>Status</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <% 
+                                                                        // Get today's date for comparison 
+                                                                        const today = new Date(); 
+                                                                        // Display only the next 2 upcoming EMIs that are pending 
+                                                                        loan.payments
+                                                                        .filter(payment => payment.status === 'pending')
+                                                                        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+                                                                        .slice(0, 2) // Only take the first 2 EMIs
+                                                                        .forEach(payment => {
+                                                                    %>
+                                                                        <tr
+                                                                            class="<%= new Date(payment.dueDate) < today ? 'overdue-row' : '' %>">
+                                                                            <td>
+                                                                                <%= new
+                                                                                    Date(payment.dueDate).toLocaleDateString('en-IN',
+                                                                                    { day: 'numeric' , month: 'short' ,
+                                                                                    year: 'numeric' }) %>
+                                                                            </td>
+                                                                            <td>
+                                                                                <%= payment.emiNumber || '1' %> of <%=
+                                                                                        (loan.loanDetails &&
+                                                                                        loan.loanDetails.loanTenure) ?
+                                                                                        loan.loanDetails.loanTenure * 12
+                                                                                        : payment.emiNumber ?
+                                                                                        payment.emiNumber : 240 %>
+                                                                            </td>
+                                                                            <td>₹<%= payment.amount.toLocaleString('en-IN')
+                                                                                    %>
+                                                                            </td>
+                                                                            <td>₹<%= payment.principalAmount.toLocaleString('en-IN',
+                                                                                    { maximumFractionDigits: 0 }) %>
+                                                                            </td>
+                                                                            <td>₹<%= payment.interestAmount.toLocaleString('en-IN',
+                                                                                    { maximumFractionDigits: 0 }) %>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span
+                                                                                    class="status-badge <%= new Date(payment.dueDate) < today ? 'status-overdue' : 'status-pending' %>">
+                                                                                    <%= new Date(payment.dueDate) <
+                                                                                        today ? 'Overdue' : 'Pending' %>
+                                                                                </span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <button
+                                                                                    class="pay-btn <%= new Date(payment.dueDate) < today ? 'overdue-btn' : '' %>"
+                                                                                    onclick="openPaymentModal('<%= payment._id %>', '<%= payment.amount %>', '<%= new Date(payment.dueDate) < today %>')">
+                                                                                    Pay Now
+                                                                                </button>
+                                                                                <button class="invoice-btn"
+                                                                                    data-payment-id="<%= payment._id %>"
+                                                                                    data-emi-number="<%= payment.emiNumber || 1 %>"
+                                                                                    data-amount="<%= payment.amount %>"
+                                                                                    data-principal="<%= payment.principalAmount || 0 %>"
+                                                                                    data-interest="<%= payment.interestAmount || 0 %>"
+                                                                                    data-due-date="<%= payment.dueDate %>"
+                                                                                    data-loan-id="<%= payment.loanId ? payment.loanId._id : '' %>"
+                                                                                    data-loan-type="<%= payment.loanId && payment.loanId.loanDetails ? payment.loanId.loanDetails.loanType : 'Home_Loan' %>"
+                                                                                    data-late-fee="0"
+                                                                                    data-payment-date="<%= payment.paymentDate || '' %>"
+                                                                                    data-transaction-id="<%= payment.transactionId || '' %>"
+                                                                                    data-payment-method="<%= payment.paymentMethod || '' %>"
+                                                                                    onclick="generateInvoiceFromData(this)">
+                                                                                    Invoice
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <% }); %>
+                                                                </tbody>
+                                                            </table>
+                                                            <% }); %>
+                                                                <% } else { %>
+                                                                    <div class="empty-state">
+                                                                        <% if (locals.loanSummaries &&
+                                                                            loanSummaries.some(loan=>
+                                                                            loan.pendingEmiCount === 0 &&
+                                                                            loan.paidEmiCount > 0)) { %>
+                                                                            <i class="fas fa-award"
+                                                                                style="color: #2e7d32;"></i>
+                                                                            <h3>Loan Fully Paid Off!</h3>
+                                                                            <p>Congratulations! You have successfully
+                                                                                paid off your loan. No more EMIs are
+                                                                                pending.</p>
+                                                                            <a href="/loan/apply"
+                                                                                class="explore-btn">Apply for a New
+                                                                                Loan</a>
+                                                                            <% } else { %>
+                                                                                <i class="fas fa-money-check-alt"></i>
+                                                                                <h3>No EMI Payments Found</h3>
+                                                                                <p>
+                                                                                    <%= locals.message
+                                                                                        || "You don't have any upcoming EMI payments. Apply for a home loan to get started."
+                                                                                        %>
+                                                                                </p>
+                                                                                <a href="/loan/emi-calculator"
+                                                                                    class="explore-btn">Explore Loan
+                                                                                    Options</a>
+                                                                                <% } %>
+                                                                    </div>
+                                                                    <% } %>
+                                                </div>
+
+                                                <div id="missed-tab" class="tab-content">
+                                                    <% if (missedEmis && missedEmis.length> 0) { %>
+                                                        <div class="alert-message"
+                                                            style="background-color: #ffebee; color: #c62828; border-left-color: #c62828;">
+                                                            <p><i class="fas fa-exclamation-triangle"></i> Missed
+                                                                payments may significantly impact your credit score.
+                                                                Please clear these payments as soon as possible to avoid
+                                                                further penalties.</p>
+                                                        </div>
+
+                                                        <table class="emi-table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Due Date</th>
+                                                                    <th>EMI #</th>
+                                                                    <th>Days Late</th>
+                                                                    <th>Amount</th>
+                                                                    <th>Penalty</th>
+                                                                    <th>Total Due</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <% missedEmis.forEach(payment=> { %>
+                                                                    <tr class="overdue-row">
+                                                                        <td>
+                                                                            <%= new
+                                                                                Date(payment.dueDate).toLocaleDateString('en-IN',
+                                                                                { day: 'numeric' , month: 'short' ,
+                                                                                year: 'numeric' }) %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= payment.emiNumber || '1' %> of <%=
+                                                                                    (loan.loanDetails &&
+                                                                                    loan.loanDetails.loanTenure) ?
+                                                                                    loan.loanDetails.loanTenure * 12 :
+                                                                                    payment.emiNumber ?
+                                                                                    payment.emiNumber : 240 %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= payment.daysLate || Math.ceil((new
+                                                                                Date() - new Date(payment.dueDate)) /
+                                                                                (1000 * 60 * 60 * 24)) %> days
+                                                                        </td>
+                                                                        <td>₹<%= payment.amount.toLocaleString('en-IN')
+                                                                                %>
+                                                                        </td>
+                                                                        <td>₹<%= payment.latePaymentFee.toLocaleString('en-IN')
+                                                                                %>
+                                                                        </td>
+                                                                        <td>₹<%= (payment.amount +
+                                                                                payment.latePaymentFee).toLocaleString('en-IN')
+                                                                                %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button class="pay-btn overdue-btn"
+                                                                                onclick="openPaymentModal('<%= payment._id %>', '<%= payment.amount %>', true, '<%= payment.latePaymentFee %>')">
+                                                                                Pay Now
+                                                                            </button>
+                                                                            <button class="invoice-btn"
+                                                                                data-payment-id="<%= payment._id %>"
+                                                                                data-emi-number="<%= payment.emiNumber || 1 %>"
+                                                                                data-amount="<%= payment.amount %>"
+                                                                                data-principal="<%= payment.principalAmount || 0 %>"
+                                                                                data-interest="<%= payment.interestAmount || 0 %>"
+                                                                                data-due-date="<%= payment.dueDate %>"
+                                                                                data-loan-id="<%= payment.loanId ? payment.loanId._id : '' %>"
+                                                                                data-loan-type="<%= payment.loanId && payment.loanId.loanDetails ? payment.loanId.loanDetails.loanType : 'Home_Loan' %>"
+                                                                                data-late-fee="<%= payment.latePaymentFee || 0 %>"
+                                                                                onclick="generateInvoiceFromData(this)">
+                                                                                Invoice
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <% }); %>
+                                                            </tbody>
+                                                        </table>
+                                                        <% } else { %>
+                                                            <div class="empty-state">
+                                                                <% if (locals.loanSummaries && loanSummaries.some(loan=>
+                                                                    loan.pendingEmiCount === 0 && loan.paidEmiCount >
+                                                                    0)) { %>
+                                                                    <i class="fas fa-trophy"
+                                                                        style="color: #2e7d32;"></i>
+                                                                    <h3>Perfect Payment Record!</h3>
+                                                                    <p>Excellent job maintaining a clean payment record!
+                                                                        Your loan is fully paid with no missed payments.
+                                                                    </p>
+                                                                    <% } else { %>
+                                                                        <i class="fas fa-check-circle"
+                                                                            style="color: #2e7d32;"></i>
+                                                                        <h3>No Missed Payments</h3>
+                                                                        <p>Great job! You have no missed payments.</p>
+                                                                        <% } %>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+
+                                                <div id="future-tab" class="tab-content">
+                                                    <% if (emiPayments && emiPayments.length> 0) { %>
+                                                        <% emiPayments.forEach(loan=> { %>
+                                                            <div class="loan-card">
+                                                                <div class="loan-type">
+                                                                    <%= loan.loanType ? loan.loanType.replace('_', ' '
+                                                                        ).replace(/\b\w/g, l=> l.toUpperCase()) : 'Home Loan' %>
+                                                                </div>
+                                                                <div class="loan-amount">₹<%=
+                                                                        loan.loanAmount.toLocaleString('en-IN') %>
+                                                                </div>
+                                                                <div class="loan-details">
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Interest Rate</span>
+                                                                        <span class="detail-value">
+                                                                            <%= loan.interestRate %>%
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Tenure</span>
+                                                                        <span class="detail-value">
+                                                                            <%= loan.tenure %> years
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Monthly EMI</span>
+                                                                        <span class="detail-value">₹<%=
+                                                                                loan.emi.toLocaleString('en-IN') %>
+                                                                                </span>
+                                                                    </div>
+                                                                    <div class="detail-item">
+                                                                        <span class="detail-label">Loan ID</span>
+                                                                        <span class="detail-value">
+                                                                            <%= loan.loanId.substr(0, 8) %>...
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <table class="emi-table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Due Date</th>
+                                                                        <th>EMI #</th>
+                                                                        <th>Amount</th>
+                                                                        <th>Principal</th>
+                                                                        <th>Interest</th>
+                                                                        <th>Remaining Balance</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <% 
+                                                                        const today = new Date(); 
+                                                                        const threeMonthsLater = new Date();
+                                                                        threeMonthsLater.setMonth(today.getMonth() + 3);
+                                                                        loan.payments
+                                                                        .filter(payment => payment.status === 'pending' && new Date(payment.dueDate) > threeMonthsLater)
+                                                                        .forEach(payment => {
+                                                                    %>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <%= new
+                                                                                    Date(payment.dueDate).toLocaleDateString('en-IN',
+                                                                                    { day: 'numeric' , month: 'short' ,
+                                                                                    year: 'numeric' }) %>
+                                                                            </td>
+                                                                            <td>
+                                                                                <%= payment.emiNumber || '1' %> of <%=
+                                                                                        (loan.loanDetails &&
+                                                                                        loan.loanDetails.loanTenure) ?
+                                                                                        loan.loanDetails.loanTenure * 12
+                                                                                        : payment.emiNumber ?
+                                                                                        payment.emiNumber : 240 %>
+                                                                            </td>
+                                                                            <td>₹<%= payment.amount.toLocaleString('en-IN')
+                                                                                    %>
+                                                                            </td>
+                                                                            <td>₹<%= payment.principalAmount.toLocaleString('en-IN',
+                                                                                    { maximumFractionDigits: 0 }) %>
+                                                                            </td>
+                                                                            <td>₹<%= payment.interestAmount.toLocaleString('en-IN',
+                                                                                    { maximumFractionDigits: 0 }) %>
+                                                                            </td>
+                                                                            <td>₹<%= payment.remainingBalance.toLocaleString('en-IN',
+                                                                                    { maximumFractionDigits: 0 }) %>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <% }); %>
+                                                                </tbody>
+                                                            </table>
+                                                            <% }); %>
+                                                                <% } else { %>
+                                                                    <div class="empty-state">
+                                                                        <% if (locals.loanSummaries &&
+                                                                            loanSummaries.some(loan=>
+                                                                            loan.pendingEmiCount === 0 &&
+                                                                            loan.paidEmiCount > 0)) { %>
+                                                                            <i class="fas fa-calendar-check"
+                                                                                style="color: #2e7d32;"></i>
+                                                                            <h3>No Future Installments!</h3>
+                                                                            <p>Great news! You have successfully paid
+                                                                                off your loan. No future installments
+                                                                                are scheduled.</p>
+                                                                            <% } else { %>
+                                                                                <i class="fas fa-calendar-alt"></i>
+                                                                                <h3>No Future Installments</h3>
+                                                                                <p>You don't have any future
+                                                                                    installments scheduled beyond the
+                                                                                    next 3 months.</p>
+                                                                                <% } %>
+                                                                    </div>
+                                                                    <% } %>
+                                                </div>
+
+                                                <div id="history-tab" class="tab-content">
+                                                    <% if (emiPayments && emiPayments.length> 0) { %>
+                                                        <% emiPayments.forEach(loan=> { %>
+                                                            <% if (loan.payments.some(payment=> payment.status ===
+                                                                'paid' || payment.status === 'late')) { %>
+                                                                <div class="loan-card">
+                                                                    <div class="loan-type">
+                                                                        <%= loan.loanType ?
+                                                                            loan.loanType.replace('_', ' '
+                                                                            ).replace(/\b\w/g, l=> l.toUpperCase()) :
+                                                                            'Home Loan' %>
+                                                                    </div>
+                                                                    <div class="loan-amount">₹<%=
+                                                                            loan.loanAmount.toLocaleString('en-IN') %>
+                                                                    </div>
+                                                                    <div class="loan-details">
+                                                                        <div class="detail-item">
+                                                                            <span class="detail-label">Interest
+                                                                                Rate</span>
+                                                                            <span class="detail-value">
+                                                                                <%= loan.interestRate %>%
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="detail-item">
+                                                                            <span class="detail-label">Tenure</span>
+                                                                            <span class="detail-value">
+                                                                                <%= loan.tenure %> years
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="detail-item">
+                                                                            <span class="detail-label">Monthly
+                                                                                EMI</span>
+                                                                            <span class="detail-value">₹<%=
+                                                                                    loan.emi.toLocaleString('en-IN') %>
+                                                                                    </span>
+                                                                        </div>
+                                                                        <div class="detail-item">
+                                                                            <span class="detail-label">Loan ID</span>
+                                                                            <span class="detail-value">
+                                                                                <%= loan.loanId.substr(0, 8) %>...
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <table class="emi-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Payment Date</th>
+                                                                            <th>Due Date</th>
+                                                                            <th>Amount</th>
+                                                                            <th>Payment Method</th>
+                                                                            <th>Status</th>
+                                                                            <th>Transaction ID</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <% loan.payments.filter(payment=> payment.status
+                                                                            === 'paid' || payment.status ===
+                                                                            'late').forEach(payment => { %>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <%= new
+                                                                                        Date(payment.paymentDate).toLocaleDateString('en-IN',
+                                                                                        { day: 'numeric' ,
+                                                                                        month: 'short' , year: 'numeric'
+                                                                                        }) %>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <%= new
+                                                                                        Date(payment.dueDate).toLocaleDateString('en-IN',
+                                                                                        { day: 'numeric' ,
+                                                                                        month: 'short' , year: 'numeric'
+                                                                                        }) %>
+                                                                                </td>
+                                                                                <td>₹<%= payment.amount.toLocaleString('en-IN')
+                                                                                        %>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <%= payment.paymentMethod.replace('_', ' '
+                                                                                        ).replace(/\b\w/g, l=>
+                                                                                        l.toUpperCase()) %>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span
+                                                                                        class="status-badge status-<%= payment.status %>">
+                                                                                        <%= payment.status.charAt(0).toUpperCase()
+                                                                                            + payment.status.slice(1) %>
+                                                                                    </span>
+                                                                                    <button class="invoice-btn"
+                                                                                        data-payment-id="<%= payment._id %>"
+                                                                                        data-emi-number="<%= payment.emiNumber || 1 %>"
+                                                                                        data-amount="<%= payment.amount %>"
+                                                                                        data-principal="<%= payment.principalAmount || 0 %>"
+                                                                                        data-interest="<%= payment.interestAmount || 0 %>"
+                                                                                        data-due-date="<%= payment.dueDate %>"
+                                                                                        data-loan-id="<%= payment.loanId ? payment.loanId._id : '' %>"
+                                                                                        data-loan-type="<%= payment.loanId && payment.loanId.loanDetails ? payment.loanId.loanDetails.loanType : 'Home_Loan' %>"
+                                                                                        data-late-fee="0"
+                                                                                        data-payment-date="<%= payment.paymentDate || '' %>"
+                                                                                        data-transaction-id="<%= payment.transactionId || '' %>"
+                                                                                        data-payment-method="<%= payment.paymentMethod || '' %>"
+                                                                                        onclick="generateInvoiceFromData(this)">
+                                                                                        Invoice
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <%= payment.transactionId || 'N/A'
+                                                                                        %>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <% }); %>
+                                                                    </tbody>
+                                                                </table>
+                                                                <% } %>
+                                                                    <% }); %>
+                                                                        <% } else { %>
+                                                                            <div class="empty-state">
+                                                                                <% if (locals.loanSummaries &&
+                                                                                    loanSummaries.some(loan=>
+                                                                                    loan.pendingEmiCount === 0 &&
+                                                                                    loan.paidEmiCount > 0)) { %>
+                                                                                    <i class="fas fa-history"
+                                                                                        style="color: #2e7d32;"></i>
+                                                                                    <h3>Loan Successfully Paid Off</h3>
+                                                                                    <p>You have successfully completed
+                                                                                        all your EMI payments. View your
+                                                                                        payment history by selecting a
+                                                                                        loan above.</p>
+                                                                                    <% } else { %>
+                                                                                        <i class="fas fa-history"></i>
+                                                                                        <h3>No Payment History</h3>
+                                                                                        <p>You haven't made any EMI
+                                                                                            payments yet.</p>
+                                                                                        <% } %>
+                                                                            </div>
+                                                                            <% } %>
+                                                </div>
+                                            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="payment-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Pay EMI</h2>
+                    <button class="close-btn" onclick="closePaymentModal()">×</button>
+                </div>
+                <div class="payment-summary">
+                    <div class="summary-item">
+                        <div>EMI Amount</div>
+                        <div id="summaryEmiAmount">₹0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div>Late Payment Fee</div>
+                        <div id="summaryLateFee">₹0</div>
+                    </div>
+                    <div class="summary-item summary-total">
+                        <div>Total Payable</div>
+                        <div id="summaryTotal">₹0</div>
+                    </div>
+                </div>
+                <form id="paymentForm" class="payment-form">
+                    <input type="hidden" id="emiId" name="emiId">
+                    <div class="form-group">
+                        <label>Select Payment Method</label>
+                        <div class="payment-method-options">
+                            <div class="payment-method-option" data-method="credit_card"
+                                onclick="selectPaymentMethod('credit_card')">
+                                <i class="fas fa-credit-card"></i>
+                                <div>Credit Card</div>
+                            </div>
+                            <div class="payment-method-option" data-method="debit_card"
+                                onclick="selectPaymentMethod('debit_card')">
+                                <i class="fas fa-credit-card"></i>
+                                <div>Debit Card</div>
+                            </div>
+                            <div class="payment-method-option" data-method="upi" onclick="selectPaymentMethod('upi')">
+                                <i class="fas fa-mobile-alt"></i>
+                                <div>UPI</div>
+                            </div>
+                            <div class="payment-method-option" data-method="net_banking"
+                                onclick="selectPaymentMethod('net_banking')">
+                                <i class="fas fa-university"></i>
+                                <div>Net Banking</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="paymentMethod" name="paymentMethod" required>
+                    </div>
+                    <div id="creditCardFields" class="payment-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" maxlength="16" placeholder="1234 5678 9012 3456">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardName">Name on Card</label>
+                            <input type="text" id="cardName" placeholder="John Doe">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="expiry">Expiry Date</label>
+                                <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" placeholder="123" maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="upiFields" class="payment-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="upiId">UPI ID</label>
+                            <input type="text" id="upiId" placeholder="name@upi">
+                        </div>
+                    </div>
+                    <div id="netBankingFields" class="payment-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="bankName">Select Bank</label>
+                            <select id="bankName">
+                                <option value="">Select Bank</option>
+                                <option value="sbi">State Bank of India</option>
+                                <option value="hdfc">HDFC Bank</option>
+                                <option value="icici">ICICI Bank</option>
+                                <option value="axis">Axis Bank</option>
+                                <option value="pnb">Punjab National Bank</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Pay Now</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Invoice Modal -->
+        <div id="invoiceModal" class="invoice-modal">
+            <div class="invoice-content">
+                <div class="invoice-header">
+                    <h2 class="invoice-title">Payment Invoice</h2>
+                    <div class="invoice-actions">
+                        <button class="invoice-print-btn" onclick="printInvoice()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="invoice-download-btn" onclick="downloadInvoice()">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                        <button class="invoice-close-btn" onclick="closeInvoiceModal()">×</button>
+                    </div>
+                </div>
+                <div id="invoiceContent" class="invoice-body">
+                    <div class="invoice-company">
+                        <h3>MagicBricks Financial Services</h3>
+                        <p>123 Finance Tower, Cyber City</p>
+                        <p>Gurugram, Haryana 122002</p>
+                        <p>support@magicbricks.com | +91-1234567890</p>
+                        <p>GST: 27AABCT3518Q1Z6</p>
+                    </div>
+
+                    <div class="invoice-details">
+                        <div class="invoice-section">
+                            <h4>BILL TO</h4>
+                            <p class="invoice-data" id="customerName">Customer Name</p>
+                            <p class="invoice-data" id="customerAddress">Address</p>
+                            <p class="invoice-data" id="customerContact">Contact</p>
+                        </div>
+                        <div class="invoice-section">
+                            <h4>INVOICE DETAILS</h4>
+                            <p class="invoice-data">Invoice #: <span id="invoiceNumber">INV-0001</span></p>
+                            <p class="invoice-data">Date: <span id="invoiceDate">01 Jan 2023</span></p>
+                            <p class="invoice-data">Payment Status: <span id="paymentStatus">Pending</span></p>
+                        </div>
+                    </div>
+
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Loan ID</th>
+                                <th>EMI #</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="loanDescription">Home Loan EMI Payment</td>
+                                <td id="loanId">LOAN123</td>
+                                <td id="emiNumber">1 of 240</td>
+                                <td id="emiDueDate">01 Jan 2023</td>
+                                <td id="emiAmount">₹8,678</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="invoice-summary">
+                        <div class="invoice-summary-row">
+                            <div>Principal Amount:</div>
+                            <div id="principalAmount">₹5,000</div>
+                        </div>
+                        <div class="invoice-summary-row">
+                            <div>Interest Amount:</div>
+                            <div id="interestAmount">₹3,678</div>
+                        </div>
+                        <div id="lateFeeRow" class="invoice-summary-row" style="display: none;">
+                            <div>Late Payment Fee:</div>
+                            <div id="lateFeeAmount">₹0</div>
+                        </div>
+                        <div class="invoice-summary-row">
+                            <div>Total Amount:</div>
+                            <div id="totalAmount">₹8,678</div>
+                        </div>
+                    </div>
+
+                    <div id="paymentDetails" style="display: none;">
+                        <h4>Payment Details</h4>
+                        <p>Transaction ID: <span id="transactionId">TXN123456789</span></p>
+                        <p>Payment Date: <span id="paymentDate">01 Jan 2023</span></p>
+                        <p>Payment Method: <span id="paymentMethod">Credit Card</span></p>
+                    </div>
+
+                    <div class="invoice-footer">
+                        <p>Thank you for your business!</p>
+                        <p class="invoice-note">This is a computer-generated invoice and does not require a signature.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include('./partials/footer') %>
+
+            <script>
+                let selectedMethod = '';
+                let currentEmiId = '';
+                let emiAmount = 0;
+                let latePaymentFee = 0;
+
+                // Tab switching
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                        tab.classList.add('active');
+                        document.getElementById(tab.dataset.tab).classList.add('active');
+                    });
+                });
+
+                // Payment modal functions
+                function openPaymentModal(emiId, amount, isOverdue, penaltyAmount = 0) {
+                    currentEmiId = emiId;
+                    emiAmount = parseFloat(amount);
+
+                    // Calculate late fee if payment is overdue
+                    latePaymentFee = 0;
+                    if (isOverdue) {
+                        // If penalty amount is provided, use it, otherwise use default 200
+                        latePaymentFee = penaltyAmount ? parseFloat(penaltyAmount) : 200;
+                    }
+
+                    document.getElementById('emiId').value = emiId;
+                    document.getElementById('summaryEmiAmount').innerText = '₹' + parseFloat(amount).toLocaleString('en-IN');
+                    document.getElementById('summaryLateFee').innerText = '₹' + latePaymentFee.toLocaleString('en-IN');
+                    document.getElementById('summaryTotal').innerText = '₹' + (parseFloat(amount) + latePaymentFee).toLocaleString('en-IN');
+
+                    document.getElementById('paymentModal').style.display = 'flex';
+                }
+
+                function closePaymentModal() {
+                    document.getElementById('paymentModal').style.display = 'none';
+                    resetPaymentForm();
+                }
+
+                function selectPaymentMethod(method) {
+                    selectedMethod = method;
+                    document.getElementById('paymentMethod').value = method;
+
+                    document.querySelectorAll('.payment-method-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+
+                    document.querySelector(`.payment-method-option[data-method="${method}"]`).classList.add('selected');
+
+                    // Hide all payment fields
+                    document.querySelectorAll('.payment-fields').forEach(field => {
+                        field.style.display = 'none';
+                    });
+
+                    // Show relevant fields based on selected method
+                    if (method === 'credit_card' || method === 'debit_card') {
+                        document.getElementById('creditCardFields').style.display = 'block';
+                    } else if (method === 'upi') {
+                        document.getElementById('upiFields').style.display = 'block';
+                    } else if (method === 'net_banking') {
+                        document.getElementById('netBankingFields').style.display = 'block';
+                    }
+                }
+
+                function resetPaymentForm() {
+                    document.getElementById('paymentForm').reset();
+                    document.querySelectorAll('.payment-method-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    document.querySelectorAll('.payment-fields').forEach(field => {
+                        field.style.display = 'none';
+                    });
+                    selectedMethod = '';
+                    latePaymentFee = 0;
+                }
+
+                // Payment form submission
+                document.getElementById('paymentForm').addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    if (!selectedMethod) {
+                        alert('Please select a payment method');
+                        return;
+                    }
+
+                    // Validation based on payment method
+                    if ((selectedMethod === 'credit_card' || selectedMethod === 'debit_card') &&
+                        (!document.getElementById('cardNumber').value ||
+                            !document.getElementById('cardName').value ||
+                            !document.getElementById('expiry').value ||
+                            !document.getElementById('cvv').value)) {
+                        alert('Please fill all card details');
+                        return;
+                    }
+
+                    if (selectedMethod === 'upi' && !document.getElementById('upiId').value) {
+                        alert('Please enter UPI ID');
+                        return;
+                    }
+
+                    if (selectedMethod === 'net_banking' && !document.getElementById('bankName').value) {
+                        alert('Please select a bank');
+                        return;
+                    }
+
+                    // Generate transaction ID (in real app, this would come from payment gateway)
+                    const transactionId = 'TXN' + Math.floor(Math.random() * 1000000000);
+
+                    try {
+                        const response = await fetch(`/loan/pay-emi/${currentEmiId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                paymentMethod: selectedMethod,
+                                transactionId: transactionId
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            alert('Payment successful! Transaction ID: ' + transactionId);
+                            closePaymentModal();
+                            location.reload(); // Reload the page to show updated status
+                        } else {
+                            alert('Payment failed: ' + data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error processing payment:', error);
+                        alert('Payment failed. Please try again later.');
+                    }
+                });
+
+                // Invoice functions
+                function generateInvoiceFromData(button) {
+                    const data = button.dataset;
+                    generateInvoice(
+                        data.paymentId,
+                        data.emiNumber,
+                        data.amount,
+                        data.principal,
+                        data.interest,
+                        data.dueDate,
+                        data.loanId,
+                        data.loanType,
+                        data.lateFee,
+                        data.paymentDate || null,
+                        data.transactionId || null,
+                        data.paymentMethod || null
+                    );
+                }
+
+                function generateInvoice(emiId, emiNumber, amount, principalAmount, interestAmount, dueDate, loanId, loanType, lateFee = 0, paymentDate = null, transactionId = null, paymentMethod = null) {
+                    // Format the dates
+                    const formattedDueDate = new Date(dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                    // Generate invoice number (would be better done server-side in production)
+                    const invoiceNumber = 'INV-' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+
+                    // Set invoice data
+                    document.getElementById('invoiceNumber').innerText = invoiceNumber;
+                    document.getElementById('invoiceDate').innerText = today;
+                    document.getElementById('loanDescription').innerText = loanType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' EMI Payment';
+                    document.getElementById('loanId').innerText = loanId.substr(0, 8) + '...';
+                    document.getElementById('emiNumber').innerText = emiNumber + ' of ' + (240); // Assumming 240 EMIs (20 years)
+                    document.getElementById('emiDueDate').innerText = formattedDueDate;
+                    document.getElementById('emiAmount').innerText = '₹' + parseFloat(amount).toLocaleString('en-IN');
+
+                    document.getElementById('principalAmount').innerText = '₹' + parseFloat(principalAmount).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+                    document.getElementById('interestAmount').innerText = '₹' + parseFloat(interestAmount).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+
+                    // Handle late fees if applicable
+                    if (lateFee && parseFloat(lateFee) > 0) {
+                        document.getElementById('lateFeeRow').style.display = 'flex';
+                        document.getElementById('lateFeeAmount').innerText = '₹' + parseFloat(lateFee).toLocaleString('en-IN');
+                        document.getElementById('totalAmount').innerText = '₹' + (parseFloat(amount) + parseFloat(lateFee)).toLocaleString('en-IN');
+                    } else {
+                        document.getElementById('lateFeeRow').style.display = 'none';
+                        document.getElementById('totalAmount').innerText = '₹' + parseFloat(amount).toLocaleString('en-IN');
+                    }
+
+                    // Set customer info (in a real app, this would be fetched from user profile)
+                    document.getElementById('customerName').innerText = '<%= locals.user ? user.name : "Customer" %>';
+                    document.getElementById('customerAddress').innerText = '<%= locals.user && user.address ? user.address : "Address not provided" %>';
+                    document.getElementById('customerContact').innerText = '<%= locals.user && user.email ? user.email : "Email not provided" %>';
+
+                    // Show payment details if provided (for paid EMIs)
+                    if (paymentDate && transactionId && paymentMethod) {
+                        document.getElementById('paymentStatus').innerText = 'Paid';
+                        document.getElementById('paymentDetails').style.display = 'block';
+                        document.getElementById('transactionId').innerText = transactionId;
+                        document.getElementById('paymentDate').innerText = new Date(paymentDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                        document.getElementById('paymentMethod').innerText = paymentMethod.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    } else {
+                        document.getElementById('paymentStatus').innerText = 'Pending';
+                        document.getElementById('paymentDetails').style.display = 'none';
+                    }
+
+                    // Show the invoice modal
+                    document.getElementById('invoiceModal').style.display = 'flex';
+                }
+
+                function closeInvoiceModal() {
+                    document.getElementById('invoiceModal').style.display = 'none';
+                }
+
+                function printInvoice() {
+                    // Create a new window for printing
+                    const printWindow = window.open('', '_blank');
+
+                    // Get the invoice content
+                    const invoiceContent = document.getElementById('invoiceContent').cloneNode(true);
+
+                    // Create a simple document with just the invoice
+                    printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>EMI Payment Invoice</title>
+                    <style>
+                        body {
+                            font-family: 'Inter', Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            padding: 2rem;
+                        }
+                        .invoice-company {
+                            margin-bottom: 2rem;
+                        }
+                        .invoice-company h3 {
+                            color: #333;
+                            margin-bottom: 0.5rem;
+                        }
+                        .invoice-company p {
+                            margin: 0.25rem 0;
+                            color: #666;
+                        }
+                        .invoice-details {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 2rem;
+                        }
+                        .invoice-section {
+                            flex: 1;
+                        }
+                        .invoice-section h4 {
+                            color: #333;
+                            margin-bottom: 0.5rem;
+                            font-size: 1rem;
+                        }
+                        .invoice-data {
+                            margin: 0.25rem 0;
+                            color: #333;
+                        }
+                        .invoice-data span {
+                            font-weight: 600;
+                        }
+                        .invoice-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 2rem;
+                        }
+                        .invoice-table th,
+                        .invoice-table td {
+                            padding: 0.75rem;
+                            text-align: left;
+                            border-bottom: 1px solid #eee;
+                        }
+                        .invoice-table th {
+                            background-color: #f5f5f5;
+                            font-weight: 600;
+                            color: #333;
+                        }
+                        .invoice-summary {
+                            margin-left: auto;
+                            width: 40%;
+                        }
+                        .invoice-summary-row {
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 0.5rem 0;
+                            border-bottom: 1px solid #eee;
+                        }
+                        .invoice-summary-row:last-child {
+                            border-bottom: none;
+                            font-weight: 700;
+                            font-size: 1.1rem;
+                            padding-top: 1rem;
+                        }
+                        .invoice-footer {
+                            margin-top: 3rem;
+                            padding-top: 1rem;
+                            border-top: 1px solid #eee;
+                            color: #666;
+                            font-size: 0.9rem;
+                        }
+                        .invoice-note {
+                            margin-top: 1rem;
+                            font-style: italic;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="invoice-header">
+                        <h2>Payment Invoice</h2>
+                    </div>
+                    ${invoiceContent.outerHTML}
+                </body>
+                </html>
+            `);
+
+                    // Print the new window
+                    printWindow.document.close();
+                    printWindow.focus();
+
+                    // Wait for resources to load then print
+                    setTimeout(() => {
+                        printWindow.print();
+                        printWindow.close();
+                    }, 500);
+                }
+
+                function downloadInvoice() {
+                    // In a real app, you would implement PDF generation
+                    // For now, we'll just show an alert
+                    alert('PDF download functionality would be implemented here.\nFor now, please use the Print option and save as PDF.');
+                }
+
+                // Auto-generate EMI schedule for approved loans
+                window.addEventListener('load', async function () {
+                    try {
+                        // Get all loan cards
+                        const loanCards = document.querySelectorAll('.loan-card');
+
+                        // If no loans or empty state is shown, don't proceed
+                        if (loanCards.length === 0 || document.querySelector('.empty-state')) {
+                            return;
+                        }
+
+                        // Get all approved loans without EMI schedules
+                        const response = await fetch('/loan/my-applications');
+                        const data = await response.json();
+
+                        if (data.success && data.applications) {
+                            // Filter for approved loans
+                            const approvedLoans = data.applications.filter(loan =>
+                                loan.applicationStatus === 'approved');
+
+                            // Generate EMI schedule for each approved loan
+                            for (const loan of approvedLoans) {
+                                try {
+                                    await fetch(`/loan/generate-emi-schedule/${loan._id}`, {
+                                        method: 'POST'
+                                    });
+                                    // We don't need to handle the response here
+                                } catch (error) {
+                                    console.error('Error generating EMI schedule:', error);
+                                }
+                            }
+
+                            // If we generated any EMI schedules and the page shows empty state,
+                            // reload to show the new schedules
+                            if (approvedLoans.length > 0 && document.querySelector('.empty-state')) {
+                                location.reload();
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error checking for approved loans:', error);
+                    }
+                });
+            </script>
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+/* --- BlogCard.css --- */
+
+/* --- Root Variables (Copied from BlogList.css) --- */
+:root {
+  --orange-soda: hsl(9, 100%, 62%);
+  --cadet: hsl(200, 15%, 43%);
+  --white: hsl(0, 0%, 100%);
+  --dark-jungle-green: hsl(188, 63%, 7%);
+  --light-gray: hsl(0, 0%, 96%);
+  --border-color: #eee;
+  --transition: 0.3s ease-in-out;
+
+  /* Category Pill Colors */
+  --residential-bg: #fff0ed;
+  --residential-fg: var(--orange-soda);
+  --commercial-bg: #ebf5ff;
+  --commercial-fg: #007bff;
+  --investment-bg: #eaf7f0;
+  --investment-fg: #28a745;
+  --market-trends-bg: #f3f0f9;
+  --market-trends-fg: #6f42c1;
+  --general-bg: #f0f0f0;
+  --general-fg: #555;
+}
+
+/* --- Blog Card Styles (Matching image_397fff.png) --- */
+
+.blg-card-list-item {
+  list-style: none;
+}
+
+.blg-card {
+  background: var(--white);
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.blg-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.blg-card-banner {
+  position: relative;
+  overflow: hidden;
+  line-height: 0; /* Fixes potential image gap */
+  border-radius: 12px 12px 0 0;
+}
+
+.blg-card-banner img {
+  width: 100%;
+  height: 180px; /* Small card image */
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  display: block;
+}
+
+.blg-card:hover .blg-card-banner img {
+  transform: scale(1.1);
+}
+
+/* New Blog Content Styling (Matches new image) */
+.blg-card-content {
+  padding: 18px; /* Small padding */
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Makes card content fill height */
+  gap: 12px; /* Small gap */
+}
+
+.blg-card-meta-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Puts Author left, Tag right */
+  flex-wrap: wrap;
+  gap: 10px; /* Gap for wrapping */
+  font-size: 0.8rem; /* Small font */
+  color: var(--cadet);
+}
+
+.blg-card-meta-link {
+  color: var(--cadet);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+/* Style for the Author icon */
+.blg-card-meta-list .blg-card-meta-link i.fa-user {
+  color: var(--cadet);
+  font-size: 0.9rem;
+}
+
+/* Style for the Tag Pill */
+.blg-card-meta-link.blg-card-tag-pill {
+  font-size: 0.75rem; /* Small pill text */
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 50px;
+  gap: 0;
+}
+
+/* Use data-category from parent to color the pills */
+.blg-card[data-category="residential"] .blg-card-tag-pill {
+  background-color: var(--residential-bg);
+  color: var(--residential-fg);
+}
+.blg-card[data-category="commercial"] .blg-card-tag-pill {
+  background-color: var(--commercial-bg);
+  color: var(--commercial-fg);
+}
+.blg-card[data-category="investment"] .blg-card-tag-pill {
+  background-color: var(--investment-bg);
+  color: var(--investment-fg);
+}
+.blg-card[data-category="market-trends"] .blg-card-tag-pill {
+  background-color: var(--market-trends-bg);
+  color: var(--market-trends-fg);
+}
+.blg-card[data-category="general"] .blg-card-tag-pill,
+.blg-card[data-category="all"] .blg-card-tag-pill {
+  background-color: var(--general-bg);
+  color: var(--general-fg);
+}
+
+.blg-card-title {
+  font-size: 0.95rem; /* Reduced title size */
+  font-weight: 700;
+  margin: 0;
+  color: var(--dark-jungle-green);
+  transition: var(--transition);
+  line-height: 1.3;
+  /* Add min-height to align cards if titles wrap */
+  min-height: 2.6em; /* 0.95rem * 1.3 * 2 lines */
+}
+
+/* Bottom section: Date and Read More */
+.blg-card-content-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto; /* Pushes to bottom */
+  padding-top: 10px; /* Space from title */
+  border-top: 1px solid var(--border-color); /* Line from new image */
+}
+
+.blg-card-publish-date {
+  font-size: 0.8rem;
+  color: var(--cadet);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.blg-card-publish-date i {
+  color: var(--cadet);
+}
+
+.blg-card-read-more {
+  color: var(--orange-soda);
+  font-size: 1rem; /* Small text */
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px; /* Give it a small button-like padding */
+  border-radius: 4px;
+}
+
+.blg-card-read-more:hover {
+  background-color: var(--light-gray);
+  color: var(--dark-jungle-green);
+}
+
+.blg-card-read-more i {
+  color: var(--orange-soda);
+  transition: transform 0.3s ease;
+  font-size: 0.7rem;
+}
+
+.blg-card-read-more:hover i {
+  transform: translateX(4px);
+}
+
+/* --- Responsive Styles for Cards --- */
+@media (max-width: 768px) {
+  .blg-card-banner img {
+    height: 200px; /* Readjust for 2-col layout */
+  }
+}
+
+@media (max-width: 576px) {
+  .blg-card-banner img {
+    height: 220px;
+  }
+}

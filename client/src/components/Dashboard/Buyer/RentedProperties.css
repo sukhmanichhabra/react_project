@@ -1,0 +1,280 @@
+/* "My Rented Properties" Page Styles */
+
+.rented-properties-section {
+  width: 100%;
+  padding: 2rem; /* 32px */
+}
+
+.rented-properties-header {
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.rented-properties-header h2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+}
+
+.rented-properties-header p {
+  color: #6b7280; /* text-gray-500 */
+}
+
+/* 3-column grid for the cards */
+.rented-properties-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+/* On medium screens and up, go to 2 columns */
+@media (min-width: 768px) {
+  .rented-properties-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* On extra-large screens and up, go to 3 columns */
+@media (min-width: 1280px) {
+  .rented-properties-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Individual Rented Property Card */
+.rented-property-card {
+  background-color: #fff;
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+}
+
+.rented-property-card__image {
+  position: relative;
+}
+
+.rented-property-card__image img {
+  width: 100%;
+  height: 14rem; /* 224px */
+  object-fit: cover;
+}
+
+.rented-property-card__tag {
+  position: absolute;
+  top: 0.75rem; /* 12px */
+  left: 0.75rem; /* 12px */
+  background-color: #3b82f6; /* bg-blue-500 */
+  color: #fff;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 600;
+  padding: 0.25rem 0.75rem; /* 4px 12px */
+  border-radius: 0.375rem; /* 6px */
+  text-transform: uppercase;
+}
+
+.rented-property-card__content {
+  padding: 1.25rem; /* 20px */
+}
+
+.rented-property-card__title {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  color: #111827; /* text-gray-900 */
+  margin-bottom: 0.25rem; /* 4px */
+}
+
+.rented-property-card__title a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease-in-out;
+}
+
+.rented-property-card__title a:hover {
+  color: #dc2626; /* text-red-600 */
+}
+
+.rented-property-card__location {
+  font-size: 0.875rem; /* 14px */
+  color: #6b7280; /* text-gray-500 */
+  margin-bottom: 0.75rem; /* 12px */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+}
+
+.rented-property-card__location i {
+  color: #9ca3af; /* text-gray-400 */
+}
+
+.rented-property-card__price {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  color: #dc2626; /* text-red-600 */
+  margin-bottom: 1rem; /* 16px */
+}
+
+/* "Rental Information" block */
+.rented-property-card__info-block {
+  border-top: 1px solid #f3f4f6; /* border-gray-100 */
+  padding-top: 1rem; /* 16px */
+  margin-bottom: 1rem; /* 16px */
+}
+
+.rented-property-card__info-title {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 0.5rem; /* 8px */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+}
+
+.rented-property-card__info-title i {
+  color: #9ca3af; /* text-gray-400 */
+}
+
+.rented-property-card__info-details {
+  font-size: 0.875rem; /* 14px */
+  color: #374151; /* text-gray-600 */
+}
+
+.rented-property-card__info-details p {
+  margin-bottom: 0.25rem; /* 4px */
+}
+.rented-property-card__info-details p:last-child {
+  margin-bottom: 0;
+}
+
+/* 3-button action grid */
+.rented-property-card__actions {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.75rem; /* 12px */
+  padding-top: 1rem; /* 16px */
+  border-top: 1px solid #f3f4f6; /* border-gray-100 */
+}
+
+@media (min-width: 640px) {
+  .rented-property-card__actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Generic button style for the card actions */
+.dash-btn {
+  width: 100%;
+  text-align: center;
+  padding: 0.5rem 1rem; /* 8px 16px */
+  border-radius: 0.5rem; /* 8px */
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* 8px */
+  text-decoration: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dash-btn i {
+  font-size: 0.875rem; /* 14px */
+}
+
+.dash-btn.blue {
+  background-color: #3b82f6; /* bg-blue-500 */
+}
+.dash-btn.blue:hover {
+  background-color: #2563eb; /* hover:bg-blue-600 */
+}
+
+.dash-btn.red {
+  background-color: #ef4444; /* bg-red-500 */
+}
+.dash-btn.red:hover {
+  background-color: #dc2626; /* hover:bg-red-600 */
+}
+
+.dash-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* "Empty state" message when no properties are found */
+.dash-empty-state {
+  grid-column: 1 / -1; /* Make it span all columns */
+  text-align: center;
+  padding: 3rem; /* 48px */
+  background-color: #fff;
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dash-empty-state i {
+  font-size: 2.25rem; /* text-4xl */
+  color: #d1d5db; /* text-gray-300 */
+  margin-bottom: 1rem; /* 16px */
+}
+
+.dash-empty-state h3 {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600;
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 0.5rem; /* 8px */
+}
+
+.dash-empty-state p {
+  color: #6b7280; /* text-gray-500 */
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.dash-empty-state .dash-cta-button {
+  background-color: #dc2626; /* bg-red-600 */
+  color: #fff;
+  padding: 0.75rem 1.25rem; /* px-5 py-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* space-x-2 */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dash-empty-state .dash-cta-button:hover {
+  background-color: #b91c1c; /* hover:bg-red-700 */
+}
+
+/* Loading and Error States */
+.dash-loading-state, .dash-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.dash-loading-state i, .dash-error-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #9ca3af;
+}
+
+.dash-error-state i {
+  color: #ef4444;
+}
+
+.dash-loading-state p, .dash-error-state p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.dash-error-state h3 {
+  color: #ef4444;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}

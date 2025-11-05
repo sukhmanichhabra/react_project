@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="/css/base.css">
+        <link rel="stylesheet" href="/css/navbar.css">
+        <link rel="stylesheet" href="/css/header.css">
+        <link rel="stylesheet" href="/css/footer.css">
+        <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+    
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/css/managerent.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><%= title || 'Manage Rent' %></title>
+    </head>
+<body>
+    <%- include('./partials/navbar') %>
+    <%- include('./partials/header', {title: 'Manage Rent - Property ' + property.title}) %>
+
+    
+    <div class="container">
+        <div class="content-wrapper">
+            <div class="content-header">
+                <h1>
+                    <i class="fas fa-file-invoice-dollar"></i> 
+                    Manage Rent: <%= property.title %>
+                </h1>
+                <a href="/property/<%= property._id %>" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Property
+                </a>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-section">
+                    <h2>Property Information</h2>
+                    <div class="property-overview">
+                        <div class="property-image">
+                            <img src="<%= property.images && property.images[0] ? property.images[0] : '/images/property-placeholder.jpg' %>" alt="<%= property.title %>">
+                        </div>
+                        <div class="property-details">
+                            <h3><%= property.title %></h3>
+                            <p class="property-location">
+                                <i class="fas fa-map-marker-alt"></i> <%= property.location %>
+                            </p>
+                            <div class="property-stats">
+                                <span><i class="fas fa-bed"></i> <%= property.features.beds %> Beds</span>
+                                <span><i class="fas fa-bath"></i> <%= property.features.baths %> Baths</span>
+                                <span><i class="fas fa-ruler-combined"></i> <%= property.features.sqft %> sqft</span>
+                            </div>
+                            <p class="property-price">
+                                <i class="fas fa-money-bill-wave"></i> <%= property.price %>
+                            </p>
+                            <p class="property-status">
+                                <i class="fas fa-info-circle"></i> Status: 
+                                <span class="<%= property.status %>"><%= property.status.toUpperCase() %></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h2>Rent Settings</h2>
+                    <form action="/rent/settings/<%= property._id %>" method="POST" class="rent-settings-form">
+                        <div class="form-group">
+                            <label for="rentAmount">Rent Amount ($)</label>
+                            <% 
+                            // Extract rent amount from property price
+                            let rentAmount = 0;
+                            if (property.price) {
+                                rentAmount = parseFloat(property.price.replace(/[^0-9.-]+/g, ""));
+                                if (isNaN(rentAmount)) rentAmount = 0;
+                            }
+                            %>
+                            <input type="number" id="rentAmount" name="rentAmount" value="<%= rentAmount %>" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="frequency">Payment Frequency</label>
+                            <select id="frequency" name="frequency">
+                                <option value="monthly" selected>Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dueDay">Due Day of Month</label>
+                            <input type="number" id="dueDay" name="dueDay" value="1" min="1" max="31" required>
+                            <p class="form-hint">Day of the month when rent is due</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="gracePeriod">Grace Period (Days)</label>
+                            <input type="number" id="gracePeriod" name="gracePeriod" value="5" min="0" max="30" required>
+                            <p class="form-hint">Days after due date before rent is marked overdue</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="lateFee">Late Fee ($)</label>
+                            <input type="number" id="lateFee" name="lateFee" value="50" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn primary-btn">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="panel-section">
+                    <div class="section-header">
+                        <h2>Generate Rent</h2>
+                        <% if (property.status === 'rented') { %>
+                            <form action="/rent/generate/<%= property._id %>" method="POST" class="generate-rent-form" 
+                                onsubmit="return confirm('Generate next rent payment for this property?')">
+                                <button type="submit" class="btn primary-btn">
+                                    <i class="fas fa-file-invoice-dollar"></i> Generate Next Rent
+                                </button>
+                            </form>
+                        <% } else { %>
+                            <button class="btn primary-btn" disabled style="background-color: #ccc; cursor: not-allowed;">
+                                <i class="fas fa-file-invoice-dollar"></i> Property Not Rented
+                            </button>
+                        <% } %>
+                    </div>
+                    
+                    <div class="info-box">
+                        <p><i class="fas fa-info-circle"></i> You can generate a new rent payment for the tenant once the current payment is settled.</p>
+                        <p>The rent will be generated based on the settings above and will be due according to the frequency and due date specified.</p>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h2>Complete Rent History</h2>
+                    <% if (rentHistory && rentHistory.length > 0) { %>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tenant</th>
+                                    <th>Due Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Paid Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% rentHistory.forEach(rent => { %>
+                                    <tr>
+                                        <td><%= rent.renterName %></td>
+                                        <td><%= new Date(rent.dueDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) %></td>
+                                        <td>$<%= rent.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></td>
+                                        <td>
+                                            <span class="status-badge status-<%= rent.status %>">
+                                                <%= rent.status.charAt(0).toUpperCase() + rent.status.slice(1) %>
+                                            </span>
+                                        </td>
+                                        <td><%= rent.paidDate ? new Date(rent.paidDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : 'Not paid yet' %></td>
+                                        <td>
+                                            <a href="/rent/details/<%= rent._id %>" class="btn small-btn">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <p>No rent history available for this property.</p>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="panel-section">
+                    <h2>Current Tenant Information</h2>
+                    <% if (property.status === 'rented' && property.buyer) { %>
+                        <div class="tenant-info">
+                            <div class="info-item">
+                                <span class="label">Name:</span>
+                                <span class="value"><%= property.buyer.name %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Email:</span>
+                                <span class="value"><%= property.buyer.email %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Phone:</span>
+                                <span class="value"><%= property.buyer.phone %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Rented Since:</span>
+                                <span class="value"><%= property.purchaseDate ? new Date(property.purchaseDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : 'Unknown' %></span>
+                            </div>
+                        </div>
+                        
+                        <div class="tenant-actions">
+                            <button class="btn secondary-btn message-btn" data-tenant-id="<%= property.buyerId %>">
+                                <i class="fas fa-envelope"></i> Message Tenant
+                            </button>
+                            
+                            <form action="/rent/cancel-agreement/<%= property._id %>" method="POST" class="cancel-rental-form" 
+                                onsubmit="return confirm('Are you sure you want to cancel this rental agreement? This action cannot be undone.')">
+                                <button type="submit" class="btn danger-btn cancel-rental-btn">
+                                    <i class="fas fa-times-circle"></i> Cancel Agreement
+                                </button>
+                            </form>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-user"></i>
+                            <p>This property is not currently rented.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('./partials/footer') %>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize message modal if needed
+            const messageButtons = document.querySelectorAll('.message-btn');
+            messageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tenantId = this.getAttribute('data-tenant-id');
+                    alert('Message functionality would open here. Tenant ID: ' + tenantId);
+                    // Implement your messaging UI here
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,705 @@
+/* Property List Page Styles - EXACT Layout */
+
+.prop-list-page {
+  min-height: 100vh;
+  padding: 40px 20px 60px;
+}
+
+.prop-list-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  max-width: 1440px;
+  margin: 0 auto;
+  margin-top: -10px;
+  margin-right: 50px;
+}
+
+.prop-list-featured-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 30px 20px; /* Optional: adds side padding */
+  background-color: #95999dff; /* Light gray background */
+  border-radius: 12px; /* Rounded corners */
+}
+
+/* Filter Sidebar - EXACT styling */
+.prop-list-filter-sidebar {
+  background: white;
+  padding: 28px 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  min-width: 350px;
+  max-width: 350px;
+  position: sticky;
+  top: 20px;
+}
+
+.prop-list-filter-sidebar h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  margin-top: 24px;
+  color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+}
+
+.prop-list-filter-sidebar h3:first-child {
+  margin-top: 0;
+}
+
+.prop-list-filter-sidebar select,
+.prop-list-filter-sidebar input[type="text"],
+.prop-list-filter-sidebar input[type="range"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.prop-list-filter-sidebar select:hover,
+.prop-list-filter-sidebar input[type="text"]:hover {
+  border-color: #ff6600;
+}
+
+.prop-list-filter-sidebar input[type="range"] {
+  padding: 0;
+}
+
+/* Location input container */
+.prop-list-location-container {
+  position: relative;
+}
+
+/* Location input styling */
+.prop-list-location-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.prop-list-location-input:focus {
+  outline: none;
+  border-color: #ff6600;
+  box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+/* Location suggestions dropdown */
+.prop-list-location-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: -15px;
+}
+
+.prop-list-suggestion-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.prop-list-suggestion-item:hover {
+  background-color: #f5f5f5;
+  color: #ff6600;
+}
+
+/* Style the range slider */
+.prop-list-price-range {
+  margin-bottom: 20px;
+}
+
+.prop-list-price-range label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #333;
+}
+
+.prop-list-price-slider-container {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.prop-list-price-slider-track {
+  position: absolute;
+  height: 4px;
+  background: #ff6600;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.prop-list-price-range input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #ddd;
+  outline: none;
+  margin: 10px 0;
+  position: relative;
+}
+
+.prop-list-price-range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #ff6600;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.prop-list-price-range input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #ff6600;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.prop-list-price-range input[type="range"]::-webkit-slider-thumb:hover {
+  background: #e55a00;
+  transform: scale(1.1);
+}
+
+.prop-list-price-range input[type="range"]::-moz-range-thumb:hover {
+  background: #e55a00;
+  transform: scale(1.1);
+}
+
+#prop-list-price-value {
+  display: block;
+  text-align: center;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff6600;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+#prop-list-price-value:hover {
+  background: #ffe8d6;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.prop-list-amenities-grid {
+  margin: 20px 0;
+}
+
+.prop-list-amenities-grid h3 {
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.prop-list-custom-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  user-select: none;
+}
+
+/* Hide Default Checkbox */
+.prop-list-custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Custom Checkbox Shape */
+.prop-list-custom-checkbox .prop-list-checkmark {
+  height: 18px;
+  width: 18px;
+  background-color: white;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+/* Checkmark Icon */
+.prop-list-custom-checkbox input:checked + .prop-list-checkmark {
+  background-color: #ff6600;
+  border-color: #ff6600;
+}
+
+/* Adding a Check Icon */
+.prop-list-custom-checkbox .prop-list-checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Show Check Icon on Select */
+.prop-list-custom-checkbox input:checked + .prop-list-checkmark::after {
+  display: block;
+}
+
+/* Hover Effect */
+.prop-list-custom-checkbox:hover .prop-list-checkmark {
+  border-color: #ff6600;
+}
+
+.prop-list-filter-sidebar label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.prop-list-filter-sidebar input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.prop-list-search-btn {
+  margin-top: 15px;
+  padding: 12px;
+  color: white;
+  background-color: #ff6600;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.prop-list-search-btn:hover {
+  background-color: #e55a00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+}
+
+.prop-list-show-all-btn {
+  margin-top: 10px;
+  padding: 12px;
+  width: 100%;
+  border: 2px solid #ff6600;
+  background-color: white;
+  color: #ff6600;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.prop-list-show-all-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 102, 0, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.prop-list-show-all-btn:hover {
+  background-color: #ff6600;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+}
+
+.prop-list-show-all-btn:hover::before {
+  left: 100%;
+}
+
+.prop-list-compare-properties-btn {
+  display: block;
+  margin-top: 15px;
+  padding: 12px;
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.prop-list-compare-properties-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Property Grid - EXACT spacing */
+.prop-list-property-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Enhanced Property Grid - for new enhanced property cards */
+.enhanced-property-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 30px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.enhanced-property-grid .enhanced-property-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.enhanced-property-grid .enhanced-property-card {
+  height: 100%;
+}
+
+/* No Results Message */
+.prop-list-no-results-message {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.prop-list-no-results-icon {
+  font-size: 64px;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.prop-list-no-results-message h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.prop-list-no-results-message p {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+.prop-list-filter-suggestions {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.prop-list-filter-suggestions p {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.prop-list-filter-suggestions ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  display: inline-block;
+}
+
+.prop-list-filter-suggestions li {
+  padding: 8px 0;
+  color: #666;
+}
+
+.prop-list-filter-suggestions i {
+  color: #4caf50;
+  margin-right: 10px;
+}
+
+.prop-list-action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.prop-list-reset-filters-btn,
+.prop-list-modify-filters-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.prop-list-reset-filters-btn {
+  background-color: #ff6600;
+  color: white;
+}
+
+.prop-list-reset-filters-btn:hover {
+  background-color: #e55a00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+}
+
+.prop-list-modify-filters-btn {
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+}
+
+.prop-list-modify-filters-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* General styling for the page background to make cards stand out */
+body {
+  background-color: #f9fafb; /* Light gray background like in the image */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* A clean, modern font */
+}
+
+/* Main container for the section */
+.prop-list-featured-section {
+  padding: 80px 20px; /* Increased vertical padding for more space */
+  animation: prop-list-fadeIn 1s ease-out;
+  max-width: 100%; /* Max width for larger screens */
+  margin: 0 auto; /* Center the section */
+}
+
+/* Header for the section */
+.prop-list-section-header {
+  text-align: center;
+  margin-bottom: 50px; /* Added more space between header and stats */
+  animation: prop-list-slideDown 1s ease-out;
+}
+
+/* Main title: "Featured Properties" */
+.prop-list-section-header h2 {
+  font-size: 2.2rem; /* Slightly adjusted for balance */
+  font-weight: 600; /* Bolder text */
+  color: #1f2937; /* A darker, less harsh black */
+  margin-bottom: 15px;
+}
+
+/* Subtitle under the main title */
+.prop-list-section-header p {
+  font-size: 1rem; /* Adjusted for better hierarchy */
+  color: #6b7280; /* A softer gray */
+}
+
+/* Grid container for the stat cards */
+.prop-list-featured-stats {
+  display: grid;
+  /* Responsive columns: 4 on desktop, 2 on tablet, 1 on mobile */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+
+/* Individual stat card */
+.prop-list-stat-item {
+  background: white;
+  padding: 30px;
+  border-radius: 12px; /* Slightly more rounded corners to match the image */
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Softer, more diffuse shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: prop-list-fadeInUp 1s ease-out;
+}
+
+/* Hover effect for the card */
+.prop-list-stat-item:hover {
+  transform: translateY(-8px); /* A more subtle lift effect */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Icon inside the card */
+.prop-list-stat-item i {
+  font-size: 2.5rem;
+  color: #ff6600; /* This orange color is a good match */
+  margin-bottom: 20px; /* More space below the icon */
+}
+
+/* The number/statistic (e.g., "1200+") */
+.prop-list-stat-item h3 {
+  font-size: 2.4rem; /* Made the number larger and bolder for impact */
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px; /* Reduced space to bring text closer */
+}
+
+/* The label for the statistic (e.g., "Properties Listed") */
+.prop-list-stat-item p {
+  color: #6b7280;
+  font-size: 0.9rem; /* Made the label text smaller */
+}
+
+/* Keyframe animations used in the code */
+@keyframes prop-list-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes prop-list-slideDown {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes prop-list-fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Back to Top Button */
+#prop-list-backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+#prop-list-backToTop:hover {
+  background: #e55a00;
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+#prop-list-backToTop i {
+  font-size: 20px;
+}
+
+/* Loading and Error states (from PropertyList.jsx) */
+.prop-list-loading-container,
+.prop-list-error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 18px;
+  color: #666;
+  width: 100%;
+}
+
+.prop-list-error-container {
+  color: #e74c3c;
+}
+
+.prop-list-loading-container i,
+.prop-list-error-container i {
+  margin-right: 10px;
+}
+
+/* From PropertyGrid.jsx */
+.prop-list-listing {
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .prop-list-container {
+    flex-direction: column;
+  }
+
+  .prop-list-filter-sidebar {
+    max-width: 100%;
+    position: static;
+  }
+
+  .prop-list-property-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .prop-list-featured-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .prop-list-section-header h2 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .prop-list-property-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prop-list-featured-stats {
+    grid-template-columns: 1fr;
+  }
+}

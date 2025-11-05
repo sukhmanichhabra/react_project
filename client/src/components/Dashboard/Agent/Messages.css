@@ -1,0 +1,71 @@
+.dash-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+  padding: 2rem; /* 32px */
+}
+
+.dash-message-item {
+  background-color: #fff;
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 1.5rem; /* 24px */
+}
+
+.dash-message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+  padding-bottom: 0.75rem; /* 12px */
+  margin-bottom: 0.75rem; /* 12px */
+}
+
+.dash-message-sender {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  color: #1f2937; /* text-gray-800 */
+}
+
+.dash-message-date {
+  font-size: 0.875rem; /* 14px */
+  color: #6b7280; /* text-gray-500 */
+}
+
+.dash-message-property {
+  font-size: 0.875rem; /* 14px */
+  color: #4b5563; /* text-gray-600 */
+  margin-bottom: 1rem; /* 16px */
+}
+
+.dash-message-property a {
+  color: #dc2626; /* text-red-600 */
+  font-weight: 500;
+  text-decoration: none;
+}
+.dash-message-property a:hover {
+  text-decoration: underline;
+}
+
+.dash-message-body {
+  color: #374151; /* text-gray-700 */
+  margin-bottom: 1rem; /* 16px */
+  line-height: 1.6;
+}
+
+.dash-reply-btn {
+  background-color: #3b82f6; /* bg-blue-500 */
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease-in-out;
+}
+.dash-reply-btn:hover {
+  background-color: #2563eb; /* hover:bg-blue-600 */
+}

@@ -1,0 +1,1255 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<%- include('partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h3 class="mb-3">Chatbot Q&A Management</h3>
+            <p class="text-muted">Manage questions and answers for the AI chatbot assistant. Organize them by category and set priority to control which answers appear first.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Sidebar for filtering -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Categories</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/chatbot/admin" class="list-group-item list-group-item-action <%= !currentCategory ? 'active' : '' %>">
+                        All Categories
+                    </a>
+                    <% categories.forEach(category => { %>
+                        <a href="/chatbot/admin?category=<%= category.id %>" class="list-group-item list-group-item-action <%= currentCategory === category.id ? 'active' : '' %>">
+                            <%= category.name %>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Add New Q&A</h5>
+                </div>
+                <div class="card-body">
+                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addQAModal">
+                        <i class="fas fa-plus-circle me-2"></i>Add New Question
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span class="text-muted">Total Q&A Entries:</span>
+                        <span class="float-end fw-bold"><%= qas.length %></span>
+                    </div>
+                    <% 
+                        // Calculate stats per category
+                        const categoryStats = {};
+                        categories.forEach(cat => {
+                            categoryStats[cat.id] = 0;
+                        });
+                        
+                        qas.forEach(qa => {
+                            if (categoryStats[qa.category] !== undefined) {
+                                categoryStats[qa.category]++;
+                            }
+                        });
+                    %>
+                    <% Object.keys(categoryStats).forEach(catId => { %>
+                        <div class="mb-2">
+                            <span class="text-muted"><%= categories.find(c => c.id === catId).name %>:</span>
+                            <span class="float-end"><%= categoryStats[catId] %></span>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content table -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <% if (currentCategory) { %>
+                            Questions in <%= categories.find(c => c.id === currentCategory).name %>
+                        <% } else { %>
+                            All Questions and Answers
+                        <% } %>
+                    </h5>
+                    <div class="input-group" style="max-width: 300px;">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search questions...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="qaTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 40%">Question</th>
+                                    <th style="width: 30%">Answer</th>
+                                    <th style="width: 10%">Category</th>
+                                    <th style="width: 10%">Priority</th>
+                                    <th style="width: 10%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (qas.length === 0) { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                No Q&A entries found. Add your first question using the button on the left.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% } else { %>
+                                    <% qas.forEach(qa => { %>
+                                        <tr class="<%= !qa.isActive ? 'table-secondary' : '' %>" 
+                                            data-id="<%= qa._id %>" 
+                                            data-keywords="<%= qa.keywords ? qa.keywords.join(',') : '' %>">
+                                            <td>
+                                                <%= qa.question %>
+                                                <% if (!qa.isActive) { %>
+                                                    <span class="badge bg-secondary ms-2">Inactive</span>
+                                                <% } %>
+                                            </td>
+                                            <td class="text-truncate" style="max-width: 300px;"><%= qa.answer %></td>
+                                            <td><span class="badge bg-info"><%= qa.category %></span></td>
+                                            <td><%= qa.priority %></td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-outline-primary edit-btn" data-id="<%= qa._id %>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger delete-btn" data-id="<%= qa._id %>">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add QA Modal -->
+<div class="modal fade" id="addQAModal" tabindex="-1" aria-labelledby="addQAModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addQAModalLabel">Add New Question & Answer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addQAForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="question" class="form-label">Question</label>
+                        <input type="text" class="form-control" id="question" name="question" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="answer" class="form-label">Answer</label>
+                        <textarea class="form-control" id="answer" name="answer" rows="4" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <% categories.forEach(category => { %>
+                                        <option value="<%= category.id %>"><%= category.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Priority</label>
+                                <input type="number" class="form-control" id="priority" name="priority" min="0" max="10" value="0">
+                                <small class="text-muted">Higher numbers appear first in results (0-10)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="keywords" class="form-label">Keywords (comma separated)</label>
+                        <input type="text" class="form-control" id="keywords" name="keywords">
+                        <small class="text-muted">Optional: Words that help match this question</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit QA Modal -->
+<div class="modal fade" id="editQAModal" tabindex="-1" aria-labelledby="editQAModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editQAModalLabel">Edit Question & Answer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editQAForm">
+                <input type="hidden" id="editId" name="id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editQuestion" class="form-label">Question</label>
+                        <input type="text" class="form-control" id="editQuestion" name="question" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAnswer" class="form-label">Answer</label>
+                        <textarea class="form-control" id="editAnswer" name="answer" rows="4" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editCategory" class="form-label">Category</label>
+                                <select class="form-select" id="editCategory" name="category" required>
+                                    <% categories.forEach(category => { %>
+                                        <option value="<%= category.id %>"><%= category.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editPriority" class="form-label">Priority</label>
+                                <input type="number" class="form-control" id="editPriority" name="priority" min="0" max="10" value="0">
+                                <small class="text-muted">Higher numbers appear first in results (0-10)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editKeywords" class="form-label">Keywords (comma separated)</label>
+                        <input type="text" class="form-control" id="editKeywords" name="keywords">
+                        <small class="text-muted">Optional: Words that help match this question</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="editIsActive" name="isActive" checked>
+                            <label class="form-check-label" for="editIsActive">Active</label>
+                        </div>
+                        <small class="text-muted">When inactive, this Q&A won't be shown in search results</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this question and answer?</p>
+                <p><strong>Question:</strong> <span id="deleteQuestion"></span></p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="successMessage">
+            Operation completed successfully!
+        </div>
+    </div>
+</div>
+
+<!-- Error Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="errorMessage">
+            An error occurred. Please try again.
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Enhanced Admin Panel Styling */
+    body {
+        background: #f5f7fa;
+    }
+    
+    .container-fluid {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    h3.mb-3 {
+        position: relative;
+        padding-bottom: 12px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    h3.mb-3:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, #1976d2, #64b5f6);
+        border-radius: 2px;
+    }
+    
+    /* Card styling */
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        transform: translateY(0);
+        overflow: hidden;
+    }
+    
+    .card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        transform: translateY(-5px);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: #1976d2;
+        margin-bottom: 0;
+    }
+    
+    /* List group styling */
+    .list-group-item {
+        border-left: 4px solid transparent;
+        transition: all 0.3s ease;
+        padding: 12px 15px;
+    }
+    
+    .list-group-item:hover {
+        background-color: #f0f7ff;
+        border-left: 4px solid #1976d2;
+        transform: translateX(5px);
+    }
+    
+    .list-group-item.active {
+        background: linear-gradient(135deg, #1976d2, #42a5f5);
+        border-color: #1976d2;
+        box-shadow: 0 4px 10px rgba(25, 118, 210, 0.3);
+    }
+    
+    /* Table styling */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        background: transparent;
+    }
+    
+    .table thead th {
+        border: none;
+        background: linear-gradient(135deg, #1976d2, #42a5f5);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        padding: 15px;
+    }
+    
+    .table thead th:first-child {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+    
+    .table thead th:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+    
+    .table tbody tr {
+        background-color: white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        transform: scale(1);
+    }
+    
+    .table tbody tr:hover {
+        box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+        transform: scale(1.01);
+    }
+    
+    .table tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-top: none;
+    }
+    
+    .table tbody tr td:first-child {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+    
+    .table tbody tr td:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+    
+    /* Button styling */
+    .btn {
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255,255,255,0.3);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+    
+    .btn:hover:after {
+        animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+        20% {
+            transform: scale(25, 25);
+            opacity: 0.3;
+        }
+        100% {
+            opacity: 0;
+            transform: scale(40, 40);
+        }
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #1976d2, #42a5f5);
+        border: none;
+        box-shadow: 0 4px 10px rgba(25, 118, 210, 0.3);
+    }
+    
+    .btn-primary:hover {
+        box-shadow: 0 6px 15px rgba(25, 118, 210, 0.4);
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #1565c0, #1976d2);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #757575, #9e9e9e);
+        border: none;
+        box-shadow: 0 4px 10px rgba(158, 158, 158, 0.3);
+    }
+    
+    .btn-secondary:hover {
+        box-shadow: 0 6px 15px rgba(158, 158, 158, 0.4);
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #616161, #757575);
+    }
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #d32f2f, #ef5350);
+        border: none;
+        box-shadow: 0 4px 10px rgba(239, 83, 80, 0.3);
+    }
+    
+    .btn-danger:hover {
+        box-shadow: 0 6px 15px rgba(239, 83, 80, 0.4);
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #c62828, #d32f2f);
+    }
+    
+    .btn-group .btn {
+        border-radius: 6px;
+        padding: 6px 10px;
+    }
+    
+    /* Modal styling */
+    .modal-content {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        overflow: hidden;
+    }
+    
+    .modal-header {
+        border-bottom: none;
+        padding: 20px 25px;
+        background: linear-gradient(135deg, #1976d2, #64b5f6);
+        color: white;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+    }
+    
+    .modal-body {
+        padding: 25px;
+    }
+    
+    .modal-footer {
+        border-top: none;
+        padding: 15px 25px 25px;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid #dde2e7;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+    }
+    
+    .form-label {
+        color: #455a64;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+    
+    .form-control:hover, .form-select:hover {
+        border-color: #64b5f6;
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+    }
+    
+    /* Badge styling */
+    .badge {
+        padding: 6px 10px;
+        font-weight: 600;
+        border-radius: 50px;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        animation: badgePulse 2s infinite;
+    }
+    
+    @keyframes badgePulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(0,123,255, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(0,123,255, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(0,123,255, 0);
+        }
+    }
+    
+    .bg-info {
+        background: linear-gradient(135deg, #0288d1, #29b6f6) !important;
+    }
+    
+    .bg-secondary {
+        background: linear-gradient(135deg, #757575, #9e9e9e) !important;
+    }
+    
+    /* Statistics styling */
+    .float-end {
+        font-weight: 600;
+        color: #455a64;
+    }
+    
+    /* Toast styling */
+    .toast {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        overflow: hidden;
+        opacity: 1;
+    }
+    
+    .toast-header {
+        padding: 12px 15px;
+        border-bottom: none;
+    }
+    
+    .toast-body {
+        padding: 15px;
+        font-weight: 500;
+    }
+    
+    .bg-success, .text-white {
+        background: linear-gradient(135deg, #2e7d32, #66bb6a) !important;
+        color: white !important;
+    }
+    
+    .bg-danger {
+        background: linear-gradient(135deg, #c62828, #ef5350) !important;
+    }
+    
+    /* Input group styling */
+    .input-group {
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .input-group:hover {
+        box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    }
+    
+    .input-group .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: none;
+    }
+    
+    .input-group .btn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border: none;
+        background: linear-gradient(135deg, #42a5f5, #1976d2);
+        color: white;
+    }
+    
+    /* Animation classes */
+    .animate-fade-in {
+        opacity: 0;
+        animation: fadeIn 0.5s forwards;
+    }
+    
+    .animate-slide-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUp 0.5s forwards;
+    }
+    
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Form check switch styling */
+    .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        margin-top: 0.25em;
+        vertical-align: top;
+        background-color: #fff;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        border: 1px solid #e0e0e0;
+        appearance: none;
+        print-color-adjust: exact;
+        transition: all 0.3s ease;
+    }
+    
+    .form-check-input:checked {
+        background-color: #1976d2;
+        border-color: #1976d2;
+    }
+    
+    .form-switch .form-check-input {
+        border-radius: 2em;
+        transition: background-position 0.15s ease-in-out;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(0, 0, 0, 0.25)'/%3e%3c/svg%3e");
+        background-position: left center;
+    }
+    
+    .form-switch .form-check-input:checked {
+        background-position: right center;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    }
+    
+    .form-check-label {
+        color: #455a64;
+        font-weight: 500;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .container-fluid {
+            padding: 1rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .table thead th, .table tbody td {
+            padding: 10px;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips and modals
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Initialize all modals
+        const addModal = new bootstrap.Modal(document.getElementById('addQAModal'));
+        const editModal = new bootstrap.Modal(document.getElementById('editQAModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        
+        // Add button click handler
+        document.querySelector('[data-bs-target="#addQAModal"]').addEventListener('click', function() {
+            // Reset form fields
+            document.getElementById('addQAForm').reset();
+            
+            // Show modal
+            addModal.show();
+            
+            // Add animation
+            setTimeout(() => {
+                document.querySelector('#addQAModal .modal-content').classList.add('animate-fade-in');
+            }, 200);
+        });
+        
+        // Toasts
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        
+        // Show success message
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            successToast.show();
+        }
+        
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            errorToast.show();
+        }
+        
+        // Add animation classes to elements
+        document.querySelectorAll('.card').forEach((card, index) => {
+            card.classList.add('animate-fade-in');
+            card.style.animationDelay = (index * 0.1) + 's';
+        });
+        
+        document.querySelectorAll('tbody tr').forEach((row, index) => {
+            row.classList.add('animate-slide-up');
+            row.style.animationDelay = (index * 0.05) + 's';
+        });
+        
+        // Add QA Form Submission
+        document.getElementById('addQAForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading animation
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i> Saving...';
+            submitBtn.disabled = true;
+            
+            const formData = {
+                question: document.getElementById('question').value,
+                answer: document.getElementById('answer').value,
+                category: document.getElementById('category').value,
+                priority: document.getElementById('priority').value,
+                keywords: document.getElementById('keywords').value
+            };
+            
+            fetch('/chatbot/admin/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccess('Question added successfully!');
+                    // Close modal and refresh page
+                    addModal.hide();
+                    
+                    // Add a nice transition before reload
+                    document.body.style.opacity = '0';
+                    document.body.style.transition = 'opacity 0.5s ease';
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 800);
+                } else {
+                    showError(data.message || 'Failed to add question');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred. Please try again.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+        
+        // Edit QA Button Click
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const qaId = this.getAttribute('data-id');
+                const row = document.querySelector(`tr[data-id="${qaId}"]`);
+                
+                // Add ripple effect to the row
+                row.classList.add('highlight-pulse');
+                setTimeout(() => {
+                    row.classList.remove('highlight-pulse');
+                }, 1000);
+                
+                // Get values from the table row
+                const question = row.cells[0].textContent.trim();
+                const answer = row.cells[1].textContent.trim();
+                const category = row.cells[2].querySelector('.badge').textContent.trim();
+                const priority = row.cells[3].textContent.trim();
+                const isActive = !row.classList.contains('table-secondary');
+                const keywordsAttr = row.getAttribute('data-keywords');
+                
+                // Fetch the question details via API to get complete data
+                fetch(`/chatbot/admin/getqa/${qaId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Set values in the edit form
+                            document.getElementById('editId').value = qaId;
+                            document.getElementById('editQuestion').value = question;
+                            document.getElementById('editAnswer').value = answer;
+                            document.getElementById('editCategory').value = category;
+                            document.getElementById('editPriority').value = priority;
+                            document.getElementById('editIsActive').checked = isActive;
+                            
+                            // Set keywords if present in the API response
+                            if (data.qa && data.qa.keywords) {
+                                document.getElementById('editKeywords').value = data.qa.keywords.join(', ');
+                            } else if (keywordsAttr) {
+                                // Fallback to data attribute
+                                document.getElementById('editKeywords').value = keywordsAttr;
+                            }
+                            
+                            // Open the modal with animation
+                            editModal.show();
+                            
+                            // Add animation to modal content
+                            setTimeout(() => {
+                                document.querySelector('#editQAModal .modal-content').classList.add('animate-fade-in');
+                            }, 200);
+                        } else {
+                            showError('Failed to load question details');
+                            
+                            // Fallback to use data from the table
+                            document.getElementById('editId').value = qaId;
+                            document.getElementById('editQuestion').value = question;
+                            document.getElementById('editAnswer').value = answer;
+                            document.getElementById('editCategory').value = category;
+                            document.getElementById('editPriority').value = priority;
+                            document.getElementById('editIsActive').checked = isActive;
+                            
+                            if (keywordsAttr) {
+                                document.getElementById('editKeywords').value = keywordsAttr;
+                            }
+                            
+                            // Open the modal with animation
+                            editModal.show();
+                            
+                            // Add animation to modal content
+                            setTimeout(() => {
+                                document.querySelector('#editQAModal .modal-content').classList.add('animate-fade-in');
+                            }, 200);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        
+                        // Fallback if API fails - use the data we already have
+                        document.getElementById('editId').value = qaId;
+                        document.getElementById('editQuestion').value = question;
+                        document.getElementById('editAnswer').value = answer;
+                        document.getElementById('editCategory').value = category;
+                        document.getElementById('editPriority').value = priority;
+                        document.getElementById('editIsActive').checked = isActive;
+                        
+                        if (keywordsAttr) {
+                            document.getElementById('editKeywords').value = keywordsAttr;
+                        }
+                        
+                        // Open the modal with animation
+                        editModal.show();
+                        
+                        // Add animation to modal content
+                        setTimeout(() => {
+                            document.querySelector('#editQAModal .modal-content').classList.add('animate-fade-in');
+                        }, 200);
+                    });
+            });
+        });
+        
+        // Edit QA Form Submission
+        document.getElementById('editQAForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading animation
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i> Updating...';
+            submitBtn.disabled = true;
+            
+            const qaId = document.getElementById('editId').value;
+            const formData = {
+                question: document.getElementById('editQuestion').value,
+                answer: document.getElementById('editAnswer').value,
+                category: document.getElementById('editCategory').value,
+                priority: document.getElementById('editPriority').value,
+                keywords: document.getElementById('editKeywords').value,
+                isActive: document.getElementById('editIsActive').checked
+            };
+            
+            fetch(`/chatbot/admin/update/${qaId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccess('Question updated successfully!');
+                    // Close modal and refresh page
+                    editModal.hide();
+                    
+                    // Add a nice transition before reload
+                    document.body.style.opacity = '0';
+                    document.body.style.transition = 'opacity 0.5s ease';
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 800);
+                } else {
+                    showError(data.message || 'Failed to update question');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred. Please try again.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+        
+        // Delete QA Button Click
+        let deleteId = null;
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                deleteId = this.getAttribute('data-id');
+                const row = document.querySelector(`tr[data-id="${deleteId}"]`);
+                
+                // Add shake animation to the row
+                row.classList.add('highlight-shake');
+                setTimeout(() => {
+                    row.classList.remove('highlight-shake');
+                }, 1000);
+                
+                // Set question text in confirmation modal
+                document.getElementById('deleteQuestion').textContent = row.cells[0].textContent.trim();
+                
+                // Open confirmation modal
+                deleteModal.show();
+                
+                // Add animation to modal content
+                setTimeout(() => {
+                    document.querySelector('#deleteConfirmModal .modal-content').classList.add('animate-fade-in');
+                }, 200);
+            });
+        });
+        
+        // Confirm Delete Button Click
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (!deleteId) return;
+            
+            // Show loading animation
+            const deleteBtn = this;
+            const originalText = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i> Deleting...';
+            deleteBtn.disabled = true;
+            
+            fetch(`/chatbot/admin/delete/${deleteId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add delete animation
+                    const row = document.querySelector(`tr[data-id="${deleteId}"]`);
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.transform = 'translateX(100%)';
+                    row.style.opacity = '0';
+                    
+                    showSuccess('Question deleted successfully!');
+                    // Close modal and refresh page after animation
+                    deleteModal.hide();
+                    
+                    // Add a nice transition before reload
+                    setTimeout(() => {
+                        document.body.style.opacity = '0';
+                        document.body.style.transition = 'opacity 0.5s ease';
+                        
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    }, 800);
+                } else {
+                    showError(data.message || 'Failed to delete question');
+                    deleteBtn.innerHTML = originalText;
+                    deleteBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred. Please try again.');
+                deleteBtn.innerHTML = originalText;
+                deleteBtn.disabled = false;
+            });
+        });
+        
+        // Search functionality with animation
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Add search animation
+            this.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-search"></i>';
+                
+                const rows = document.querySelectorAll('#qaTable tbody tr');
+                
+                rows.forEach(row => {
+                    const question = row.cells[0].textContent.toLowerCase();
+                    const answer = row.cells[1].textContent.toLowerCase();
+                    
+                    if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                        row.style.display = '';
+                        row.classList.add('highlight-match');
+                        setTimeout(() => {
+                            row.classList.remove('highlight-match');
+                        }, 2000);
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }, 500);
+        });
+        
+        // Reset search on clear
+        document.getElementById('searchInput').addEventListener('input', function() {
+            if (this.value === '') {
+                document.querySelectorAll('#qaTable tbody tr').forEach(row => {
+                    row.style.display = '';
+                });
+            }
+        });
+        
+        // Enter key to search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+        
+        // Add hover effect to rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.querySelector('.btn-group').style.opacity = '1';
+                this.querySelector('.btn-group').style.transform = 'scale(1.1)';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.querySelector('.btn-group').style.opacity = '0.7';
+                this.querySelector('.btn-group').style.transform = 'scale(1)';
+            });
+        });
+        
+        // Show active category count with animation
+        document.querySelectorAll('.card:nth-child(3) .mb-2').forEach((stat, index) => {
+            stat.style.opacity = '0';
+            stat.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                stat.style.transition = 'all 0.5s ease';
+                stat.style.opacity = '1';
+                stat.style.transform = 'translateX(0)';
+            }, 500 + (index * 100));
+        });
+    });
+</script>
+
+<style>
+    /* Additional animations */
+    @keyframes highlight-pulse {
+        0% {
+            background-color: white;
+        }
+        50% {
+            background-color: rgba(25, 118, 210, 0.1);
+        }
+        100% {
+            background-color: white;
+        }
+    }
+    
+    @keyframes highlight-shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+        20%, 60% {
+            transform: translateX(-5px);
+        }
+        40%, 80% {
+            transform: translateX(5px);
+        }
+    }
+    
+    @keyframes highlight-match {
+        0%, 100% {
+            background-color: white;
+        }
+        50% {
+            background-color: rgba(240, 247, 255, 0.8);
+        }
+    }
+    
+    .highlight-pulse {
+        animation: highlight-pulse 1s ease;
+    }
+    
+    .highlight-shake {
+        animation: highlight-shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    
+    .highlight-match {
+        animation: highlight-match 2s ease;
+    }
+    
+    /* Button group animation */
+    .btn-group {
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+    
+    /* Hide modals by default to allow for animation */
+    .modal-content {
+        opacity: 0;
+        transform: scale(0.9);
+        transition: all 0.3s ease;
+    }
+    
+    .modal-content.animate-fade-in {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #1976d2;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #155fa0;
+    }
+</style>
+
+<%- include('partials/footer') %> 

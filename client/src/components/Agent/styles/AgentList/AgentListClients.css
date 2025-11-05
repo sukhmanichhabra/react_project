@@ -1,0 +1,251 @@
+/* Agent List Clients Styles */
+.agt-list-client-stats-wrapper {
+  margin-bottom: 60px;
+}
+
+.agt-list-client-stats {
+  background: linear-gradient(135deg, #233142 0%, #25364a 100%);
+  padding: 48px 0 32px 0;
+  margin-bottom: 32px;
+}
+
+.agt-list-client-wrapper-container {
+  height: 52vh;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+.agt-list-client-stats {
+  padding-bottom: 120px;
+}
+
+.agt-list-client-stats .agt-list-client-icon-card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.1);
+  width: 220px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 32px;
+  padding: 32px 0 0 0;
+}
+.agt-list-client-stats .agt-list-client-icon-card i {
+  color: #ff6f61;
+  font-size: 3.2rem;
+  margin-bottom: 32px;
+}
+.agt-list-client-stats .agt-list-client-section-header {
+  flex: 1 1 320px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 320px;
+  padding: 0;
+  margin-bottom: 0;
+}
+.agt-list-client-stats .agt-list-client-section-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 10px;
+  display: block;
+  letter-spacing: -1px;
+}
+.agt-list-client-stats .agt-list-client-section-subtitle {
+  font-size: 1rem;
+  color: #e0e6ed;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+.agt-list-client-stats-container {
+  flex: 3 1 0;
+  display: flex;
+  justify-content: flex-start;
+  gap: 40px;
+  align-items: stretch;
+  margin-bottom: 40px;
+}
+.agt-list-client-stat-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
+  padding: 48px 24px 32px 24px;
+  min-width: 260px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.agt-list-client-stat-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.2);
+}
+.agt-list-client-stat-icon {
+  font-size: 2.6rem;
+  color: #ff6f61;
+  margin-bottom: 18px;
+}
+.agt-list-client-stat-number {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+.agt-list-client-stat-title {
+  font-size: 1.15rem;
+  color: #e0e6ed;
+  font-weight: 500;
+}
+
+/* Testimonials Section */
+.agt-list-client-testimonials {
+  padding: 60px 0 32px 0;
+}
+.agt-list-client-testimonials-wrapper {
+  margin-top: 60px;
+}
+.agt-list-client-testimonials {
+  margin-top: -30px;
+}
+.agt-list-client-testimonials .agt-list-client-wrapper-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: auto; /* Override fixed height */
+}
+.agt-list-client-testimonials .agt-list-client-section-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.agt-list-client-testimonials .agt-list-client-section-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #23272a;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.agt-list-client-testimonials .agt-list-client-section-title i {
+  color: #ff6f61;
+  font-size: 2.2rem;
+}
+.agt-list-client-testimonials .agt-list-client-section-subtitle {
+  font-size: 1.1rem;
+  color: #5a6061;
+  font-weight: 400;
+}
+.agt-list-client-testimonial-slider {
+  position: relative;
+  min-height: 260px;
+}
+.agt-list-client-testimonial-card {
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin: 20px 0;
+  display: flex; /* This was 'flex' */
+}
+.agt-list-client-testimonial-content {
+  margin-bottom: 18px;
+}
+.agt-list-client-testimonial-text {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
+}
+.agt-list-client-quote-icon {
+  color: #ff6f61;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+.agt-list-client-testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 12px;
+  justify-content: center;
+}
+.agt-list-client-author-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff6f61;
+}
+.agt-list-client-author-info h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #23272a;
+  margin-bottom: 2px;
+}
+.agt-list-client-author-info p {
+  font-size: 0.98rem;
+  color: #5a6061;
+  margin-bottom: 4px;
+}
+.agt-list-client-rating {
+  color: #ffb400;
+  font-size: 1.1rem;
+}
+.agt-list-client-testimonial-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+.agt-list-client-nav-btn {
+  background: #ff6f61;
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.agt-list-client-nav-btn:hover {
+  background: #e64a19;
+  transform: scale(1.1);
+}
+
+.agt-list-client-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.agt-list-client-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.agt-list-client-dot.active {
+  background: #ff6f61;
+  transform: scale(1.2);
+}

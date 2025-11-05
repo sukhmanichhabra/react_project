@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Trends</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/trend.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="shortcut icon" href="./assets/favicon.svg" type="image/svg+xml">
+
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+    <section id="section1">
+        <div class="container">
+            
+            <div class="head">
+                <h1 id="cityTitle">Trends for Gurgaon</h1>
+                <div id="cityDropdown" class="city-dropdown">
+                    <div class="dropdown-section">
+                        <h3>Popular Cities</h3>
+                        <div class="city-list">
+                            <div class="city-item" onclick="selectCity('Bangalore')">Bangalore</div>
+                            <div class="city-item" onclick="selectCity('Chennai')">Chennai</div>
+                            <div class="city-item" onclick="selectCity('Ghaziabad')">Ghaziabad</div>
+                            <div class="city-item" onclick="selectCity('Mumbai')">Mumbai</div>
+                            <div class="city-item" onclick="selectCity('Hyderabad')">Hyderabad</div>
+                            <div class="city-item" onclick="selectCity('Gurgaon')">Gurgaon</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-section">
+                        <h3>Other Cities</h3>
+                        <div class="city-list">
+                            <div class="city-item" onclick="selectCity('Agra')">Agra</div>
+                            <div class="city-item" onclick="selectCity('Goa')">Goa</div>
+                            <div class="city-item" onclick="selectCity('Guntur')">Guntur</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="type-selector">
+                    <label>For:</label>
+                    <div class="radio-container">
+                        <div class="radio-option" onclick="selectType('localities')">
+                            <div class="radio-circle selected"></div>
+                            <span>Localities</span>
+                        </div>
+                        <div class="radio-option" onclick="selectType('projects')">
+                            <div class="radio-circle"></div>
+                            <span>Projects</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Overview Banner -->
+            <div class="market-overview-banner">
+                <div class="market-stat">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">+4.2%</span>
+                        <span class="stat-label">Price Growth</span>
+                    </div>
+                </div>
+                <div class="market-stat">
+                    <i class="fas fa-home"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">2,450</span>
+                        <span class="stat-label">New Listings</span>
+                    </div>
+                </div>
+                <div class="market-stat">
+                    <i class="fas fa-handshake"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">1,280</span>
+                        <span class="stat-label">Transactions</span>
+                    </div>
+                </div>
+                <div class="market-stat">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">45 days</span>
+                        <span class="stat-label">Avg. Time on Market</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                
+                <div class="graph-section">
+                    <div class="graph-header">
+                        <div class="graph-title">Locality Average Price</div>
+                        <div class="property-filter">
+                            <label for="propertyType">Property Type:</label>
+                            <select id="propertyType" onchange="updatePropertyType()">
+                                <option value="flats">Flats</option>
+                                <option value="houses">Houses</option>
+                                <option value="plots">Plots</option>
+                                <option value="office">Office Space</option>
+                                <option value="shops">Shops/Showroom</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                    <div class="chart-legend" id="chartLegend"></div>
+                </div>
+
+                
+                <div class="localities-section">
+                    <div class="localities-header">Top 5 Localities</div>
+                    <ul class="locality-list" id="localityList">
+                        
+                    </ul>
+                </div>
+                
+                <div class="projects-section" id="projectsSection" style="display: none;">
+                    <div class="projects-header">Top 5 Projects</div>
+                    <ul class="project-list" id="projectList">
+                        
+                    </ul>
+                </div>
+            </div>
+
+            
+            <div class="summary" id="summary">
+                <div class="market-summary-container">
+                    <h2 class="summary-title">Market Summary</h2>
+                    <div class="summary-content">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="summary-text">
+                                <h3>Price Trends</h3>
+                                <p>Property prices in Gurgaon have shown a steady increase of 4.2% over the past year, with premium localities experiencing the highest growth rates.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="summary-text">
+                                <h3>Supply Analysis</h3>
+                                <p>New property launches have increased by 15% compared to last year, with a focus on mid-range apartments and luxury villas.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-search-dollar"></i>
+                            </div>
+                            <div class="summary-text">
+                                <h3>Demand Insights</h3>
+                                <p>Buyer interest remains strong in 2-3 BHK configurations, with a notable 22% increase in search queries for properties in developing areas.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="key-highlights">
+                        <h3>Key Market Highlights</h3>
+                        <ul class="highlights-list">
+                            <li><i class="fas fa-check-circle"></i> Residential property prices increased by 4.2% year-over-year</li>
+                            <li><i class="fas fa-check-circle"></i> Premium localities saw up to 6.8% price appreciation</li>
+                            <li><i class="fas fa-check-circle"></i> 2-3 BHK apartments remain the most sought-after configuration</li>
+                            <li><i class="fas fa-check-circle"></i> New infrastructure developments are driving growth in emerging areas</li>
+                            <li><i class="fas fa-check-circle"></i> Average time on market decreased from 60 to 45 days</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Insights Section -->
+    <section id="market_insights">
+        <div class="container">
+            <h2 class="section-title">Market Insights</h2>
+            <p class="section-subtitle">Stay informed with the latest real estate trends and predictions</p>
+            
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3>Residential Market</h3>
+                    <p>The residential market in Gurgaon has shown a steady growth of 4.2% over the last quarter, with premium properties seeing the highest demand increase.</p>
+                    <div class="trend-indicator up">
+                        <i class="fas fa-arrow-up"></i> 4.2%
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Commercial Market</h3>
+                    <p>Commercial properties have experienced a slight decline of 1.5% in the last quarter, primarily due to the shift towards hybrid work models.</p>
+                    <div class="trend-indicator down">
+                        <i class="fas fa-arrow-down"></i> 1.5%
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Emerging Localities</h3>
+                    <p>New infrastructure developments have boosted property values in previously overlooked areas, with Sector 67 and 68 showing the highest growth potential.</p>
+                    <div class="trend-indicator up">
+                        <i class="fas fa-arrow-up"></i> 6.8%
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Investment Outlook</h3>
+                    <p>Investor sentiment remains positive with ROI averaging 8-12% annually in premium localities, making Gurgaon a favorable market for long-term investments.</p>
+                    <div class="trend-indicator stable">
+                        <i class="fas fa-equals"></i> Stable
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="Locality_List">
+        <div class="container2">
+            <h1>Locality List</h1>
+            <div class="sub-header">
+                <div class="sort-options">
+                    <label for="sort">Sorted by :</label>
+                    <select id="sort">
+                        <option value="demand">Demand - High to Low</option>
+                        <option value="price">Price - High to Low</option>
+                        <option value="growth">Growth - High to Low</option>
+                    </select>
+                </div>
+                <input type="text" id="search" placeholder="Search a Locality">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Locality</th>
+                        <th>Configuration</th>
+                        <th>Price Range</th>
+                        <th>Average Price (₹/sqft)</th>
+                        <th>Growth Last 6 months</th>
+                        <th>Demand</th>
+                        <th>Supply</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lingampally Kachiguda</td>
+                        <td>2 BHK, 3 BHK</td>
+                        <td>₹3,000 - ₹5,000/sqft</td>
+                        <td>₹4,200</td>
+                        <td>2.0%</td>
+                        <td>High</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Chikoor</td>
+                        <td>1 BHK, 2 BHK</td>
+                        <td>₹2,500 - ₹4,000/sqft</td>
+                        <td>₹3,200</td>
+                        <td>1.5%</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Madhapur</td>
+                        <td>2 BHK, 3 BHK, 4 BHK</td>
+                        <td>₹4,000 - ₹6,000/sqft</td>
+                        <td>₹5,200</td>
+                        <td>2.5%</td>
+                        <td>High</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Manikonda</td>
+                        <td>1 BHK, 2 BHK, 3 BHK</td>
+                        <td>₹3,000 - ₹5,000/sqft</td>
+                        <td>₹4,000</td>
+                        <td>-1.0%</td>
+                        <td>Medium</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Kondapur</td>
+                        <td>2 BHK, 3 BHK, 4 BHK</td>
+                        <td>₹4,500 - ₹7,000/sqft</td>
+                        <td>₹6,000</td>
+                        <td>3.0%</td>
+                        <td>High</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Shaikpet</td>
+                        <td>2 BHK, 3 BHK</td>
+                        <td>₹3,500 - ₹5,500/sqft</td>
+                        <td>₹4,500</td>
+                        <td>-2.2%</td>
+                        <td>High</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Alwal</td>
+                        <td>1 BHK, 2 BHK</td>
+                        <td>₹2,000 - ₹3,500/sqft</td>
+                        <td>₹2,800</td>
+                        <td>1.0%</td>
+                        <td>Low</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Uppal</td>
+                        <td>2 BHK, 3 BHK</td>
+                        <td>₹2,500 - ₹4,000/sqft</td>
+                        <td>₹3,500</td>
+                        <td>-1.5%</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Shamshabad</td>
+                        <td>1 BHK, 2 BHK</td>
+                        <td>₹2,000 - ₹3,500/sqft</td>
+                        <td>₹2,800</td>
+                        <td>1.0%</td>
+                        <td>Low</td>
+                        <td>Low</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span>Show :</span>
+                <select id="rowsPerPage">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+                <span>Rows</span>
+                <button onclick="changePage(1)">1</button>
+                <button onclick="changePage(2)">2</button>
+                <button onclick="changePage(3)">3</button>
+                <button onclick="changePage(4)">4</button>
+                <button onclick="changePage(5)">5</button>
+                <span>...</span>
+                <button onclick="changePage(681)">681</button>
+                <button onclick="nextPage()">Next</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Price Prediction Section -->
+    <section id="price_prediction">
+        <div class="container">
+            <h2 class="section-title">Price Prediction</h2>
+            <p class="section-subtitle">AI-powered forecasts for the next 12 months</p>
+            
+            <div class="prediction-cards">
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <h3>Sector 24</h3>
+                        <div class="prediction-badge up">Rising</div>
+                    </div>
+                    <div class="prediction-content">
+                        <div class="current-price">
+                            <span class="label">Current Avg. Price:</span>
+                            <span class="value">₹7,200/sqft</span>
+                        </div>
+                        <div class="predicted-price">
+                            <span class="label">Predicted in 12 months:</span>
+                            <span class="value">₹7,850/sqft</span>
+                        </div>
+                        <div class="prediction-chart">
+                            <div class="chart-bar" style="height: 40%"></div>
+                            <div class="chart-bar" style="height: 55%"></div>
+                            <div class="chart-bar" style="height: 50%"></div>
+                            <div class="chart-bar" style="height: 65%"></div>
+                            <div class="chart-bar" style="height: 70%"></div>
+                            <div class="chart-bar" style="height: 75%"></div>
+                        </div>
+                        <div class="growth-rate">
+                            <i class="fas fa-arrow-up"></i> Expected Growth: 9.0%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <h3>Sector 57</h3>
+                        <div class="prediction-badge stable">Stable</div>
+                    </div>
+                    <div class="prediction-content">
+                        <div class="current-price">
+                            <span class="label">Current Avg. Price:</span>
+                            <span class="value">₹8,500/sqft</span>
+                        </div>
+                        <div class="predicted-price">
+                            <span class="label">Predicted in 12 months:</span>
+                            <span class="value">₹8,670/sqft</span>
+                        </div>
+                        <div class="prediction-chart">
+                            <div class="chart-bar" style="height: 60%"></div>
+                            <div class="chart-bar" style="height: 65%"></div>
+                            <div class="chart-bar" style="height: 62%"></div>
+                            <div class="chart-bar" style="height: 64%"></div>
+                            <div class="chart-bar" style="height: 63%"></div>
+                            <div class="chart-bar" style="height: 66%"></div>
+                        </div>
+                        <div class="growth-rate stable">
+                            <i class="fas fa-equals"></i> Expected Growth: 2.0%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <h3>Sector 45</h3>
+                        <div class="prediction-badge down">Declining</div>
+                    </div>
+                    <div class="prediction-content">
+                        <div class="current-price">
+                            <span class="label">Current Avg. Price:</span>
+                            <span class="value">₹9,200/sqft</span>
+                        </div>
+                        <div class="predicted-price">
+                            <span class="label">Predicted in 12 months:</span>
+                            <span class="value">₹8,740/sqft</span>
+                        </div>
+                        <div class="prediction-chart">
+                            <div class="chart-bar" style="height: 80%"></div>
+                            <div class="chart-bar" style="height: 75%"></div>
+                            <div class="chart-bar" style="height: 72%"></div>
+                            <div class="chart-bar" style="height: 68%"></div>
+                            <div class="chart-bar" style="height: 65%"></div>
+                            <div class="chart-bar" style="height: 60%"></div>
+                        </div>
+                        <div class="growth-rate down">
+                            <i class="fas fa-arrow-down"></i> Expected Growth: -5.0%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="Project_List" class="hidden">
+        <div class="container2">
+            <h1>Project List</h1>
+            <div class="sub-header">
+                <div class="sort-options">
+                    <label for="sort">Sorted by :</label>
+                    <select id="sort">
+                        <option value="demand">Demand - High to Low</option>
+                        <option value="price">Price - High to Low</option>
+                        <option value="growth">Growth - High to Low</option>
+                    </select>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Locality</th>
+                        <th>Configuration</th>
+                        <th>Price Range</th>
+                        <th>Average Price (₹/sqft)</th>
+                        <th>Growth Last 6 months</th>
+                        <th>Demand</th>
+                        <th>Supply</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lingampally Kachiguda</td>
+                        <td>2 BHK, 3 BHK</td>
+                        <td>₹3,000 - ₹5,000/sqft</td>
+                        <td>₹4,200</td>
+                        <td>2.0%</td>
+                        <td>High</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Chikoor</td>
+                        <td>1 BHK, 2 BHK</td>
+                        <td>₹2,500 - ₹4,000/sqft</td>
+                        <td>₹3,200</td>
+                        <td>1.5%</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Madhapur</td>
+                        <td>2 BHK, 3 BHK, 4 BHK</td>
+                        <td>₹4,000 - ₹6,000/sqft</td>
+                        <td>₹5,200</td>
+                        <td>2.5%</td>
+                        <td>High</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Manikonda</td>
+                        <td>1 BHK, 2 BHK, 3 BHK</td>
+                        <td>₹3,000 - ₹5,000/sqft</td>
+                        <td>₹4,000</td>
+                        <td>-1.0%</td>
+                        <td>Medium</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Kondapur</td>
+                        <td>2 BHK, 3 BHK, 4 BHK</td>
+                        <td>₹4,500 - ₹7,000/sqft</td>
+                        <td>₹6,000</td>
+                        <td>3.0%</td>
+                        <td>High</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Shaikpet</td>
+                        <td>2 BHK, 3 BHK</td>
+                        <td>₹3,500 - ₹5,500/sqft</td>
+                        <td>₹4,500</td>
+                        <td>-2.2%</td>
+                        <td>High</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Alwal</td>
+                        <td>1 BHK, 2 BHK</td>
+                        <td>₹2,000 - ₹3,500/sqft</td>
+                        <td>₹2,800</td>
+                        <td>1.0%</td>
+                        <td>Low</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Uppal</td>
+                        <td>2 BHK, 3 BHK</td>
+                        <td>₹2,500 - ₹4,000/sqft</td>
+                        <td>₹3,500</td>
+                        <td>-1.5%</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Shamshabad</td>
+                        <td>1 BHK, 2 BHK</td>
+                        <td>₹2,000 - ₹3,500/sqft</td>
+                        <td>₹2,800</td>
+                        <td>1.0%</td>
+                        <td>Low</td>
+                        <td>Low</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span>Show :</span>
+                <select id="rowsPerPage">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+                <span>Rows</span>
+                <button onclick="changePage(1)">1</button>
+                <button onclick="changePage(2)">2</button>
+                <button onclick="changePage(3)">3</button>
+                <button onclick="changePage(4)">4</button>
+                <button onclick="changePage(5)">5</button>
+                <span>...</span>
+                <button onclick="changePage(681)">681</button>
+                <button onclick="nextPage()">Next</button>
+            </div>
+        </div>
+    </section>
+
+    <%- include('./partials/footer') %>
+    
+    <!-- Back to Top Button -->
+    <button id="backToTop" aria-label="Back to top">
+        <a href="#top" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></a>
+    </button>
+
+    <script>
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        // Ensure page starts at the top when loaded or refreshed
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            
+            // Force scroll to top after a slight delay to override any browser behavior
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 50);
+            
+            // Initialize back to top button
+            backToTopButton.style.display = 'none';
+        };
+    </script>
+    <script src="/js/trend.js"></script>
+
+</body>
+
+</html>

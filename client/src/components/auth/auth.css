@@ -1,0 +1,294 @@
+/* Import Google Font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* REMOVED the 'body' styles. 
+*/
+
+/* ADDED .auth-container styles.
+  This is the root element of your Login component.
+*/
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* This makes it fill the available space in App.js */
+  min-height: 100vh; /* Failsafe to ensure it's full height */
+  background: linear-gradient(135deg, #f8f8f8, #e0e0e0);
+  animation: fadeInBackground 1s ease-in-out;
+  padding: 20px; /* Added padding for smaller screens */
+}
+
+.container {
+  display: flex;
+  width: 100%; /* Changed from 80% to be responsive */
+  max-width: 900px;
+  background: #fff;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 40px;
+  transform: scale(0.9);
+  animation: scaleUp 0.5s ease-in-out forwards;
+}
+
+.left,
+.right {
+  padding: 40px;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+.left {
+  flex: 1;
+  background: #f8f8f8;
+  display: flex; /* Added flex to center illustration */
+  flex-direction: column; /* Added flex to center illustration */
+  align-items: center; /* Added flex to center illustration */
+  justify-content: center; /* Added flex to center illustration */
+}
+
+/* Hide image on small screens */
+@media (max-width: 768px) {
+  .left {
+    display: none;
+  }
+  .container {
+    width: 90%;
+  }
+  .right {
+    padding: 30px;
+  }
+}
+
+.left h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px; /* Reduced margin */
+}
+
+.left img {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.feature img {
+  width: 40px;
+  height: 40px;
+  margin-top: 30px;
+  margin-right: 10px;
+}
+
+.right {
+  flex: 1;
+}
+
+h2 {
+  font-weight: 600;
+  color: #222;
+}
+
+p {
+  font-size: 14px;
+  color: #555;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background: black;
+  color: white;
+  padding: 10px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+  background: #333;
+  transform: translateY(-3px);
+}
+
+.google,
+.facebook {
+  background: white;
+  color: #333;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  font-size: 16px;
+  margin-top: 10px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.google:hover,
+.facebook:hover {
+  background: #f0f0f0;
+  transform: translateY(-3px);
+}
+
+.google i {
+  color: #db4437;
+  margin-right: 10px;
+}
+
+.facebook i {
+  color: #1877f2;
+  margin-right: 10px;
+}
+
+.or {
+  text-align: center;
+  margin: 15px 0;
+  font-size: 14px;
+  color: #777;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 15px;
+  color: #777;
+}
+
+/* Select dropdown styles */
+.select-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.select-wrapper select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn {
+  color: #ff6f61;
+}
+
+.select-wrapper select:focus {
+  outline: none;
+  border-color: #ff6f61;
+  box-shadow: 0 0 0 2px rgba(255, 111, 97, 0.2);
+}
+
+.select-wrapper select option {
+  padding: 10px;
+}
+
+.select-wrapper .fa-chevron-down {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.select-wrapper select:focus + .fa-chevron-down {
+  color: #ff6f61;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Alert message styles */
+.alert-message {
+  background-color: #fff3e0;
+  color: #e65100;
+  padding: 12px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border-left: 4px solid #ff9800;
+  animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInBackground {
+  from {
+    background: #f8f8f8;
+  }
+  to {
+    background: linear-gradient(135deg, #f8f8f8, #e0e0e0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

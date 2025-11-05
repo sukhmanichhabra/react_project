@@ -1,0 +1,136 @@
+.agt-list-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.agt-list-card {
+  position: relative;
+  text-align: center;
+  background: #fff;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid #e9eef3;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.agt-list-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(16, 24, 40, 0.12);
+}
+
+.agt-list-card .agt-list-card-image-container {
+  width: 100%;
+  height: 380px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #f5f5f5;
+}
+
+.agt-list-card .agt-list-card-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease-in-out;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.agt-list-card:hover .agt-list-card-image-container img {
+  transform: scale(1.05);
+}
+
+.agt-list-card h3 {
+  font-size: 18px;
+  margin-top: 0;
+  padding: 18px 20px 4px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.agt-list-card h3 a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.agt-list-card h3 a:hover {
+  color: #ff6f61;
+}
+
+.agt-list-card .agt-list-card-role {
+  margin-top: 0;
+  padding: 0 20px 20px;
+  font-size: 12px;
+  color: #98a2b3;
+  font-weight: 400;
+}
+
+.agt-list-card-agent-info {
+  border-top: 1px solid #edf2f7;
+  background: #fff;
+}
+
+.agt-list-card-listing-tag {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  background: #fff;
+  color: #2c3e50;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 18px;
+  padding: 6px 16px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+.agt-list-card-listing-tag i {
+  margin-right: 6px;
+  color: #ff6f61;
+}
+.agt-list-card-verified-tag,
+.agt-list-card-unverified-tag {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 18px;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+.agt-list-card-verified-tag {
+  background: #28a745;
+  color: #fff;
+}
+.agt-list-card-unverified-tag {
+  background: #dc3545;
+  color: #fff;
+}
+.agt-list-card-verified-tag i,
+.agt-list-card-unverified-tag i {
+  font-size: 1.1rem;
+}
+
+.agt-list-card-no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9eef3;
+  font-size: 4rem;
+  color: #98a2b3;
+}

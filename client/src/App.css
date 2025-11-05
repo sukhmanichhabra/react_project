@@ -1,0 +1,27 @@
+/* App container styles */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+/* Loading spinner (Can be replaced with Tailwind) */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Toast notification styles */
+.react-hot-toast {
+  z-index: 9999;
+}
+
+/* Ensure footer is at the bottom */
+footer {
+  margin-top: auto;
+}

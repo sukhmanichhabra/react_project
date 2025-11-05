@@ -1,0 +1,114 @@
+<!-- views/partials/property_card.ejs -->
+<li>
+    <div class="property-card">
+        <figure class="card-banner">
+            <a href="<%= overviewLink %>" <% if (typeof adId !== 'undefined' && adId) { %>data-ad-id="<%= adId %>"<% } %>>
+                <img src="<%= imageUrl %>" alt="<%= title %>" class="w-100">
+            </a>
+
+            <div class="card-badge <%= badge %>">
+                <%= badgeText %>
+            </div>
+
+            <div class="banner-actions">
+                <button class="banner-actions-btn">
+                    <ion-icon name="location"></ion-icon>
+                    <address>
+                        <%= location %>
+                    </address>
+                </button>
+
+                <button class="banner-actions-btn">
+                    <ion-icon name="camera"></ion-icon>
+                    <span>
+                        <%= imagesCount %>
+                    </span>
+                </button>
+
+                <button class="banner-actions-btn">
+                    <ion-icon name="film"></ion-icon>
+                    <span>
+                        <%= videosCount %>
+                    </span>
+                </button>
+            </div>
+        </figure>
+
+        <div class="card-content">
+            <div class="card-price">
+                <strong>
+                    <%= price %>
+                </strong>
+            </div>
+
+            <h3 class="h3 card-title">
+                <a href="<%= overviewLink %>" <% if (typeof adId !== 'undefined' && adId) { %>data-ad-id="<%= adId %>"<% } %>>
+                    <%= title %>
+                </a>
+            </h3>
+
+            <p class="card-text">
+                <%= description %>
+            </p>
+
+            <ul class="card-list">
+                <li class="card-item">
+                    <strong>
+                        <%= bedrooms %>
+                    </strong>
+                    <ion-icon name="bed-outline"></ion-icon>
+                    <span>Bedrooms</span>
+                </li>
+
+                <li class="card-item">
+                    <strong>
+                        <%= bathrooms %>
+                    </strong>
+                    <ion-icon name="man-outline"></ion-icon>
+                    <span>Bathrooms</span>
+                </li>
+
+                <li class="card-item">
+                    <strong>
+                        <%= squareFeet %>
+                    </strong>
+                    <ion-icon name="square-outline"></ion-icon>
+                    <span>Square Ft</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-footer">
+            <div class="card-author">
+                <figure class="author-avatar">
+                    <img src="<%= agentImage %>" alt="<%= agentName %>" class="w-100">
+                </figure>
+
+                <div>
+                    <p class="author-name">
+                        <a href="<%= agentLink %>">
+                            <%= agentName %>
+                        </a>
+                    </p>
+                    <p class="author-title">
+                        <%= agentTitle %>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card-footer-actions">
+                <button class="card-footer-actions-btn">
+                    <ion-icon name="resize-outline"></ion-icon>
+                </button>
+
+                <button class="card-footer-actions-btn">
+                    <ion-icon name="heart-outline"></ion-icon>
+                </button>
+
+                <button class="card-footer-actions-btn">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</li>
