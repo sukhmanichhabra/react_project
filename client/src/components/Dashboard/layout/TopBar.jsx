@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getProfileImageUrl, handleImageError } from "../../../utils/imageUtils";
 import "./Topbar.css";
 
 const TopBar = ({ user }) => {
@@ -32,9 +33,10 @@ const TopBar = ({ user }) => {
         </div>
         <div className="dash-profile-menu">
           <img
-            src={user.profileImage || "/images/default-avatar.png"}
+            src={getProfileImageUrl(user.profileImage)}
             alt="Profile"
             className="dash-avatar"
+            onError={(e) => handleImageError(e, '/images/default-avatar.png')}
           />
           <span className="dash-username">{user.name}</span>
         </div>

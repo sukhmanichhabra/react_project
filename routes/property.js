@@ -2,38 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { PropertyModel, AgentModel } = require('../models');
 const TransactionModel = require('../models/transaction');
-const multer = require('multer');
-const path = require('path');
 const { requireAuth, requireSeller } = require('../middleware/auth');
 const UserModel = require('../models/user');
 const MessageModel = require('../models/message');
 const mongoose = require('mongoose');
 const geocodingService = require('../service/geocoding');
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads/properties')
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname))
-    }
-});
-
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 5000000 }, // 5MB limit
-    fileFilter: function (req, file, cb) {
-        const filetypes = /jpeg|jpg|png/;
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = filetypes.test(file.mimetype);
-        if (extname && mimetype) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
-        }
-    }
-});
+const { propertyUpload } = require('../config/cloudinary');
 
 // Middleware to check if user is a buyer
 const requireBuyer = (req, res, next) => {
@@ -418,8 +392,12 @@ router.get('/tag/:tag', async (req, res) => {
 });
 
 // Handle property listing submission (seller only)
-router.post('/listing', requireAuth, requireSeller, upload.array('images', 5), async (req, res) => {
-    try {        console.log("Property submission initiated");        const {
+router.post('/listing', requireAuth, requireSeller, propertyUpload.array('images', 10), async (req, res) => {
+    try {        
+        console.log("Property submission initiated");
+        console.log("Full req.body:", req.body);
+        
+        const {
             title,
             type,
             tag,
@@ -433,7 +411,20 @@ router.post('/listing', requireAuth, requireSeller, upload.array('images', 5), a
             latitude,
             longitude,
             address
-        } = req.body;// Handle amenities which might come as amenities[] or amenities
+        } = req.body;
+        
+        console.log("Extracted values:", { title, type, tag, price, location });
+        
+        // Validate required fields
+        if (!tag || (tag !== 'sale' && tag !== 'rent')) {
+            console.error("❌ Invalid or missing tag:", tag);
+            return res.status(400).json({
+                success: false,
+                message: 'Property type (sale/rent) is required'
+            });
+        }
+        
+        // Handle amenities which might come as amenities[] or amenities
         let amenities = req.body['amenities[]'] || req.body.amenities || [];
 
         console.log("Raw amenities received:", amenities);
@@ -454,12 +445,12 @@ router.post('/listing', requireAuth, requireSeller, upload.array('images', 5), a
             throw new Error('Property description is required');
         }
 
-        // Process uploaded images
+        // Process uploaded images from Cloudinary
         const images = req.files && Array.isArray(req.files) 
-            ? req.files.map(file => `/uploads/properties/${file.filename}`) 
+            ? req.files.map(file => file.path) // Cloudinary provides the full URL in file.path
             : [];
 
-        console.log("Processed images:", images.length);
+        console.log("Processed images from Cloudinary:", images.length);
 
         // Process amenities properly - flatten any nested arrays and ensure strings only
         let processedAmenities = [];
@@ -987,7 +978,7 @@ router.get('/:id/edit', requireAuth, requireSeller, async (req, res) => {
 });
 
 // Update property (seller only)
-router.post('/:id/edit', requireAuth, requireSeller, upload.array('images', 5), async (req, res) => {
+router.post('/:id/edit', requireAuth, requireSeller, propertyUpload.array('images', 5), async (req, res) => {
     try {
         const {
             title,
@@ -1003,9 +994,9 @@ router.post('/:id/edit', requireAuth, requireSeller, upload.array('images', 5), 
             amenities
         } = req.body;
 
-        // Process uploaded images
+        // Process uploaded images from Cloudinary
         const images = req.files && Array.isArray(req.files) 
-            ? req.files.map(file => `/uploads/properties/${file.filename}`) 
+            ? req.files.map(file => file.path) // Cloudinary provides the full URL in file.path
             : [];
 
         const updateData = {

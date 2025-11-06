@@ -1,37 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AdvertisedPropertyCard from "./AdvertisedPropertyCard";
-import "./AdvertisedProperties.css"; // <-- Import new CSS
+import advertisingAPI from "../../../services/advertisingAPI";
+import "./AdvertisedProperties.css";
 
-// 1. Mock data added
-const mockAdProperty = {
-  _id: "ad-mock-1",
-  images: ["/assets/property-1.jpg"],
-  title: "Premium Villa Listing (Mock)",
-  location: "Premium Location, Mock City",
-  price: "$500,000",
-  features: { beds: 4, baths: 3, sqft: 2500 },
-  status: "active",
-  adPackage: {
-    name: "Gold Package",
-    startDate: "2025-10-01T00:00:00Z",
-    endDate: "2025-11-30T00:00:00Z",
-  }
-};
+const AdvertisedProperties = () => {
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const AdvertisedProperties = ({ advertisedProperties = [] }) => {
-  // 2. Combined mock data with prop data in state
-  const [properties, setProperties] = useState([mockAdProperty, ...advertisedProperties]);
+  useEffect(() => {
+    fetchMyPackages();
+  }, []);
 
-  const handleCancel = (propertyId) => {
-    if (
-      window.confirm(
-        "Are you sure you want to cancel this advertising package?"
-      )
-    ) {
-      console.log(`Canceling package for ${propertyId}`);
-      // API call to cancel
-      setProperties(properties.filter((p) => p._id !== propertyId));
+  const fetchMyPackages = async () => {
+    try {
+      setLoading(true);
+      const response = await advertisingAPI.getMyPackages();
+      if (response.success) {
+        setProperties(response.packages || []);
+      }
+    } catch (error) {
+      console.error('Error fetching advertising packages:', error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCancel = async (advertisingId) => {
+    if (!window.confirm("Are you sure you want to cancel this advertising package?")) {
+      return;
+    }
+
+    try {
+      const response = await advertisingAPI.cancelPackage(advertisingId);
+      if (response.success) {
+        alert('Package cancelled successfully');
+        await fetchMyPackages(); // Refresh the list
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to cancel package';
+      alert(message);
+    }
+  };
+
+  const handleCreateAdvertising = () => {
+    navigate('/advertising');
   };
 
   return (
@@ -40,28 +54,43 @@ const AdvertisedProperties = ({ advertisedProperties = [] }) => {
       className="advertised-properties-section"
     >
       <div className="advertised-properties-header">
-        <h2>Advertised Properties</h2>
-        <p>Manage your active advertising packages.</p>
+        <div>
+          <h2>Advertised Properties</h2>
+          <p>Manage your active advertising packages.</p>
+        </div>
+        <button className="dash-action-btn" onClick={handleCreateAdvertising}>
+          <i className="fas fa-plus-circle"></i> Create New Advertisement
+        </button>
       </div>
-      <div className="advertised-properties-grid">
-        {properties.length > 0 ? (
-          properties.map((prop) => (
-            <AdvertisedPropertyCard
-              key={prop._id}
-              property={prop}
-              isAdmin={false}
-              onCancel={handleCancel}
-            />
-          ))
-        ) : (
-          // Using the shared 'dash-empty-state' class
-          <div className="dash-empty-state">
-            <i className="fas fa-ad"></i>
-            <h3>No Advertised Properties</h3>
-            <p>You have not purchased any advertising packages.</p>
-          </div>
-        )}
-      </div>
+      
+      {loading ? (
+        <div className="dash-loading">
+          <i className="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+      ) : (
+        <div className="advertised-properties-grid">
+          {properties.length > 0 ? (
+            properties.map((pkg) => (
+              <AdvertisedPropertyCard
+                key={pkg._id}
+                property={pkg.property}
+                advertising={pkg}
+                isAdmin={false}
+                onCancel={() => handleCancel(pkg._id)}
+              />
+            ))
+          ) : (
+            <div className="dash-empty-state">
+              <i className="fas fa-ad"></i>
+              <h3>No Advertised Properties</h3>
+              <p>You have not purchased any advertising packages.</p>
+              <button className="dash-action-btn" onClick={handleCreateAdvertising}>
+                <i className="fas fa-plus-circle"></i> Create Your First Advertisement
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 };

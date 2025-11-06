@@ -1,5 +1,7 @@
 const { PropertyModel, AgentModel, VisitModel } = require("../models");
+const { Visit } = require("../models/visit");
 const mongoose = require("mongoose");
+const Agent = mongoose.model("Agent");
 const NotificationService = require("../service/notificationService");
 
 // Middleware functions (moved from routes)
@@ -195,8 +197,11 @@ const scheduleVisit = async (req, res) => {
 // Get all visits for the logged-in buyer
 const getMyVisits = async (req, res) => {
   try {
-    // Get all visits for this buyer
-    const visits = await VisitModel.getVisitsByBuyer(req.user._id);
+    // Get all visits for this buyer using the Visit model directly
+    const visits = await Visit.find({ buyerId: req.user._id })
+      .populate('propertyId')
+      .populate('buyerId', 'name email phone')
+      .sort({ visitDate: 1, status: 1 });
 
     res.json({
       success: true,
@@ -746,6 +751,89 @@ const processOverdueVisits = async (req, res) => {
   }
 };
 
+// Get agent visits as JSON API (for React frontend)
+const getAgentVisitsAPI = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // First, find the agent document for this user using mongoose model
+    const agent = await Agent.findOne({ userId: userId });
+    
+    if (!agent) {
+      return res.json({
+        success: true,
+        visits: [],
+        message: "No agent profile found for this user"
+      });
+    }
+
+    // Get all visits for this agent using the agent's _id
+    const visits = await Visit.find({ agentId: agent._id })
+      .populate("propertyId")
+      .populate("buyerId", "name email phone")
+      .sort({ visitDate: 1, status: 1 });
+
+    res.json({
+      success: true,
+      visits: visits || [],
+    });
+  } catch (error) {
+    console.error("Error fetching agent visits:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch visits",
+      error: error.message,
+    });
+  }
+};
+
+// Get available time slots as JSON API (for React frontend)
+const getAvailableSlotsAPI = async (req, res) => {
+  try {
+    const { date, propertyId } = req.query;
+
+    const allSlots = [
+      "09:00 - 10:00",
+      "10:00 - 11:00",
+      "11:00 - 12:00",
+      "12:00 - 13:00",
+      "13:00 - 14:00",
+      "14:00 - 15:00",
+      "15:00 - 16:00",
+      "16:00 - 17:00",
+    ];
+
+    if (!date || !propertyId) {
+      return res.json({
+        success: true,
+        timeSlots: allSlots,
+      });
+    }
+
+    // Find booked slots for this date and property
+    const bookedVisits = await Visit.find({
+      propertyId,
+      visitDate: new Date(date),
+      status: { $in: ["pending", "approved"] },
+    });
+
+    const bookedSlots = bookedVisits.map((v) => v.timeSlot);
+    const availableSlots = allSlots.filter((slot) => !bookedSlots.includes(slot));
+
+    res.json({
+      success: true,
+      timeSlots: availableSlots,
+    });
+  } catch (error) {
+    console.error("Error fetching time slots:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch time slots",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   requireBuyer,
   requireAgent,
@@ -755,6 +843,8 @@ module.exports = {
   getMyVisits,
   cancelVisit,
   getAgentDashboard,
+  getAgentVisitsAPI,
+  getAvailableSlotsAPI,
   approveVisit,
   rejectVisit,
   completeVisit,

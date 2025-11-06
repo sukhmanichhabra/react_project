@@ -1,7 +1,5 @@
 const { AgentModel, PropertyModel } = require("../models");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const { agentDocumentUpload } = require("../config/cloudinary");
 
 // Helper function to track activity
 const trackActivity = (req, activityData) => {
@@ -24,45 +22,8 @@ const trackActivity = (req, activityData) => {
   }
 };
 
-// Configure multer for document uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = "public/uploads/agent";
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    // Create unique filename with original extension
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, "agent-" + uniqueSuffix + ext);
-  },
-});
-
-// File filter for uploads
-const fileFilter = (req, file, cb) => {
-  // Accept image files and PDFs
-  if (
-    file.mimetype.startsWith("image/") ||
-    file.mimetype === "application/pdf"
-  ) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files and PDFs are allowed!"), false);
-  }
-};
-
-// Initialize multer upload middleware
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB file size limit
-  },
-});
+// Use Cloudinary upload for agent documents
+const upload = agentDocumentUpload;
 
 // Search agents by name
 exports.searchAgents = async (req, res) => {
@@ -466,7 +427,7 @@ exports.uploadDocuments = async (req, res) => {
 
     if (req.files.idProof && req.files.idProof[0]) {
       documents.idProof = {
-        path: "/uploads/agent/" + req.files.idProof[0].filename,
+        path: req.files.idProof[0].path, // Cloudinary URL
         originalName: req.files.idProof[0].originalname,
         mimeType: req.files.idProof[0].mimetype,
         uploadedAt: uploadDate,
@@ -475,7 +436,7 @@ exports.uploadDocuments = async (req, res) => {
 
     if (req.files.license && req.files.license[0]) {
       documents.license = {
-        path: "/uploads/agent/" + req.files.license[0].filename,
+        path: req.files.license[0].path, // Cloudinary URL
         originalName: req.files.license[0].originalname,
         mimeType: req.files.license[0].mimetype,
         uploadedAt: uploadDate,
@@ -484,14 +445,14 @@ exports.uploadDocuments = async (req, res) => {
 
     if (req.files.businessProof && req.files.businessProof[0]) {
       documents.businessProof = {
-        path: "/uploads/agent/" + req.files.businessProof[0].filename,
+        path: req.files.businessProof[0].path, // Cloudinary URL
         originalName: req.files.businessProof[0].originalname,
         mimeType: req.files.businessProof[0].mimetype,
         uploadedAt: uploadDate,
       };
     }    if (req.files.profilePhoto && req.files.profilePhoto[0]) {
       documents.profilePhoto = {
-        path: "/uploads/agent/" + req.files.profilePhoto[0].filename,
+        path: req.files.profilePhoto[0].path, // Cloudinary URL
         originalName: req.files.profilePhoto[0].originalname,
         mimeType: req.files.profilePhoto[0].mimetype,
         uploadedAt: uploadDate,
@@ -504,7 +465,7 @@ exports.uploadDocuments = async (req, res) => {
       req.files.additionalDocs.length > 0
     ) {
       documents.additionalDocs = req.files.additionalDocs.map((file) => ({
-        path: "/uploads/agent/" + file.filename,
+        path: file.path, // Cloudinary URL
         originalName: file.originalname,
         mimeType: file.mimetype,
         uploadedAt: uploadDate,

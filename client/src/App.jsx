@@ -542,6 +542,15 @@ import BlogList from "./components/blog/BlogList";
 import BlogDetails from "./components/blog/BlogDetails";
 import AddBlog from "./components/blog/AddBlog";
 import EditBlog from "./components/blog/EditBlog";
+import Advertising from "./pages/Advertising";
+import PayRent from "./components/rent/PayRent";
+import ManageRent from "./components/rent/ManageRent";
+import PropertyRentManagement from "./components/rent/PropertyRentManagement";
+import LoanApplication from "./components/loan/LoanApplication";
+import MyLoans from "./components/loan/MyLoans";
+import PayEMI from "./components/loan/PayEMI";
+import ScheduleVisit from "./components/visits/ScheduleVisit";
+import ManageVisits from "./components/visits/ManageVisits";
 import "./App.css";
 
 // This new component handles all layout and routing logic
@@ -677,16 +686,6 @@ function AppLayout() {
         }
       />
       <Route
-        path="/loans/my-emis"
-        element={
-          isAuthenticated ? (
-            <div>Pay EMI</div>
-          ) : (
-            <Navigate to="/auth/signin" replace />
-          )
-        }
-      />
-      <Route
         path="/model"
         element={
           isAuthenticated ? (
@@ -722,7 +721,7 @@ function AppLayout() {
         path="/visits/my-visits"
         element={
           isAuthenticated ? (
-            <div>My Visits</div>
+            <ScheduleVisit />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -732,7 +731,7 @@ function AppLayout() {
         path="/visits/agent"
         element={
           isAuthenticated ? (
-            <div>Agent Visit Requests</div>
+            <ManageVisits />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -742,7 +741,7 @@ function AppLayout() {
         path="/schedule-visit/:id"
         element={
           isAuthenticated ? (
-            <div>Schedule Visit</div>
+            <ScheduleVisit />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -781,6 +780,108 @@ function AppLayout() {
         element={
           isAuthenticated ? (
             <BlogDetails />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
+      {/* Advertising route */}
+      <Route
+        path="/advertising"
+        element={
+          isAuthenticated ? (
+            <Advertising />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
+      {/* Rent management routes */}
+      <Route
+        path="/rent/pay"
+        element={
+          isAuthenticated ? (
+            <PayRent />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/rent/manage"
+        element={
+          isAuthenticated ? (
+            <ManageRent />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/rent/manage/:propertyId"
+        element={
+          isAuthenticated ? (
+            <PropertyRentManagement />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
+      {/* Loan management routes */}
+      <Route
+        path="/loans/apply"
+        element={
+          isAuthenticated ? (
+            <LoanApplication />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/loans/my-applications"
+        element={
+          isAuthenticated ? (
+            <MyLoans />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/loans/emi-calculator"
+        element={<Navigate to="/loan/emi-calculator" replace />}
+      />
+      <Route
+        path="/loans/my-emis"
+        element={
+          isAuthenticated ? (
+            <PayEMI />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
+      {/* Visit management routes */}
+      <Route
+        path="/visits/schedule"
+        element={
+          isAuthenticated ? (
+            <ScheduleVisit />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/visits/manage"
+        element={
+          isAuthenticated ? (
+            <ManageVisits />
           ) : (
             <Navigate to="/auth/signin" replace />
           )

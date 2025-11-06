@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { propertyAPI } from "../../../services/api";
+import { propertyAPI, dashboardAPI } from "../../../services/api";
 import "./AddListing.css"; // <-- Import new CSS
 
 const AddListing = () => {  // State for the form
@@ -25,6 +25,8 @@ const AddListing = () => {  // State for the form
   const [imageUploadError, setImageUploadError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+  const [searchAddress, setSearchAddress] = useState("");
+  const [geocoding, setGeocoding] = useState(false);
 
   // Cleanup effect for image preview URLs
   useEffect(() => {
@@ -48,6 +50,7 @@ const AddListing = () => {  // State for the form
       return { ...prev, amenities: newAmenities };
     });
   };
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setImageUploadError('');
@@ -121,6 +124,53 @@ const AddListing = () => {  // State for the form
       }
     });
   };
+
+  // Geocode address to get coordinates
+  const handleFindLocation = async () => {
+    if (!searchAddress || searchAddress.trim() === "") {
+      setSubmitStatus({ type: "error", message: "Please enter an address to search" });
+      setTimeout(() => setSubmitStatus({ type: "", message: "" }), 3000);
+      return;
+    }
+
+    try {
+      setGeocoding(true);
+      setSubmitStatus({ type: "loading", message: "Finding location..." });
+
+      const response = await dashboardAPI.geocodeAddress(searchAddress);
+
+      if (response.data.success) {
+        const { latitude, longitude, formattedAddress } = response.data.data;
+        
+        // Update form data with coordinates
+        setFormData((prev) => ({
+          ...prev,
+          latitude: latitude,
+          longitude: longitude,
+          address: formattedAddress,
+        }));
+
+        setSubmitStatus({ 
+          type: "success", 
+          message: `Location found: ${formattedAddress}` 
+        });
+
+        setTimeout(() => setSubmitStatus({ type: "", message: "" }), 5000);
+      } else {
+        throw new Error(response.data.message || "Failed to find location");
+      }
+    } catch (err) {
+      console.error("Geocoding error:", err);
+      setSubmitStatus({ 
+        type: "error", 
+        message: err.response?.data?.message || err.message || "Failed to find location" 
+      });
+      setTimeout(() => setSubmitStatus({ type: "", message: "" }), 5000);
+    } finally {
+      setGeocoding(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -133,10 +183,30 @@ const AddListing = () => {  // State for the form
       return;
     }
 
+    // Validate tag field specifically
+    if (!formData.tag || (formData.tag !== 'sale' && formData.tag !== 'rent')) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Please select a valid property status (For Sale or For Rent)'
+      });
+      return;
+    }
+
+    // Validate type field
+    if (!formData.type) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Please select a property type'
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus({ type: '', message: '' });
 
     try {
+      console.log('📝 Form data before submission:', formData);
+      
       const data = new FormData();
         // Append form data
       for (const key in formData) {
@@ -148,11 +218,21 @@ const AddListing = () => {  // State for the form
             });
           }
         } else {
-          data.append(key, formData[key]);
+          // Ensure we're appending the actual value, not undefined
+          const value = formData[key];
+          if (value !== undefined && value !== null && value !== '') {
+            data.append(key, value);
+            console.log(`  ✅ Appending ${key}: ${value}`);
+          } else {
+            console.warn(`  ⚠️ Skipping ${key}: value is ${value}`);
+          }
         }
       }
         // Append files
       images.forEach((image) => data.append("images", image));
+      
+      // Log what's being sent
+      console.log('📤 Sending FormData with', images.length, 'images');
       
       // Submit to backend
       const result = await propertyAPI.addListing(data);
@@ -206,6 +286,7 @@ const AddListing = () => {  // State for the form
       setIsSubmitting(false);
     }
   };
+
   return (
     <section id="add-listing">
       <div className="dash-section-header">
@@ -251,24 +332,26 @@ const AddListing = () => {  // State for the form
             ></textarea>
           </div>          <div className="dash-form-row">
             <div className="dash-form-group">
-              <label htmlFor="tag">Status (Tag)</label>
+              <label htmlFor="tag">Status (Tag) <span style={{color: 'red'}}>*</span></label>
               <select
                 id="tag"
                 name="tag"
                 value={formData.tag}
                 onChange={handleChange}
+                required
               >
                 <option value="sale">For Sale</option>
                 <option value="rent">For Rent</option>
               </select>
             </div>
             <div className="dash-form-group">
-              <label htmlFor="type">Property Type</label>
+              <label htmlFor="type">Property Type <span style={{color: 'red'}}>*</span></label>
               <select
                 id="type"
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
+                required
               >
                 <option value="House">House</option>
                 <option value="Apartment">Apartment</option>
@@ -308,6 +391,56 @@ const AddListing = () => {  // State for the form
             <p className="geolocation-help">
               Adding coordinates helps us assign the best agent for your property based on location.
             </p>
+            
+            {/* Address Search Field */}
+            <div className="dash-form-group">
+              <label htmlFor="searchAddress">Search Address</label>
+              <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                <input
+                  type="text"
+                  id="searchAddress"
+                  name="searchAddress"
+                  value={searchAddress}
+                  onChange={(e) => setSearchAddress(e.target.value)}
+                  placeholder="Enter property address (e.g., 123 Main St, New York, NY)"
+                  style={{ flex: 1 }}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleFindLocation();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleFindLocation}
+                  disabled={geocoding}
+                  className="dash-submit-btn"
+                  style={{ 
+                    minWidth: "140px",
+                    whiteSpace: "nowrap",
+                    opacity: geocoding ? 0.6 : 1,
+                    padding: "10px 20px"
+                  }}
+                >
+                  {geocoding ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin" style={{ marginRight: "5px" }}></i>
+                      Finding...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-map-marker-alt" style={{ marginRight: "5px" }}></i>
+                      Find Location
+                    </>
+                  )}
+                </button>
+              </div>
+              <small style={{ marginTop: "5px", display: "block", color: "#6b7280" }}>
+                Enter the property address and click "Find Location" to automatically fill latitude and longitude
+              </small>
+            </div>
+            
             <div className="dash-form-row">
               <div className="dash-form-group">
                 <label htmlFor="latitude">Latitude</label>

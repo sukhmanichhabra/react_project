@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { selectAuth, logoutUser } from "../../store/slices/authSlice";
+import { loanAPI } from "../../services/api";
 import "./navbar.css";
 
 const NavBar = () => {
@@ -67,13 +68,14 @@ const NavBar = () => {
 
   const checkApprovedLoans = async () => {
     try {
-      const response = await fetch("/api/loan/has-approved-loans");
-      const data = await response.json();
-      if (data.success) {
-        setHasApprovedLoans(data.hasApprovedLoans);
+      const response = await loanAPI.hasApprovedLoans();
+      if (response.data.success) {
+        setHasApprovedLoans(response.data.hasApprovedLoans);
       }
     } catch (error) {
       console.error("Error checking loan status:", error);
+      // Set to true by default so users can always access if they want
+      setHasApprovedLoans(true);
     }
   };
 
@@ -202,6 +204,24 @@ const NavBar = () => {
                       <Link to="/properties">All Properties</Link>
                       <Link to="/properties/compare">Compare Properties</Link>
                     </div>
+                    <div className="dropdown-column">
+                      <h3>Property Visits</h3>
+                      {user?.role === "buyer" && (
+                        <Link to="/visits/schedule">
+                          <i className="fas fa-calendar-plus"></i> Schedule Visit
+                        </Link>
+                      )}
+                      {user?.role === "agent" && (
+                        <Link to="/visits/manage">
+                          <i className="fas fa-tasks"></i> Manage Visits
+                        </Link>
+                      )}
+                      {!user && (
+                        <Link to="/auth/signin">
+                          <i className="fas fa-sign-in-alt"></i> Login to Schedule
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -217,14 +237,55 @@ const NavBar = () => {
                 <div className="dropdown-content">
                   <div className="dropdown-grid">
                     <div className="dropdown-column">
-                      <h3>Finances</h3>
-                      <Link to="/loans/emi-calculator">Loan and EMI</Link>
-                      {user?.role === "buyer" && hasApprovedLoans && (
-                        <Link to="/loans/my-emis">Pay EMI</Link>
+                      <h3>Loans & EMI</h3>
+                      <Link to="/loans/emi-calculator">
+                        <i className="fas fa-calculator"></i> EMI Calculator
+                      </Link>
+                      {user?.role === "buyer" && (
+                        <>
+                          <Link to="/loans/apply">
+                            <i className="fas fa-file-alt"></i> Apply for Loan
+                          </Link>
+                          <Link to="/loans/my-applications">
+                            <i className="fas fa-folder-open"></i> My Loan Applications
+                          </Link>
+                          {hasApprovedLoans && (
+                            <Link to="/loans/my-emis">
+                              <i className="fas fa-money-check-alt"></i> Pay EMI
+                            </Link>
+                          )}
+                        </>
                       )}
-                      <Link to="/model">Price Prediction</Link>
-                      <Link to="/pricing">Pricing</Link>
-                      <Link to="/trend">Market Trends</Link>
+                    </div>
+                    <div className="dropdown-column">
+                      <h3>Rent Management</h3>
+                      {user?.role === "buyer" && (
+                        <Link to="/rent/pay">
+                          <i className="fas fa-file-invoice-dollar"></i> Pay Rent
+                        </Link>
+                      )}
+                      {user?.role === "seller" && (
+                        <Link to="/rent/manage">
+                          <i className="fas fa-cog"></i> Manage Rent
+                        </Link>
+                      )}
+                      {!user && (
+                        <Link to="/auth/signin">
+                          <i className="fas fa-sign-in-alt"></i> Login to Access
+                        </Link>
+                      )}
+                    </div>
+                    <div className="dropdown-column">
+                      <h3>Tools & Analytics</h3>
+                      <Link to="/model">
+                        <i className="fas fa-chart-line"></i> Price Prediction
+                      </Link>
+                      <Link to="/pricing">
+                        <i className="fas fa-tags"></i> Pricing
+                      </Link>
+                      <Link to="/trend">
+                        <i className="fas fa-chart-area"></i> Market Trends
+                      </Link>
                     </div>
                   </div>
                 </div>

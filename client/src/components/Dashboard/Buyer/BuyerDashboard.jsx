@@ -5,17 +5,17 @@ import {
   fetchUserBalance,
   updateUserBalance,
 } from "../../../store/slices/authSlice.js";
+import { dashboardAPI } from "../../../services/api";
 
 // Import Sections
 import Profile from "../common/Profile";
 import BuyerOverview from "./BuyerOverview";
 import MyProperties from "./MyProperties";
 import RentedProperties from "./RentedProperties";
-
-// Removed: import "../dashboard.css"; (Assuming Tailwind is used)
+import AddFundsModal from "../common/AddFundsModal";
 
 // This is the main component for the Buyer
-const BuyerDashboard = ({ user, activeSection }) => {
+const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
   const dispatch = useAppDispatch();
 
   // State for data
@@ -24,52 +24,34 @@ const BuyerDashboard = ({ user, activeSection }) => {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAddFundsModalOpen, setIsAddFundsModalOpen] = useState(false);
 
   // Fetch all dashboard data for the buyer on load
-  useEffect(() => {
-    const fetchBuyerData = async () => {
-      try {
-        setLoading(true);
+  const fetchBuyerData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // 1. Fetch from the main dashboard endpoint
-        const response = await fetch("/api/dashboard");
-        const result = await response.json();
+      // Fetch from the main dashboard endpoint using API service
+      const response = await dashboardAPI.getDashboardData();
 
-        // 2. Handle errors from the backend's JSON response
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "Failed to fetch dashboard data.");
-        }
+      if (response.data.success) {
+        // Get the nested data object
+        const { data } = response.data;
 
-        // 3. Get the nested data object
-        const { data } = result;
-
-        // 4. Extract data from the correct paths
+        // Extract data from the correct paths
         const userProperties = data.properties || [];
-        const userLoanRequests = data.user?.loanRequests || []; // Pulled from populated user
-        const userTransactions = data.transactions || []; // Used for stats
+        const userLoanRequests = data.user?.loanRequests || [];
+        const userTransactions = data.transactions || [];
 
         setProperties(userProperties);
         setLoanRequests(userLoanRequests);
 
-        // 5. Calculate stats based on the fetched data
-        const bought = userProperties.filter(
-          (p) => p.status === "sold"
-        ).length;
-        const rented = userProperties.filter(
-          (p) => p.status === "rented"
-        ).length;
-        
-        // Calculate totalSpent from the transactions array
-        const totalSpent = userTransactions.reduce(
-          (acc, tx) => acc + (tx.amount || 0),
-          0
-        );
-        
-        const loanStatus = userLoanRequests.find(
-          (l) => l.status === "pending"
-        )
-          ? "Pending"
-          : "N/A";
+        // Calculate stats based on the fetched data
+        const bought = userProperties.filter((p) => p.status === "sold").length;
+        const rented = userProperties.filter((p) => p.status === "rented").length;
+        const totalSpent = userTransactions.reduce((acc, tx) => acc + (tx.amount || 0), 0);
+        const loanStatus = userLoanRequests.find((l) => l.status === "pending") ? "Pending" : "N/A";
 
         setStats({
           bought,
@@ -78,81 +60,59 @@ const BuyerDashboard = ({ user, activeSection }) => {
           loanStatus,
         });
 
-        // 6. Dispatch Redux action to sync balance
-        // This is good practice as it keeps the Redux store (used by TopBar) in sync
+        // Dispatch Redux action to sync balance
         dispatch(fetchUserBalance());
-        
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      } else {
+        throw new Error(response.data.message || "Failed to fetch dashboard data");
       }
-    };
-
-    fetchBuyerData();
-  }, [dispatch]);
-  // --- Logic from dash1.js ---
-  // This function is correct. It dispatches a Redux thunk,
-  // which (in authSlice.js) should be configured to call
-  // the `POST /api/dashboard/update-balance` endpoint.
-  const handleAddFunds = async () => {
-    const amount = window.prompt("Enter amount to add to your account:");
-    if (!amount) return;
-
-    const parsedAmount = parseFloat(amount);
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      return alert("Please enter a valid amount.");
-    }
-
-    try {
-      // Dispatch the Redux action to update balance
-      await dispatch(updateUserBalance(parsedAmount)).unwrap();
-      alert("Funds added successfully!");
-      // The user balance in the TopBar/Overview will update automatically via Redux
     } catch (err) {
-      alert("Failed to add funds. " + err.message);
+      console.error("Error fetching buyer data:", err);
+      setError(err.response?.data?.message || err.message || "Failed to load buyer data");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleProfileUpdate = (updatedUser) => {
-    // This could trigger a re-fetch of user data or update Redux state
+  useEffect(() => {
+    if (user?._id) {
+      fetchBuyerData();
+    }
+  }, [user?._id]);
+  // --- Logic from dash1.js ---
+  // Open the Add Funds modal
+  const handleAddFundsClick = () => {
+    setIsAddFundsModalOpen(true);
+  };
+
+  // Handle adding funds from the modal
+  const handleAddFunds = async (amount) => {
+    try {
+      // Dispatch the Redux action to update balance
+      await dispatch(updateUserBalance(amount)).unwrap();
+      
+      // Refresh user data to get updated balance
+      if (onUserUpdate && typeof onUserUpdate === 'function') {
+        onUserUpdate();
+      }
+      
+      // Refresh buyer-specific data
+      fetchBuyerData();
+      
+      return Promise.resolve();
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  };
+
+  const handleProfileUpdate = (updatedUser, updatedAgentProfile) => {
     console.log("Profile updated:", updatedUser);
     
-    // Refresh the dashboard data to get the latest user info
-    const fetchBuyerData = async () => {
-      try {
-        setLoading(true);
-
-        const response = await fetch("/api/dashboard");
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "Failed to fetch dashboard data.");
-        }
-
-        const { data } = result;
-        const userProperties = data.properties || [];
-        const userLoanRequests = data.user?.loanRequests || [];
-        const userTransactions = data.transactions || [];
-
-        setProperties(userProperties);
-        setLoanRequests(userLoanRequests);
-
-        const bought = userProperties.filter((p) => p.status === "sold").length;
-        const rented = userProperties.filter((p) => p.status === "rented").length;
-        const totalSpent = userTransactions.reduce((acc, tx) => acc + (tx.amount || 0), 0);
-        const loanStatus = userLoanRequests.find((l) => l.status === "pending") ? "Pending" : "N/A";
-
-        setStats({ bought, rented, totalSpent, loanStatus });
-        dispatch(fetchUserBalance());
-        
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    // Refresh user data in parent Dashboard component
+    if (onUserUpdate && typeof onUserUpdate === 'function') {
+      onUserUpdate();
+    }
+    
+    // Refresh buyer-specific data
     fetchBuyerData();
   };
 
@@ -178,7 +138,7 @@ const BuyerDashboard = ({ user, activeSection }) => {
             user={user}
             stats={stats}
             loanRequests={loanRequests}
-            onAddFunds={handleAddFunds}
+            onAddFunds={handleAddFundsClick}
           />
         );
       case "my-properties":
@@ -200,13 +160,23 @@ const BuyerDashboard = ({ user, activeSection }) => {
             user={user}
             stats={stats}
             loanRequests={loanRequests}
-            onAddFunds={handleAddFunds}
+            onAddFunds={handleAddFundsClick}
           />
         );
     }
   };
 
-  return <>{renderSection()}</>;
+  return (
+    <>
+      {renderSection()}
+      <AddFundsModal
+        isOpen={isAddFundsModalOpen}
+        onClose={() => setIsAddFundsModalOpen(false)}
+        onAddFunds={handleAddFunds}
+        currentBalance={user?.accountBalance || 0}
+      />
+    </>
+  );
 };
 
 export default BuyerDashboard;

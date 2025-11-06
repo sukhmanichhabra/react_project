@@ -21,7 +21,7 @@ const mockAgentData = {
   stats: {},
 };
 
-const AgentDashboard = ({ user, activeSection }) => {
+const AgentDashboard = ({ user, activeSection, onUserUpdate }) => {
   const [agentData, setAgentData] = useState(mockAgentData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -60,7 +60,11 @@ const AgentDashboard = ({ user, activeSection }) => {
     }
   }, [user?._id]);
 
-  const handleProfileUpdate = () => {
+  const handleProfileUpdate = (updatedUser, updatedAgentProfile) => {
+    // Refresh user data in parent Dashboard component
+    if (onUserUpdate && typeof onUserUpdate === 'function') {
+      onUserUpdate();
+    }
     // Refresh agent data after profile update
     fetchAgentData();
   };

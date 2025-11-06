@@ -2,50 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { requireAuth } = require("../middleware/auth");
 const adminAuth = require("../middleware/adminAuth");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 const loanController = require("../controllers/loan");
+const { loanDocumentUpload } = require("../config/cloudinary");
 
-// Configure multer for document uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = "public/uploads/loans";
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, "loan-" + uniqueSuffix + ext);
-  },
-});
-
-// File filter - allow only pdfs and images
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype.startsWith("image/") ||
-    file.mimetype === "application/pdf"
-  ) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files and PDFs are allowed!"), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB file size limit
-  },
-});
-
-// Configure multer fields for different document types
-const documentUpload = upload.fields([
+// Configure multer fields for different document types with Cloudinary
+const documentUpload = loanDocumentUpload.fields([
   { name: "identityProof", maxCount: 1 },
   { name: "addressProof", maxCount: 1 },
   { name: "incomeProof", maxCount: 1 },

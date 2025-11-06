@@ -2,35 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { requireAuth, requireSeller } = require("../middleware/auth");
 const dashboardController = require("../controllers/dashboard");
-const multer = require("multer");
-const path = require("path");
-
-// Configure multer for profile image uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/profiles");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 2000000 }, // 2MB limit
-  fileFilter: function (req, file, cb) {
-    const filetypes = /jpeg|jpg|png/;
-    const extname = filetypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-    const mimetype = filetypes.test(file.mimetype);
-    if (extname && mimetype) {
-      return cb(null, true);
-    } else {
-      cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
-    }
-  },
-});
+const { profileUpload } = require("../config/cloudinary");
 
 // Dashboard route
 router.get("/", requireAuth, dashboardController.getDashboard);
@@ -39,7 +11,7 @@ router.get("/", requireAuth, dashboardController.getDashboard);
 router.post(
   "/update-profile",
   requireAuth,
-  upload.single("profileImage"),
+  profileUpload.single("profileImage"),
   dashboardController.updateProfile
 );
 
@@ -74,6 +46,13 @@ router.post(
   "/update-balance",
   requireAuth,
   dashboardController.updateAccountBalance
+);
+
+// Geocode address to get coordinates
+router.post(
+  "/geocode",
+  requireAuth,
+  dashboardController.geocodeAddress
 );
 
 module.exports = router;

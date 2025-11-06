@@ -32,6 +32,33 @@ const Sidebar = ({ user, activeSection, onNavClick }) => {
               icon="fa-key"
               label="My Rented Properties"
             />
+            <li>
+              <Link
+                to="/rent/pay"
+                className="dash-nav-item"
+              >
+                <i className="fas fa-file-invoice-dollar"></i>
+                <span>Pay Rent</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/loans/my-emis"
+                className="dash-nav-item"
+              >
+                <i className="fas fa-money-check-alt"></i>
+                <span>Pay EMI</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/loans/my-applications"
+                className="dash-nav-item"
+              >
+                <i className="fas fa-folder-open"></i>
+                <span>My Loan Applications</span>
+              </Link>
+            </li>
             <NavItem section="profile" icon="fa-user" label="Update Profile" />
           </>
         );
@@ -74,6 +101,15 @@ const Sidebar = ({ user, activeSection, onNavClick }) => {
               icon="fa-key"
               label="Rented Properties"
             />
+            <li>
+              <Link
+                to="/rent/manage"
+                className="dash-nav-item"
+              >
+                <i className="fas fa-cog"></i>
+                <span>Manage Rent</span>
+              </Link>
+            </li>
             <NavItem
               section="advertised-properties"
               icon="fa-ad"

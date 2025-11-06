@@ -1,7 +1,5 @@
 const blogDB = require("../models/blog");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const { blogUpload, deleteImage, getPublicIdFromUrl } = require("../config/cloudinary");
 
 // Helper function to track activity
 const trackActivity = (req, activityData) => {
@@ -24,42 +22,10 @@ const trackActivity = (req, activityData) => {
   }
 };
 
-// Configure multer for blog image uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = "public/uploads/blog";
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    // Create unique filename with original extension
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, "blog-" + uniqueSuffix + ext);
-  },
-});
+// Export the Cloudinary upload for use in routes
+const upload = blogUpload;
 
-// File filter for image uploads
-const fileFilter = (req, file, cb) => {
-  // Accept only image files
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed!"), false);
-  }
-};
-
-// Initialize multer upload middleware
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB file size limit
-  },
-});
+// Note: File filtering and size limits are now configured in config/cloudinary.js
 
 // Get all blogs (NOW WITH PAGINATION)
 exports.getAllBlogs = async (req, res) => { 
@@ -203,18 +169,13 @@ exports.createBlog = async (req, res) => {
 
     // Validate required fields
     if (!title || !author || !content || !tags || !createdOn) {
-      // Delete uploaded file if validation fails
-      if (req.file) {
-        fs.unlinkSync(req.file.path);
-      }
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Set imageUrl from uploaded file or use default
+    // Set imageUrl from uploaded file (Cloudinary) or use default
     let imageUrl = "/assets/house.jpg"; // Default image
     if (req.file) {
-      // Convert Windows path to URL format with forward slashes
-      imageUrl = "/uploads/blog/" + req.file.filename;
+      imageUrl = req.file.path; // Cloudinary provides the full URL in file.path
     }
 
     // Create blog
@@ -230,10 +191,6 @@ exports.createBlog = async (req, res) => {
 
     res.status(201).json({ success: true, data: newBlog });
   } catch (error) {
-    // Delete uploaded file if blog creation fails
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
     console.error("Error creating blog:", error);
     res.status(500).json({ error: "Failed to create blog" });
   }
@@ -247,19 +204,24 @@ exports.updateBlog = async (req, res) => {
 
     // Handle image update
     if (req.file) {
-      updates.imageUrl = "/uploads/blog/" + req.file.filename;
+      updates.imageUrl = req.file.path; // Cloudinary URL
 
-      // Get old image path to delete if it exists and isn't the default
+      // Get old image to delete from Cloudinary if it exists and isn't the default
       const oldBlog = await blogDB.getBlogById(id);
       if (
         oldBlog &&
         oldBlog.imageUrl &&
         !oldBlog.imageUrl.includes("assets/house.jpg") &&
-        oldBlog.imageUrl.includes("/uploads/blog/")
+        oldBlog.imageUrl.includes("cloudinary.com")
       ) {
-        const oldImagePath = path.join("public", oldBlog.imageUrl);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
+        // Extract public_id and delete from Cloudinary
+        const publicId = getPublicIdFromUrl(oldBlog.imageUrl);
+        if (publicId) {
+          try {
+            await deleteImage(publicId);
+          } catch (err) {
+            console.error("Error deleting old image from Cloudinary:", err);
+          }
         }
       }
     }
@@ -280,19 +242,11 @@ exports.updateBlog = async (req, res) => {
     const updatedBlog = await blogDB.updateBlog(id, updates);
 
     if (!updatedBlog) {
-      // Delete uploaded file if blog update fails
-      if (req.file) {
-        fs.unlinkSync(req.file.path);
-      }
       return res.status(404).json({ error: "Blog not found" });
     }
 
     res.json({ success: true, data: updatedBlog });
   } catch (error) {
-    // Delete uploaded file if blog update fails
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
     console.error("Error updating blog:", error);
     res.status(500).json({ error: "Failed to update blog" });
   }
@@ -317,15 +271,19 @@ exports.deleteBlog = async (req, res) => {
       return res.status(404).json({ error: "Failed to delete blog" });
     }
 
-    // Delete associated image file if it exists and isn't the default
+    // Delete associated image from Cloudinary if it exists and isn't the default
     if (
       blog.imageUrl &&
       !blog.imageUrl.includes("assets/house.jpg") &&
-      blog.imageUrl.includes("/uploads/blog/")
+      blog.imageUrl.includes("cloudinary.com")
     ) {
-      const imagePath = path.join("public", blog.imageUrl);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+      const publicId = getPublicIdFromUrl(blog.imageUrl);
+      if (publicId) {
+        try {
+          await deleteImage(publicId);
+        } catch (err) {
+          console.error("Error deleting image from Cloudinary:", err);
+        }
       }
     }
 

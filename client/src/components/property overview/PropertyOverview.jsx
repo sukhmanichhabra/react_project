@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import {
@@ -289,6 +289,32 @@ const PropertyOverview = () => {
               <button>➕</button>
             </div>
           </div>
+
+          {/* Rent Management Link for Buyers who rented this property */}
+          {user && user.role === "buyer" && property.status === "rented" && property.buyerId === user._id && (
+            <div className="prop-overview-buyer-actions-sidebar">
+              <a
+                href="/rent/pay"
+                className="prop-overview-action-btn-sidebar"
+                style={{ backgroundColor: "#2196f3", color: "white" }}
+              >
+                <i className="fas fa-file-invoice-dollar"></i> PAY RENT
+              </a>
+            </div>
+          )}
+
+          {/* Seller Rent Management Link */}
+          {user && user.role === "seller" && property.status === "rented" && property.sellerId === user._id && (
+            <div className="prop-overview-buyer-actions-sidebar">
+              <a
+                href="/rent/manage"
+                className="prop-overview-action-btn-sidebar"
+                style={{ backgroundColor: "#9c27b0", color: "white" }}
+              >
+                <i className="fas fa-cog"></i> MANAGE RENT
+              </a>
+            </div>
+          )}
 
           {/* Buyer Action Buttons - Right Side */}
           {user && user.role === "buyer" && property.status === "active" && (

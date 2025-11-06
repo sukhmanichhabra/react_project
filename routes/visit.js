@@ -45,12 +45,26 @@ router.post(
 
 // AGENT ROUTES
 
-// Get agent dashboard for visits
+// Get agent dashboard for visits (HTML page)
 router.get(
   "/agent",
   requireAuth,
   visitController.requireAgent,
   visitController.getAgentDashboard
+);
+
+// Get agent visits (JSON API for React)
+router.get(
+  "/agent-visits",
+  requireAuth,
+  visitController.requireAgent,
+  visitController.getAgentVisitsAPI
+);
+
+// Get available time slots (JSON API)
+router.get(
+  "/available-slots",
+  visitController.getAvailableSlotsAPI
 );
 
 // Approve a visit request (agent)

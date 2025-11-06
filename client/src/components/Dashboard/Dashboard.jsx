@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { dashboardAPI } from "../../services/api";
 
 // Import user-specific dashboards
 import AdminDashboard from "./admin/AdminDashboard";
@@ -12,31 +13,67 @@ import Sidebar from "./layout/Sidebar";
 import TopBar from "./layout/TopBar";
 
 const Dashboard = () => {
-  // In a real app, you'd get this from context or a Redux store
   const [user, setUser] = useState(null);
+  const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // State to manage active section
   const [activeSection, setActiveSection] = useState("overview");
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Fetch user data from backend
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch full dashboard data from backend
+      const response = await dashboardAPI.getDashboardData();
+      
+      if (response.data.success) {
+        const userData = response.data.data.user;
+        const fullData = response.data.data;
+        
+        // Update state with fresh backend data
+        setUser(userData);
+        setDashboardData(fullData);
+        
+        // Update localStorage with fresh user data
+        localStorage.setItem("user", JSON.stringify(userData));
+      } else {
+        throw new Error(response.data.message || "Failed to fetch user data");
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+      setError(err.response?.data?.message || err.message || "Failed to load dashboard");
+      
+      // If unauthorized, redirect to login
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.removeItem("user");
+        navigate("/auth/signin");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Get user from local storage or API
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
-    // This is just an example. You should fetch the full user object
-    // from your API to get agentProfile, properties, etc.
-    if (storedUser) {
-      setUser(storedUser);
-    }
-    setLoading(false);
+    // Fetch user data from backend on mount
+    fetchUserData();
 
     // Sync active section with URL hash
     const hash = location.hash.replace("#", "");
     if (hash) {
       setActiveSection(hash);
     }
-  }, [location]);
+  }, [location.hash]);
+
+  // Function to refresh user data from backend
+  const refreshUserData = () => {
+    fetchUserData();
+  };
 
   const handleNavClick = (section) => {
     setActiveSection(section);
@@ -47,8 +84,8 @@ const Dashboard = () => {
       return <div className="p-10 text-center">Loading Dashboard...</div>;
     }
 
-    // Pass user and activeSection to the appropriate dashboard
-    const props = { user, activeSection };
+    // Pass user, activeSection, and refreshUserData to the appropriate dashboard
+    const props = { user, activeSection, onUserUpdate: refreshUserData };
 
     switch (user.role) {
       case "admin":

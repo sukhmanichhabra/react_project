@@ -69,7 +69,7 @@ const submitLoanApplication = async (req, res) => {
     if (req.files) {
       if (req.files.identityProof && req.files.identityProof[0]) {
         documents.identityProof = {
-          path: "/uploads/loans/" + req.files.identityProof[0].filename,
+          path: req.files.identityProof[0].path, // Cloudinary URL
           originalName: req.files.identityProof[0].originalname,
           mimeType: req.files.identityProof[0].mimetype,
           uploadedAt: new Date(),
@@ -78,7 +78,7 @@ const submitLoanApplication = async (req, res) => {
 
       if (req.files.addressProof && req.files.addressProof[0]) {
         documents.addressProof = {
-          path: "/uploads/loans/" + req.files.addressProof[0].filename,
+          path: req.files.addressProof[0].path, // Cloudinary URL
           originalName: req.files.addressProof[0].originalname,
           mimeType: req.files.addressProof[0].mimetype,
           uploadedAt: new Date(),
@@ -87,7 +87,7 @@ const submitLoanApplication = async (req, res) => {
 
       if (req.files.incomeProof && req.files.incomeProof[0]) {
         documents.incomeProof = {
-          path: "/uploads/loans/" + req.files.incomeProof[0].filename,
+          path: req.files.incomeProof[0].path, // Cloudinary URL
           originalName: req.files.incomeProof[0].originalname,
           mimeType: req.files.incomeProof[0].mimetype,
           uploadedAt: new Date(),
@@ -96,7 +96,7 @@ const submitLoanApplication = async (req, res) => {
 
       if (req.files.propertyDocuments && req.files.propertyDocuments[0]) {
         documents.propertyDocuments = {
-          path: "/uploads/loans/" + req.files.propertyDocuments[0].filename,
+          path: req.files.propertyDocuments[0].path, // Cloudinary URL
           originalName: req.files.propertyDocuments[0].originalname,
           mimeType: req.files.propertyDocuments[0].mimetype,
           uploadedAt: new Date(),
@@ -105,7 +105,7 @@ const submitLoanApplication = async (req, res) => {
 
       if (req.files.bankStatements && req.files.bankStatements[0]) {
         documents.bankStatements = {
-          path: "/uploads/loans/" + req.files.bankStatements[0].filename,
+          path: req.files.bankStatements[0].path, // Cloudinary URL
           originalName: req.files.bankStatements[0].originalname,
           mimeType: req.files.bankStatements[0].mimetype,
           uploadedAt: new Date(),
@@ -118,7 +118,7 @@ const submitLoanApplication = async (req, res) => {
         req.files.additionalDocs.length > 0
       ) {
         documents.additionalDocs = req.files.additionalDocs.map((file) => ({
-          path: "/uploads/loans/" + file.filename,
+          path: file.path, // Cloudinary URL
           originalName: file.originalname,
           mimeType: file.mimetype,
           uploadedAt: new Date(),

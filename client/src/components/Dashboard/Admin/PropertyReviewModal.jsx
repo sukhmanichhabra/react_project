@@ -2,27 +2,50 @@ import React, { useState } from "react";
 import "./PropertyReviewModal.css"; // <-- Import new CSS
 
 const PropertyReviewModal = ({ property, onClose }) => {
-  const [activeImage, setActiveImage] = useState(property.images[0]);
+  // Helper function to get the correct image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '/assets/3.jpg';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/')) return imagePath;
+    return '/assets/3.jpg';
+  };
 
-  // Mock data for modal
+  const [activeImage, setActiveImage] = useState(getImageUrl(property.images?.[0]));
+
   const details = {
-    type: property.features?.type || "House",
+    type: property.features?.type || property.type || "House",
     bedrooms: property.features?.beds || 0,
     bathrooms: property.features?.baths || 0,
     area: `${property.features?.sqft || 0} sqft`,
     status: property.tag === "sale" ? "For Sale" : "For Rent",
   };
 
-  const amenities = [
-    "A/C & Heating",
-    "Swimming Pool",
-    "Garden",
-    "Security",
-    "Parking",
-    "Wifi",
-    "Fireplace",
-    "Play Ground",
-  ];
+  // Use actual property amenities or default list
+  const amenities = property.amenities && property.amenities.length > 0 
+    ? property.amenities 
+    : [
+        "A/C & Heating",
+        "Swimming Pool",
+        "Garden",
+        "Security",
+        "Parking",
+        "Wifi",
+        "Fireplace",
+        "Play Ground",
+      ];
+
+  // Navigation functions for carousel
+  const handlePrevImage = () => {
+    const currentIndex = property.images.findIndex(img => getImageUrl(img) === activeImage);
+    const prevIndex = currentIndex > 0 ? currentIndex - 1 : property.images.length - 1;
+    setActiveImage(getImageUrl(property.images[prevIndex]));
+  };
+
+  const handleNextImage = () => {
+    const currentIndex = property.images.findIndex(img => getImageUrl(img) === activeImage);
+    const nextIndex = currentIndex < property.images.length - 1 ? currentIndex + 1 : 0;
+    setActiveImage(getImageUrl(property.images[nextIndex]));
+  };
 
   return (
     <div className="review-modal-backdrop" onClick={onClose}>
@@ -43,23 +66,33 @@ const PropertyReviewModal = ({ property, onClose }) => {
               src={activeImage}
               alt="Main property view"
               className="carousel-main-image"
+              onError={(e) => {
+                e.target.src = '/assets/3.jpg';
+              }}
             />
-            <button className="carousel-nav-btn prev">
-              <i className="fas fa-chevron-left"></i>
-            </button>
-            <button className="carousel-nav-btn next">
-              <i className="fas fa-chevron-right"></i>
-            </button>
+            {property.images && property.images.length > 1 && (
+              <>
+                <button className="carousel-nav-btn prev" onClick={handlePrevImage}>
+                  <i className="fas fa-chevron-left"></i>
+                </button>
+                <button className="carousel-nav-btn next" onClick={handleNextImage}>
+                  <i className="fas fa-chevron-right"></i>
+                </button>
+              </>
+            )}
             <div className="carousel-thumbnails">
-              {property.images.map((img, index) => (
+              {property.images && property.images.map((img, index) => (
                 <img
                   key={index}
-                  src={img}
+                  src={getImageUrl(img)}
                   alt={`Thumbnail ${index + 1}`}
                   className={`carousel-thumbnail ${
-                    activeImage === img ? "active" : ""
+                    activeImage === getImageUrl(img) ? "active" : ""
                   }`}
-                  onClick={() => setActiveImage(img)}
+                  onClick={() => setActiveImage(getImageUrl(img))}
+                  onError={(e) => {
+                    e.target.src = '/assets/3.jpg';
+                  }}
                 />
               ))}
             </div>

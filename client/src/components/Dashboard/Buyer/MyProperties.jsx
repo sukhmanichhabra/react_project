@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import EnhancedPropertyCard from "../../partials/EnhancedPropertyCard";
 import "./MyProperties.css";
+import PropertyCard from "../../partials/PropertyCard";
 
 // Mock data as requested
 const mockProperty = {
@@ -58,7 +59,7 @@ const MyProperties = ({ properties = [] }) => {
       <div className="my-properties-grid enhanced-dashboard-grid">
         {allProperties.length > 0 ? (
           allProperties.map((prop) => (
-            <EnhancedPropertyCard 
+            <PropertyCard
               key={prop._id} 
               {...mapPropertyToEnhancedCard(prop)} 
             />

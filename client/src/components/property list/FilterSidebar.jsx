@@ -36,7 +36,7 @@ const FilterSidebar = ({
           onChange={onLocationChange}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         />
-        {showSuggestions && (
+        {showSuggestions && locationSuggestions.length > 0 && (
           <div className="prop-list-location-suggestions">
             {locationSuggestions.map((location, index) => (
               <div

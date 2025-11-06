@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { dashboardAPI } from "../../../services/api";
+import { getProfileImageUrl, handleImageError } from "../../../utils/imageUtils";
 import "./Profile.css"; // <-- IMPORT THE NEW CSS
 
 // This component receives the user object
@@ -34,6 +35,10 @@ const Profile = ({ user, agentProfile, onProfileUpdate }) => {  // State for for
   // State for API response
   const [status, setStatus] = useState({ type: "", message: "" });
 
+  // State for address geocoding
+  const [searchAddress, setSearchAddress] = useState("");
+  const [geocoding, setGeocoding] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -45,6 +50,51 @@ const Profile = ({ user, agentProfile, onProfileUpdate }) => {  // State for for
     if (file) {
       setProfileImage(file);
       setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  // Geocode address to get coordinates
+  const handleFindLocation = async () => {
+    if (!searchAddress || searchAddress.trim() === "") {
+      setStatus({ type: "error", message: "Please enter an address" });
+      setTimeout(() => setStatus({ type: "", message: "" }), 3000);
+      return;
+    }
+
+    try {
+      setGeocoding(true);
+      setStatus({ type: "loading", message: "Finding location..." });
+
+      const response = await dashboardAPI.geocodeAddress(searchAddress);
+
+      if (response.data.success) {
+        const { latitude, longitude, formattedAddress } = response.data.data;
+        
+        // Update form data with coordinates
+        setFormData((prev) => ({
+          ...prev,
+          latitude: latitude,
+          longitude: longitude,
+        }));
+
+        setStatus({ 
+          type: "success", 
+          message: `Location found: ${formattedAddress}` 
+        });
+
+        setTimeout(() => setStatus({ type: "", message: "" }), 5000);
+      } else {
+        throw new Error(response.data.message || "Failed to find location");
+      }
+    } catch (err) {
+      console.error("Geocoding error:", err);
+      setStatus({ 
+        type: "error", 
+        message: err.response?.data?.message || err.message || "Failed to find location" 
+      });
+      setTimeout(() => setStatus({ type: "", message: "" }), 5000);
+    } finally {
+      setGeocoding(false);
     }
   };
 
@@ -71,12 +121,45 @@ const Profile = ({ user, agentProfile, onProfileUpdate }) => {  // State for for
       
       // Update user in localStorage if it exists
       if (localStorage.getItem("user")) {
-        localStorage.setItem("user", JSON.stringify(result.data.user));
+        localStorage.setItem("user", JSON.stringify(result.data.data.user));
       }
+      
+      // Update form data with fresh backend data
+      const updatedUser = result.data.data.user;
+      const updatedAgentProfile = result.data.data.agentProfile;
+      
+      setFormData({
+        name: updatedUser.name || "",
+        phone: updatedUser.phone || "",
+        location: updatedUser.location || "",
+        website: updatedUser.website || "",
+        bio: updatedUser.bio || "",
+        // Agent-specific fields
+        title: updatedAgentProfile?.title || "",
+        qualification: updatedAgentProfile?.qualification || "",
+        overview: updatedAgentProfile?.overview || "",
+        // Agent geolocation fields
+        latitude: updatedAgentProfile?.geolocation?.latitude || "",
+        longitude: updatedAgentProfile?.geolocation?.longitude || "",
+        serviceRadius: updatedAgentProfile?.geolocation?.serviceRadius || 50,
+        // Social links
+        facebook: updatedUser.socialLinks?.facebook || "",
+        twitter: updatedUser.socialLinks?.twitter || "",
+        instagram: updatedUser.socialLinks?.instagram || "",
+        linkedin: updatedUser.socialLinks?.linkedin || "",
+      });
+      
+      // Update profile image preview if it was updated
+      if (updatedUser.profileImage) {
+        setPreview(updatedUser.profileImage);
+      }
+      
+      // Clear the file input
+      setProfileImage(null);
       
       // Call parent callback to refresh data if provided
       if (onProfileUpdate && typeof onProfileUpdate === 'function') {
-        onProfileUpdate(result.data.user);
+        onProfileUpdate(updatedUser, updatedAgentProfile);
       }
       
       // Clear the status after 3 seconds
@@ -129,10 +212,11 @@ const Profile = ({ user, agentProfile, onProfileUpdate }) => {  // State for for
           <div className="profile-card__header">
             <div className="profile-card__avatar">
               <img
-                src={preview}
+                src={getProfileImageUrl(preview)}
                 alt="Profile"
                 id="profile-preview"
                 className="profile-card__avatar-img"
+                onError={(e) => handleImageError(e, '/images/default-avatar.png')}
               />
               <label
                 htmlFor="profileImage"
@@ -259,6 +343,57 @@ const Profile = ({ user, agentProfile, onProfileUpdate }) => {  // State for for
                   <p className="profile-card__help-text">
                     Set your location coordinates to receive property assignments in your area
                   </p>
+                </div>
+
+                {/* Address Search Field */}
+                <div className="profile-card__form-group profile-card__form-group--full">
+                  <label htmlFor="searchAddress" className="profile-card__label">
+                    Search Address
+                  </label>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                    <input
+                      type="text"
+                      id="searchAddress"
+                      name="searchAddress"
+                      value={searchAddress}
+                      onChange={(e) => setSearchAddress(e.target.value)}
+                      placeholder="Enter your address (e.g., 123 Main St, New York, NY)"
+                      className="profile-card__input"
+                      style={{ flex: 1 }}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleFindLocation();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleFindLocation}
+                      disabled={geocoding}
+                      className="profile-card__btn profile-card__btn--primary"
+                      style={{ 
+                        minWidth: "140px",
+                        whiteSpace: "nowrap",
+                        opacity: geocoding ? 0.6 : 1
+                      }}
+                    >
+                      {geocoding ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin" style={{ marginRight: "5px" }}></i>
+                          Finding...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-map-marker-alt" style={{ marginRight: "5px" }}></i>
+                          Find Location
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <small className="profile-card__help-text" style={{ marginTop: "5px", display: "block" }}>
+                    Enter your address and click "Find Location" to automatically fill latitude and longitude
+                  </small>
                 </div>
                 
                 <div className="profile-card__form-group">

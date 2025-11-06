@@ -238,3 +238,57 @@
   gap: 0.5rem;
   transition: all 0.2s ease;
 }
+
+/* Loading State */
+.la-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.la-loading .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Admin Remarks Display */
+.la-admin-remarks-display {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #fff3e0;
+  border-left: 4px solid #ff9800;
+  border-radius: 6px;
+}
+
+.la-admin-remarks-display strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #e65100;
+  font-size: 14px;
+}
+
+.la-admin-remarks-display p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Disabled Button State */
+.av-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

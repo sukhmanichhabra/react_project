@@ -1,51 +1,64 @@
 import React, { useState, useEffect } from "react";
+import { dashboardAPI } from "../../../services/api";
 import Profile from "../common/Profile";
 import SellerOverview from "./SellerOverview";
 import AddListing from "./AddListing";
 import SellerMyProperties from "./SellerMyProperties";
 import SellerRentedProperties from "./SellerRentedProperties";
 import AdvertisedProperties from "./AdvertisedProperties";
-import Transactions from "./Transactions"; // Make sure this path is correct
+import Transactions from "./Transactions";
 
-// In a real app, this data would come from API calls
-const mockSellerData = {
-  properties: [
-    /* ... list of seller's properties ... */
-  ],
-  advertisedProperties: [
-    /* ... list of advertised properties ... */
-  ],
-  transactions: [
-    /* ... list of transactions ... */
-  ],
-};
-
-const SellerDashboard = ({ user, activeSection }) => {
-  // You would replace mockSellerData with fetched data
-  const [sellerData, setSellerData] = useState(mockSellerData);
-  const [loading, setLoading] = useState(false); // Set to true when fetching
+const SellerDashboard = ({ user, activeSection, onUserUpdate }) => {
+  const [sellerData, setSellerData] = useState({
+    properties: [],
+    advertisedProperties: [],
+    transactions: [],
+    stats: {}
+  });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchSellerData = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await fetch("/api/dashboard/seller-data");
-  //       const result = await response.json();
-  //       if (!result.success) throw new Error(result.message);
-  //       setSellerData(result.data);
-  //     } catch (err) {
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchSellerData();  // }, []);
+  // Fetch seller data from backend
+  const fetchSellerData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await dashboardAPI.getDashboardData();
+      
+      if (response.data.success) {
+        const data = response.data.data;
+        setSellerData({
+          properties: data.properties || [],
+          advertisedProperties: data.advertisedProperties || [],
+          transactions: data.transactions || [],
+          stats: data.stats || {}
+        });
+      } else {
+        throw new Error(response.data.message || "Failed to fetch seller data");
+      }
+    } catch (err) {
+      console.error("Error fetching seller data:", err);
+      setError(err.response?.data?.message || err.message || "Failed to load seller data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleProfileUpdate = (updatedUser) => {
+  useEffect(() => {
+    if (user?._id) {
+      fetchSellerData();
+    }
+  }, [user?._id]);
+
+  const handleProfileUpdate = (updatedUser, updatedAgentProfile) => {
     console.log("Profile updated:", updatedUser);
-    // Here you could refresh seller-specific data if needed
-    // For now, just log the update
+    // Refresh user data in parent Dashboard component
+    if (onUserUpdate && typeof onUserUpdate === 'function') {
+      onUserUpdate();
+    }
+    // Refresh seller-specific data
+    fetchSellerData();
   };
 
   if (loading) {

@@ -26,17 +26,11 @@ const PropertyListItem = ({ property, onSelect, onApprove, onReject, isProcessin
   const getImageUrl = (imagePath) => {
     if (!imagePath) return '/assets/3.jpg';
     
-    // If it's already a full URL, return as is
+    // If it's already a full URL (Cloudinary), return as is
     if (imagePath.startsWith('http')) return imagePath;
     
-    // If it starts with /, it's a relative path from server root
+    // If it starts with /, it's a relative path from server root (legacy assets)
     if (imagePath.startsWith('/')) {
-      // For uploaded images, they should be accessible via the backend server
-      if (imagePath.startsWith('/uploads/')) {
-        // Try to use the proxy first, then fallback to direct server URL
-        return imagePath; // This will use the Vite proxy to route to backend
-      }
-      // For assets, they're served from the public folder
       return imagePath;
     }
     
@@ -52,13 +46,8 @@ const PropertyListItem = ({ property, onSelect, onApprove, onReject, isProcessin
         alt={title} 
         className="pa-item-image"
         onError={(e) => {
-          // First fallback: try direct server URL if proxy fails
-          if (!e.target.src.includes('localhost:5000') && e.target.src.startsWith('/uploads/')) {
-            e.target.src = `http://localhost:5000${e.target.src}`;
-          } else {
-            // Final fallback: use default asset
-            e.target.src = '/assets/3.jpg';
-          }
+          // Fallback to default asset if Cloudinary image fails to load
+          e.target.src = '/assets/3.jpg';
         }}
       />
       <div className="pa-item-details">

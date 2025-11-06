@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { dashboardAPI } from "../../../services/api";
 import Profile from "../common/Profile";
 import AdminOverview from "./AdminOverview";
 import AgentVerification from "./AgentVerification";
@@ -7,100 +8,61 @@ import ManageAgents from "./ManageAgents";
 import PropertyApproval from "./PropertyApproval";
 import GeolocationManager from "./GeolocationManager";
 
-// In a real app, this data would come from API calls
-const mockAdminData = {
-  stats: {
-    totalUsers: 2458,
-    activeProperties: 1245,
-    totalRevenue: 845012,
-    pendingVerifications: 2, // Matched to mock data
-  },
-  pendingAgents: [
-    {
-      _id: "agent-mock-1",
-      name: "New Agent 1 (Mock)",
-      email: "agent1@example.com",
-      phone: "123-456-7890",
-      createdAt: new Date().toISOString(),
-      documentUrl: "#",
-    },
-    {
-      _id: "agent-mock-2",
-      name: "New Agent 2 (Mock)",
-      email: "agent2@example.com",
-      phone: "098-765-4321",
-      createdAt: new Date().toISOString(),
-      documentUrl: "#",
-    },
-  ],
-  allAgents: [
-    {
-      _id: "agent-all-1",
-      name: "Verified Agent (Mock)",
-      email: "verified@example.com",
-      phone: "555-555-5555",
-      listingCount: 12,
-      verified: true,
-    },
-    {
-      _id: "agent-all-2",
-      name: "Pending Agent (Mock)",
-      email: "pending@example.com",
-      phone: "111-222-3333",
-      listingCount: 1,
-      verified: false,
-    },
-  ],
-  loanApplications: [
-    {
-      _id: "loan-mock-1",
-      userName: "Buyer User (Mock)",
-      userEmail: "buyer@example.com",
-      amount: 350000,
-      propertyId: "prop-1",
-      propertyTitle: "Modern City Loft",
-      status: "pending",
-    },
-  ],
-  pendingProperties: [
-    {
-      _id: "prop-mock-1",
-      images: ["/assets/property-5.jpg"],
-      title: "Pending Approval Villa (Mock)",
-      location: "Waiting Room, Mock City",
-      price: "$750,000",
-      features: { beds: 5, baths: 4, sqft: 3200 },
-      status: "pending",
-      adPackage: { name: "Gold" },
-    },
-  ],
-};
-
-const AdminDashboard = ({ user, activeSection }) => {
-  const [adminData, setAdminData] = useState(mockAdminData);
-  const [loading, setLoading] = useState(false);
+const AdminDashboard = ({ user, activeSection, onUserUpdate }) => {
+  const [adminData, setAdminData] = useState({
+    stats: {},
+    pendingAgents: [],
+    allAgents: [],
+    agents: [],
+    loanApplications: [],
+    pendingProperties: []
+  });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchAdminData = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await fetch("/api/dashboard/admin-data"); // Example endpoint
-  //       const result = await response.json();
-  //       if (!result.success) throw new Error(result.message);
-  //       setAdminData(result.data);
-  //     } catch (err) {
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchAdminData();  // }, []);
+  // Fetch admin data from backend
+  const fetchAdminData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await dashboardAPI.getDashboardData();
+      
+      if (response.data.success) {
+        const data = response.data.data;
+        setAdminData({
+          stats: data.stats || {},
+          pendingAgents: data.pendingAgents || [],
+          allAgents: data.agents || [],
+          agents: data.agents || [],
+          loanApplications: data.loanApplications || [],
+          pendingProperties: data.stats?.pendingProperties || []
+        });
+      } else {
+        throw new Error(response.data.message || "Failed to fetch admin data");
+      }
+    } catch (err) {
+      console.error("Error fetching admin data:", err);
+      setError(err.response?.data?.message || err.message || "Failed to load admin data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleProfileUpdate = (updatedUser) => {
+  useEffect(() => {
+    if (user?._id) {
+      fetchAdminData();
+    }
+  }, [user?._id]);
+
+  const handleProfileUpdate = (updatedUser, updatedAgentProfile) => {
     console.log("Admin profile updated:", updatedUser);
-    // Here you could refresh admin-specific data if needed
-    // For now, just log the update
+    // Refresh user data in parent Dashboard component
+    if (onUserUpdate && typeof onUserUpdate === 'function') {
+      onUserUpdate();
+    }
+    // Refresh admin-specific data
+    fetchAdminData();
   };
 
   if (loading) {

@@ -3,6 +3,7 @@ const User = require("../models/user");
 const AgentModel = require("../models/agent");
 const { createToken } = require("../service/auth");
 const mongoose = require("mongoose");
+const geocodingService = require("../service/geocoding");
 
 // Get dashboard data based on user role
 const getDashboard = async (req, res) => {
@@ -302,7 +303,7 @@ const updateProfile = async (req, res) => {
           website: website || req.user.website,
           socialLinks: socialLinks,
           ...(req.file && {
-            profileImage: `/uploads/profiles/${req.file.filename}`,
+            profileImage: req.file.path, // Cloudinary URL
           }),
         },
       },
@@ -355,7 +356,7 @@ const updateProfile = async (req, res) => {
 
           // Update profile image only if a new one was uploaded
           if (req.file) {
-            agentProfile.image = `/uploads/profiles/${req.file.filename}`;
+            agentProfile.image = req.file.path; // Cloudinary URL
           }
 
           await agentProfile.save();
@@ -389,24 +390,37 @@ const updateProfile = async (req, res) => {
 
     // Check if request expects JSON response (from React frontend)
     if (req.headers.accept && req.headers.accept.includes('application/json')) {
-      return res.status(200).json({
+      // Prepare response data
+      const responseData = {
         success: true,
         message: "Profile updated successfully!",
-        user: {
-          _id: updatedUser._id,
-          name: updatedUser.name,
-          email: updatedUser.email,
-          phone: updatedUser.phone,
-          location: updatedUser.location,
-          bio: updatedUser.bio,
-          website: updatedUser.website,
-          profileImage: updatedUser.profileImage,
-          socialLinks: updatedUser.socialLinks,
-          role: updatedUser.role,
-          accountBalance: updatedUser.accountBalance || 0,
-          createdAt: updatedUser.createdAt,
+        data: {
+          user: {
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            location: updatedUser.location,
+            bio: updatedUser.bio,
+            website: updatedUser.website,
+            profileImage: updatedUser.profileImage,
+            socialLinks: updatedUser.socialLinks,
+            role: updatedUser.role,
+            accountBalance: updatedUser.accountBalance || 0,
+            createdAt: updatedUser.createdAt,
+          }
         }
-      });
+      };
+
+      // If user is an agent, include the updated agent profile
+      if (updatedUser.role === "agent") {
+        const agentProfile = await AgentModel.Agent.findOne({ userId: updatedUser._id });
+        if (agentProfile) {
+          responseData.data.agentProfile = agentProfile;
+        }
+      }
+
+      return res.status(200).json(responseData);
     } else {
       // Redirect back to dashboard with profile section active (for traditional form submissions)
       return res.redirect("/dashboard?section=profile&updated=true#profile");
@@ -697,6 +711,43 @@ const updateAccountBalance = async (req, res) => {
   }
 };
 
+// Geocode address to get coordinates
+const geocodeAddress = async (req, res) => {
+  try {
+    const { address } = req.body;
+
+    if (!address || typeof address !== 'string' || address.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid address",
+      });
+    }
+
+    console.log(`Geocoding request for address: ${address}`);
+
+    // Use the geocoding service to get coordinates
+    const result = await geocodingService.getCoordinatesFromAddress(address);
+
+    console.log(`Geocoding successful: lat=${result.latitude}, lng=${result.longitude}`);
+
+    return res.status(200).json({
+      success: true,
+      message: "Address geocoded successfully",
+      data: {
+        latitude: result.latitude,
+        longitude: result.longitude,
+        formattedAddress: result.formattedAddress,
+      },
+    });
+  } catch (error) {
+    console.error("Error geocoding address:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to geocode address",
+    });
+  }
+};
+
 module.exports = {
   getDashboard,
   updateProfile,
@@ -707,4 +758,5 @@ module.exports = {
   replyToMessage,
   deleteMessage,
   updateAccountBalance,
+  geocodeAddress,
 };

@@ -284,10 +284,30 @@ const PropertyModel = {
     // Get approved properties by seller ID for My Properties section
     getApprovedPropertiesBySeller: async (sellerId) => {
         try {
-            return await Property.find({ 
+            const properties = await Property.find({ 
                 sellerId, 
                 approvalStatus: 'approved' 
             });
+            
+            // Populate agent data for each property
+            const AgentModel = require('./agent');
+            const propertiesWithAgents = await Promise.all(
+                properties.map(async (property) => {
+                    const propertyObj = property.toObject();
+                    if (propertyObj.agent) {
+                        try {
+                            const agent = await AgentModel.getAgentById(propertyObj.agent);
+                            propertyObj.agent = agent || null;
+                        } catch (err) {
+                            console.error(`Error fetching agent for property ${propertyObj._id}:`, err);
+                            propertyObj.agent = null;
+                        }
+                    }
+                    return propertyObj;
+                })
+            );
+            
+            return propertiesWithAgents;
         } catch (error) {
             console.error('Error getting approved seller properties:', error);
             return [];

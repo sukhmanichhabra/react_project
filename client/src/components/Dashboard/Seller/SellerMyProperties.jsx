@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import EnhancedPropertyCard from "../../partials/EnhancedPropertyCard";
+import PropertyCard from "../../partials/PropertyCard";
 import { Link } from "react-router-dom";
 import "./SellerMyProperties.css";
 
@@ -8,36 +9,54 @@ const SellerMyProperties = ({ properties = [] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Helper function to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '/assets/property-1.jpg';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/')) return imagePath;
+    return '/assets/property-1.jpg';
+  };
+
   // Helper function to map property data for enhanced card
   const mapPropertyToEnhancedCard = (property) => {
+    // Handle location - it's a string in the database, not an object
+    const locationStr = property.location || property.geolocation?.address || "Location not specified";
+    
+    // Handle agent data
+    const agentData = property.agent || {};
+    const agentName = agentData.name || agentData.fullName || "No Agent Assigned";
+    const agentImage = agentData.image || agentData.profileImage || "/images/default-avatar.png";
+    
     return {
       id: property._id,
-      propertyType: property.features?.type || "Property",
+      propertyType: property.features?.type || property.type || "Property",
       amenities: property.amenities || [],
       badge: property.tag === "rent" ? "green" : "orange",
       badgeText: property.tag === "rent" ? "FOR RENT" : "FOR SALE",
-      location: `${property.location?.address || ''}, ${property.location?.city || ''}, ${property.location?.state || ''}`.replace(/^,\s*|,\s*$/g, '') || "Location not specified",
+      location: locationStr,
       imagesCount: property.images?.length || 0,
       videosCount: 0,
-      imageUrl: property.images && property.images.length > 0 ? property.images[0] : "/assets/property-1.jpg",
+      imageUrl: property.images && property.images.length > 0 ? getImageUrl(property.images[0]) : "/assets/property-1.jpg",
       price: typeof property.price === "string" ? property.price : `$${property.price?.toLocaleString() || "0"}`,
       title: property.title || "Property Title",
       overviewLink: `/property/${property._id}`,
       description: property.description || "No description available",
-      bedrooms: property.features?.bedrooms || property.features?.beds || 0,
-      bathrooms: property.features?.bathrooms || property.features?.baths || 0,
-      squareFeet: property.features?.squareFootage || property.features?.sqft || 0,
-      agentImage: null, // Dashboard doesn't need agent info for own properties
-      agentName: "You", // It's the seller's own property
-      agentId: null,
-      agentLink: "#",
+      bedrooms: parseInt(property.features?.bedrooms || property.features?.beds || 0),
+      bathrooms: parseInt(property.features?.bathrooms || property.features?.baths || 0),
+      squareFeet: parseInt(property.features?.squareFootage || property.features?.sqft || 0),
+      agentImage: agentImage,
+      agentName: agentName,
+      agentId: agentData._id || agentData.id || null,
+      agentLink: agentData._id ? `/agent/${agentData._id}` : "#",
       status: property.status || 'active'
     };
   };
 
   useEffect(() => {
     fetchApprovedProperties();
-  }, [properties]);  const fetchApprovedProperties = async () => {
+  }, [properties]);  
+
+  const fetchApprovedProperties = async () => {
     try {
       setLoading(true);
       console.log('🔍 SellerMyProperties: Starting to fetch approved properties...');
@@ -129,7 +148,7 @@ const SellerMyProperties = ({ properties = [] }) => {
       </div>      <div className="seller-my-properties-grid enhanced-dashboard-grid">
         {approvedProperties.length > 0 ? (
           approvedProperties.map((prop) => (
-            <EnhancedPropertyCard 
+            <PropertyCard 
               key={prop._id} 
               {...mapPropertyToEnhancedCard(prop)} 
             />
