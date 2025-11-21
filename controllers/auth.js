@@ -531,3 +531,67 @@ exports.postDisable2FA = async (req, res) => {
     });
   }
 };
+
+// GET Settings page
+exports.getSettings = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+        redirectUrl: "/auth/signin",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if request wants JSON (from React frontend)
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json({
+        success: true,
+        data: {
+          user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            twoFactorEnabled: user.twoFactorEnabled,
+          },
+        },
+      });
+    }
+
+    // Otherwise render EJS view
+    res.render('settings', {
+      title: 'Account Settings',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        twoFactorEnabled: user.twoFactorEnabled,
+      },
+    });
+  } catch (error) {
+    console.error("Settings page error:", error);
+    
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to load settings",
+        error: error.message,
+      });
+    }
+
+    res.status(500).render('error', {
+      message: 'Failed to load settings',
+      error: error.message,
+    });
+  }
+};

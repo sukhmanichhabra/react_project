@@ -17,4 +17,7 @@ router.get("/setup-2fa", authController.getSetup2FA);
 router.post("/enable-2fa", authController.postEnable2FA);
 router.post("/disable-2fa", authController.postDisable2FA);
 
+// Settings route
+router.get("/settings", authController.getSettings);
+
 module.exports = router;

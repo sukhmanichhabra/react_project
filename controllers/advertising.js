@@ -241,6 +241,58 @@ exports.getMyPackages = async (req, res) => {
   }
 };
 
+// Get advertised properties for seller dashboard (seller only)
+exports.getAdvertisedProperties = async (req, res) => {
+  try {
+    // Get all advertising packages for this seller
+    const advertisingPackages = await AdvertisingModel.getSellerAdvertising(
+      req.user._id
+    );
+
+    // Get property details for each package and structure with adPackage
+    const advertisedProperties = await Promise.all(
+      advertisingPackages.map(async (pkg) => {
+        const property = await PropertyModel.getPropertyById(pkg.propertyId);
+        if (!property) return null;
+
+        return {
+          ...property.toObject(),
+          _id: property._id,
+          adPackage: {
+            _id: pkg._id,
+            name: pkg.packageType.charAt(0).toUpperCase() + pkg.packageType.slice(1),
+            type: pkg.packageType,
+            startDate: pkg.startDate,
+            endDate: pkg.endDate,
+            status: pkg.status,
+            amount: pkg.amount,
+            paymentStatus: pkg.paymentStatus,
+            priority: pkg.priority,
+          },
+        };
+      })
+    );
+
+    // Filter out null values
+    const validProperties = advertisedProperties.filter(p => p !== null);
+
+    res.json({
+      success: true,
+      data: {
+        advertisedProperties: validProperties,
+        count: validProperties.length,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching advertised properties:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching advertised properties",
+      error: error.message,
+    });
+  }
+};
+
 // Cancel advertising package (seller only)
 exports.cancelPackage = async (req, res) => {
   try {

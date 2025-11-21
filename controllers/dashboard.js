@@ -748,6 +748,98 @@ const geocodeAddress = async (req, res) => {
   }
 };
 
+// Get managed properties for agent
+const getManagedProperties = async (req, res) => {
+  try {
+    const userId = req.user.id || req.user._id;
+
+    // Check if user is an agent
+    if (req.user.role !== 'agent') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only agents can access managed properties'
+      });
+    }
+
+    // Get agent profile
+    const agentProfile = await AgentModel.Agent.findOne({ userId: userId });
+
+    if (!agentProfile) {
+      return res.status(404).json({
+        success: false,
+        message: 'Agent profile not found'
+      });
+    }
+
+    // Get all managed properties for this agent
+    const managedProperties = await AgentModel.getAgentProperties(
+      agentProfile._id.toString()
+    );
+
+    // Enhance properties with additional data
+    const enhancedProperties = await Promise.all(
+      managedProperties.map(async (property) => {
+        const propertyObj = property.toObject ? property.toObject() : property;
+        
+        // Get messages for this property
+        const messages = await MessageModel.getPropertyMessages(property._id);
+        
+        return {
+          ...propertyObj,
+          messageCount: messages.length,
+          unreadMessageCount: messages.filter(m => m.status === 'unread').length
+        };
+      })
+    );
+
+    // Calculate statistics
+    const stats = {
+      totalProperties: enhancedProperties.length,
+      activeProperties: enhancedProperties.filter(p => p.status === 'active').length,
+      soldProperties: enhancedProperties.filter(p => p.status === 'sold').length,
+      rentedProperties: enhancedProperties.filter(p => p.status === 'rented').length,
+      totalMessages: enhancedProperties.reduce((sum, p) => sum + p.messageCount, 0),
+      unreadMessages: enhancedProperties.reduce((sum, p) => sum + p.unreadMessageCount, 0)
+    };
+
+    // Check if request wants JSON (from React frontend)
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json({
+        success: true,
+        data: {
+          properties: enhancedProperties,
+          stats: stats,
+          agentProfile: agentProfile
+        }
+      });
+    }
+
+    // Otherwise render EJS view
+    res.render('managed-properties', {
+      title: 'Managed Properties',
+      properties: enhancedProperties,
+      stats: stats,
+      agentProfile: agentProfile,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Error fetching managed properties:', error);
+
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch managed properties',
+        error: error.message
+      });
+    }
+
+    res.status(500).render('error', {
+      message: 'Failed to fetch managed properties',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getDashboard,
   updateProfile,
@@ -759,4 +851,5 @@ module.exports = {
   deleteMessage,
   updateAccountBalance,
   geocodeAddress,
+  getManagedProperties,
 };

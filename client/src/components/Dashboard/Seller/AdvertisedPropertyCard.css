@@ -134,6 +134,31 @@
 .dash-progress-yellow { background-color: #f59e0b; }
 .dash-progress-red { background-color: #ef4444; }
 
+.dash-sold-badge-container {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.dash-sold-badge {
+  background-color: #dc2626; /* Red background */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem; /* rounded-md */
+  font-weight: 600;
+  font-size: 0.875rem; /* text-sm */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.dash-sold-badge i {
+  font-size: 1rem;
+}
+
 /* Buttons */
 .dash-admin-actions {
   display: flex;

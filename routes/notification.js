@@ -13,6 +13,9 @@ router.get(
 // Get all notifications for the logged-in user
 router.get("/", requireAuth, notificationController.getAllNotifications);
 
+// Get unread notifications count for the logged-in user
+router.get("/count", requireAuth, notificationController.getUnreadCount);
+
 // Mark a notification as read
 router.post("/:id/mark-read", requireAuth, notificationController.markAsRead);
 

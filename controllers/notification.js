@@ -151,6 +151,25 @@ const createTestAll = async (req, res) => {
   }
 };
 
+// Get unread notification count for the logged-in user
+const getUnreadCount = async (req, res) => {
+  try {
+    const unreadCount = await NotificationModel.getUnreadCount(req.user._id);
+
+    return res.json({
+      success: true,
+      count: unreadCount,
+    });
+  } catch (error) {
+    console.error("Error fetching unread notification count:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to load unread notifications count",
+      error: error.message,
+    });
+  }
+};
+
 // Get all notifications for the logged-in user
 const getAllNotifications = async (req, res) => {
   try {
@@ -382,4 +401,5 @@ module.exports = {
   markAllAsRead,
   deleteNotification,
   createTest,
+  getUnreadCount,
 };

@@ -55,4 +55,11 @@ router.post(
   dashboardController.geocodeAddress
 );
 
+// Get managed properties for agent
+router.get(
+  "/managed-properties",
+  requireAuth,
+  dashboardController.getManagedProperties
+);
+
 module.exports = router;

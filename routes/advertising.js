@@ -19,6 +19,12 @@ router.get(
   requireSeller,
   advertisingController.getMyPackages
 );
+router.get(
+  "/advertised-properties",
+  requireAuth,
+  requireSeller,
+  advertisingController.getAdvertisedProperties
+);
 router.post(
   "/cancel/:id",
   requireAuth,

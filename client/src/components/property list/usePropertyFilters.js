@@ -78,41 +78,30 @@ export const usePropertyFilters = (properties = []) => {
     console.log('🔍 Applying filters:', filters);
     console.log('📦 Total properties:', properties.length);
     
-    // Log ALL properties structure for debugging
-    if (properties.length > 0) {
-      console.log('📋 All properties structures:');
-      properties.forEach((prop, index) => {
-        console.log(`Property ${index + 1}:`, {
-          title: prop.title,
-          location: prop.location,
-          geolocation: prop.geolocation,
-          type: prop.type,
-          'features.type': prop.features?.type,
-          'features.beds': prop.features?.beds,
-          'features.baths': prop.features?.baths,
-          'features.sqft': prop.features?.sqft,
-          price: prop.price,
-          tag: prop.tag,
-          amenities: prop.amenities,
-          approvalStatus: prop.approvalStatus,
-          status: prop.status
-        });
-      });
+    // Ensure properties is an array
+    if (!Array.isArray(properties) || properties.length === 0) {
+      console.log('⚠️ No properties to filter');
+      setFilteredProperties([]);
+      setNoResults(true);
+      return;
     }
     
-    let filtered = properties.filter((property, index) => {
-      console.log(`\n🔍 Filtering property ${index + 1}: ${property.title}`);
+    let filtered = properties.filter((property) => {
+      // Skip invalid properties
+      if (!property || !property._id) {
+        return false;
+      }
       
-      // Status filter
+      // Status/Tag filter
       const statusMatch = filters.status === 'all' || property.tag === filters.status;
-      console.log(`  📌 Status: property.tag="${property.tag}" vs filter="${filters.status}" → ${statusMatch ? '✅' : '❌'}`);
+      if (!statusMatch) return false;
       
       // Location filter - handle null/undefined locations
       const propertyLocation = property.location || property.geolocation?.address || '';
       const locationMatch = !filters.location || 
         (typeof propertyLocation === 'string' && 
          propertyLocation.toLowerCase().includes(filters.location.toLowerCase()));
-      console.log(`  📍 Location: "${propertyLocation}" contains "${filters.location}" → ${locationMatch ? '✅' : '❌'}`);
+      if (!locationMatch) return false;
       
       // Price filter - handle both string and number prices
       let propertyPrice = 0;
@@ -122,7 +111,7 @@ export const usePropertyFilters = (properties = []) => {
         propertyPrice = parseInt(property.price.replace(/[^0-9]/g, '')) || 0;
       }
       const priceMatch = propertyPrice >= filters.minPrice && propertyPrice <= filters.maxPrice;
-      console.log(`  💰 Price: $${propertyPrice} in range [$${filters.minPrice}-$${filters.maxPrice}] → ${priceMatch ? '✅' : '❌'}`);
+      if (!priceMatch) return false;
       
       // Bedrooms filter - handle database structure (property.features.beds as string)
       let bedroomsMatch = true;
@@ -136,36 +125,21 @@ export const usePropertyFilters = (properties = []) => {
         } else {
           bedroomsMatch = propertyBedrooms === selectedBedrooms;
         }
-        console.log(`  🛏️ Bedrooms: ${propertyBedrooms} vs ${selectedBedrooms} → ${bedroomsMatch ? '✅' : '❌'}`);
       }
+      if (!bedroomsMatch) return false;
       
       // Property type filter - handle both root level and features.type
       const propertyType = property.features?.type || property.type || property.propertyType || '';
       const typeMatch = filters.propertyType === 'all' || 
         propertyType === filters.propertyType;
-      console.log(`  🏠 Type: "${propertyType}" vs "${filters.propertyType}" → ${typeMatch ? '✅' : '❌'}`);
+      if (!typeMatch) return false;
       
       // Amenities filter
       const amenitiesMatch = filters.amenities.length === 0 || 
         filters.amenities.every(amenity => property.amenities?.includes(amenity));
-      console.log(`  ✨ Amenities: ${filters.amenities.length} required, property has ${property.amenities?.length || 0} → ${amenitiesMatch ? '✅' : '❌'}`);
+      if (!amenitiesMatch) return false;
       
-      const finalMatch = statusMatch && locationMatch && priceMatch && bedroomsMatch && typeMatch && amenitiesMatch;
-      
-      console.log(`  🎯 FINAL RESULT: ${finalMatch ? '✅ PASS' : '❌ FAIL'}`);
-      
-      if (!finalMatch) {
-        console.log(`  ⚠️ Failed filters:`, {
-          status: statusMatch ? '✅' : '❌',
-          location: locationMatch ? '✅' : '❌',
-          price: priceMatch ? '✅' : '❌',
-          bedrooms: bedroomsMatch ? '✅' : '❌',
-          type: typeMatch ? '✅' : '❌',
-          amenities: amenitiesMatch ? '✅' : '❌'
-        });
-      }
-      
-      return finalMatch;
+      return true;
     });
     
     console.log('✅ Filtered properties count:', filtered.length);

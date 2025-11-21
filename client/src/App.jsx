@@ -1,32 +1,3 @@
-// import {
-//   BrowserRouter as Router,
-//   Routes,
-//   Route,
-//   Navigate,
-// } from "react-router-dom";
-// import { useEffect } from "react";
-// import { Toaster } from "react-hot-toast";
-// import { useAppDispatch, useAppSelector } from "./store/hooks";
-// import { checkAuthStatus, selectAuth } from "./store/slices/authSlice";
-// import NavBar from "./components/partials/NavBar";
-// import Header from "./components/partials/Header";
-// import Footer from "./components/partials/Footer";
-// import Login from "./components/auth/Login";
-// import SignUp from "./components/auth/SignUp";
-// import Home from "./components/Home";
-// import AgentList from "./components/Agent/AgentList";
-// import AgentDesc from "./components/Agent/AgentDesc";
-// import PropertyList from "./components/property list/PropertyList";
-// import PropertyOverview from "./components/property overview/PropertyOverview";
-// // // import PropertyCompare from "./components/compareproperties/PropertyCompare";
-// // // import AboutUs from "./components/about/AboutUs";
-// // // import Contact from "./components/contact/Contact";
-// import Dashboard from "./components/Dashboard/Dashboard";
-// import BlogList from "./components/blog/BlogList";
-// import BlogDetails from "./components/blog/BlogDetails";
-// import AddBlog from "./components/blog/AddBlog";
-// import EditBlog from "./components/blog/EditBlog";
-// import "./App.css";
 // function App() {
 //   const dispatch = useAppDispatch();
 //   const { isAuthenticated, isLoading } = useAppSelector(selectAuth);
@@ -94,7 +65,6 @@
 //                 isAuthenticated ? <Navigate to="/" replace /> : <SignUp />
 //               }
 //             />
-
 //             {/* Protected routes */}
 //             <Route
 //               path="/"
@@ -406,28 +376,6 @@
 //               }
 //             />
 
-//             {/* Settings and account routes */}
-//             <Route
-//               path="/settings"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Settings</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/auth/setup-2fa"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Setup 2FA</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
 //             {/* Information pages */}
 //             {/* <Route
 //               path="/about"
@@ -542,7 +490,15 @@ import BlogList from "./components/blog/BlogList";
 import BlogDetails from "./components/blog/BlogDetails";
 import AddBlog from "./components/blog/AddBlog";
 import EditBlog from "./components/blog/EditBlog";
+import Settings from "./components/Settings/Settings";
+import Setup2FA from "./components/Settings/Setup2FA";
+import Model from "./components/Model/Model";
 import Advertising from "./pages/Advertising";
+import Messages from "./pages/Messages";
+import Chatbot from "./pages/Chatbot";
+import ChatbotAdmin from "./pages/ChatbotAdmin";
+import Notifications from "./pages/Notifications";
+import ActivityLog from "./pages/ActivityLog";
 import PayRent from "./components/rent/PayRent";
 import ManageRent from "./components/rent/ManageRent";
 import PropertyRentManagement from "./components/rent/PropertyRentManagement";
@@ -560,8 +516,8 @@ function AppLayout() {
 
   // Check for different route types
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
-  // --- ADD THIS LINE ---
   const isAuthRoute = location.pathname.startsWith("/auth/");
+  const isModelRoute = location.pathname === "/model";
 
   if (isLoading) {
     return <div className="loading-spinner">Loading...</div>;
@@ -686,16 +642,6 @@ function AppLayout() {
         }
       />
       <Route
-        path="/model"
-        element={
-          isAuthenticated ? (
-            <div>Price Prediction Model</div>
-          ) : (
-            <Navigate to="/auth/signin" replace />
-          )
-        }
-      />
-      <Route
         path="/pricing"
         element={
           isAuthenticated ? (
@@ -786,12 +732,66 @@ function AppLayout() {
         }
       />
 
+      {/* Admin Activity Log route */}
+      <Route
+        path="/activity/log"
+        element={
+          isAuthenticated ? (
+            <ActivityLog />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
       {/* Advertising route */}
       <Route
         path="/advertising"
         element={
           isAuthenticated ? (
             <Advertising />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
+      {/* Notifications route */}
+      <Route
+        path="/notifications"
+        element={
+          isAuthenticated ? (
+            <Notifications />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
+      {/* Messages route */}
+      <Route
+        path="/chat"
+        element={
+          isAuthenticated ? <Messages /> : <Navigate to="/auth/signin" replace />
+        }
+      />
+
+      {/* Chatbot routes */}
+      <Route
+        path="/chatbot"
+        element={
+          isAuthenticated ? (
+            <Chatbot />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/chatbot/admin"
+        element={
+          isAuthenticated ? (
+            <ChatbotAdmin />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -888,6 +888,34 @@ function AppLayout() {
         }
       />
 
+      {/* Settings and account routes */}
+      <Route
+        path="/settings"
+        element={
+          isAuthenticated ? (
+            <Settings />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/auth/setup-2fa"
+        element={
+          isAuthenticated ? (
+            <Setup2FA />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+
+      {/* Model/Price Prediction route */}
+      <Route
+        path="/model"
+        element={<Model />}
+      />
+
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -907,24 +935,19 @@ function AppLayout() {
 
       {/* --- UPDATE THIS LOGIC --- */}
 
-      {/* Show Nav/Header only if NOT dashboard AND NOT auth AND logged in */}
-      {!isDashboardRoute && !isAuthRoute && isAuthenticated && <NavBar />}
-      {!isDashboardRoute && !isAuthRoute && isAuthenticated && <Header />}
+      {/* Show Nav/Header only if NOT dashboard AND NOT auth AND NOT model AND logged in */}
+      {!isDashboardRoute && !isAuthRoute && !isModelRoute && isAuthenticated && <NavBar />}
+      {!isDashboardRoute && !isAuthRoute && !isModelRoute && isAuthenticated && <Header />}
 
       {/* Show routes wrapper logic */}
-      {isDashboardRoute || isAuthRoute ? (
-        // For Dashboard and Auth pages, render routes directly.
-        // These components (Login.jsx, Dashboard.jsx) must manage their own layout.
-        appRoutes
+      {isDashboardRoute || isAuthRoute || isModelRoute ? (
+        <main>{appRoutes}</main>
       ) : (
-        // For all other content pages (Home, Properties), wrap in a padded <main>
-        <main className="pt-20 sm:pt-24 md:pt-32 px-1 sm:px-2 lg:px-4 xl:px-5">
-          {appRoutes}
-        </main>
+        <main className="main-content">{appRoutes}</main>
       )}
 
-      {/* Show Footer only if NOT dashboard AND NOT auth AND logged in */}
-      {!isDashboardRoute && !isAuthRoute && isAuthenticated && <Footer />}
+      {/* Show Footer only if NOT dashboard AND NOT auth AND NOT model AND logged in */}
+      {!isDashboardRoute && !isAuthRoute && !isModelRoute && isAuthenticated && <Footer />}
     </div>
   );
 }

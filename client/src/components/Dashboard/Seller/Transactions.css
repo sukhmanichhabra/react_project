@@ -4,7 +4,15 @@
 }
 
 .transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 1.5rem; /* 24px */
+  gap: 1rem;
+}
+
+.transactions-header > div {
+  flex: 1;
 }
 
 .transactions-header h2 {
@@ -16,6 +24,38 @@
 
 .transactions-header p {
   color: #6b7280; /* text-gray-500 */
+}
+
+/* Export CSV Button */
+.export-csv-btn {
+  background-color: #10b981; /* Green background */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.export-csv-btn:hover {
+  background-color: #059669;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  transform: translateY(-1px);
+}
+
+.export-csv-btn:active {
+  transform: translateY(0);
+}
+
+.export-csv-btn i {
+  font-size: 1rem;
 }
 
 /* Re-using the table container style from BuyerOverview */

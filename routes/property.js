@@ -55,25 +55,32 @@ router.get('/', async (req, res) => {
             }
         } else {
             // Regular users only see approved properties
-            properties = await PropertyModel.getAvailableProperties();
+            properties = await PropertyModel.getApprovedProperties();
+        }
+        
+        // Ensure properties is an array
+        if (!Array.isArray(properties)) {
+            properties = [];
         }
         
         // Get agent for each property
-        const propertiesWithAgents = Array.isArray(properties) 
-            ? await Promise.all(properties.map(async (property) => {
-                let agent = null;
-                if (property.agent) {
-                    agent = await AgentModel.getAgentById(property.agent);
+        const propertiesWithAgents = await Promise.all(properties.map(async (property) => {
+            let agent = null;
+            if (property.agent) {
+                agent = await AgentModel.getAgentById(property.agent);
+            }
+            
+            // Convert to plain object if it's a Mongoose document
+            const propertyObj = property.toObject ? property.toObject() : property;
+            
+            return {
+                ...propertyObj,
+                agent: agent || { 
+                    name: "No Agent Assigned", 
+                    image: "/images/default-avatar.png" 
                 }
-                return {
-                    ...property.toObject(),  // Convert Mongoose document to plain object
-                    agent: agent || { 
-                        name: "No Agent Assigned", 
-                        image: "/images/default-avatar.png" 
-                    }
-                };
-            }))
-            : [];
+            };
+        }));
         
         // Check if request wants JSON (from React frontend)
         if (req.headers.accept && req.headers.accept.includes('application/json')) {
@@ -346,21 +353,44 @@ router.get('/my-purchases', requireAuth, requireBuyer, async (req, res) => {
 router.get('/tag/:tag', async (req, res) => {
     try {
         const { tag } = req.params;
+        
+        // Validate tag parameter
+        if (!['sale', 'rent'].includes(tag)) {
+            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+                return res.status(400).json({ 
+                    error: 'Invalid tag',
+                    message: 'Tag must be either "sale" or "rent"'
+                });
+            }
+            return res.status(400).render('error', { message: 'Invalid tag parameter' });
+        }
+        
+        // Get only approved properties for this tag
         const properties = await PropertyModel.getPropertiesByTag(tag);
         
+        // Ensure properties is an array
+        if (!Array.isArray(properties)) {
+            return res.json([]);
+        }
+        
         // Get agent for each property
-        const propertiesWithAgents = Array.isArray(properties)
-            ? await Promise.all(properties.map(async (property) => {
-                let agent = await AgentModel.getAgentById(property.agent);
-                return {
-                    ...property.toObject(),
-                    agent: agent || { 
-                        name: "No Agent Assigned", 
-                        image: "/images/default-avatar.png" 
-                    }
-                };
-            }))
-            : [];
+        const propertiesWithAgents = await Promise.all(properties.map(async (property) => {
+            let agent = null;
+            if (property.agent) {
+                agent = await AgentModel.getAgentById(property.agent);
+            }
+            
+            // Convert to plain object if it's a Mongoose document
+            const propertyObj = property.toObject ? property.toObject() : property;
+            
+            return {
+                ...propertyObj,
+                agent: agent || { 
+                    name: "No Agent Assigned", 
+                    image: "/images/default-avatar.png" 
+                }
+            };
+        }));
         
         // Check if request wants JSON (from React frontend)
         if (req.headers.accept && req.headers.accept.includes('application/json')) {

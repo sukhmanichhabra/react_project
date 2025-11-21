@@ -1,27 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdvertisedPropertyCard from "./AdvertisedPropertyCard";
-import advertisingAPI from "../../../services/advertisingAPI";
+import { advertisingAPI } from "../../../services/api";
 import "./AdvertisedProperties.css";
 
 const AdvertisedProperties = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchMyPackages();
+    fetchAdvertisedProperties();
   }, []);
 
-  const fetchMyPackages = async () => {
+  const fetchAdvertisedProperties = async () => {
     try {
       setLoading(true);
-      const response = await advertisingAPI.getMyPackages();
-      if (response.success) {
-        setProperties(response.packages || []);
+      setError(null);
+      const response = await advertisingAPI.getAdvertisedProperties();
+      if (response.data.success) {
+        setProperties(response.data.data.advertisedProperties || []);
+      } else {
+        setError(response.data.message || 'Failed to fetch advertised properties');
       }
     } catch (error) {
-      console.error('Error fetching advertising packages:', error);
+      console.error('Error fetching advertised properties:', error);
+      setError(error.response?.data?.message || 'Failed to fetch advertised properties');
     } finally {
       setLoading(false);
     }
@@ -34,9 +39,11 @@ const AdvertisedProperties = () => {
 
     try {
       const response = await advertisingAPI.cancelPackage(advertisingId);
-      if (response.success) {
+      if (response.data.success) {
         alert('Package cancelled successfully');
-        await fetchMyPackages(); // Refresh the list
+        await fetchAdvertisedProperties(); // Refresh the list
+      } else {
+        alert(response.data.message || 'Failed to cancel package');
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to cancel package';
@@ -63,6 +70,13 @@ const AdvertisedProperties = () => {
         </button>
       </div>
       
+      {error && (
+        <div className="dash-error-message">
+          <i className="fas fa-exclamation-circle"></i>
+          {error}
+        </div>
+      )}
+      
       {loading ? (
         <div className="dash-loading">
           <i className="fas fa-spinner fa-spin"></i> Loading...
@@ -70,13 +84,12 @@ const AdvertisedProperties = () => {
       ) : (
         <div className="advertised-properties-grid">
           {properties.length > 0 ? (
-            properties.map((pkg) => (
+            properties.map((property) => (
               <AdvertisedPropertyCard
-                key={pkg._id}
-                property={pkg.property}
-                advertising={pkg}
+                key={`${property._id}-${property.adPackage._id}`}
+                property={property}
                 isAdmin={false}
-                onCancel={() => handleCancel(pkg._id)}
+                onCancel={() => handleCancel(property.adPackage._id)}
               />
             ))
           ) : (

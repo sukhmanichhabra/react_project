@@ -9,10 +9,25 @@ const AdvertisedPropertyCard = ({
   onReject,
   onCancel,
 }) => {
-  // Calculate time remaining
+  // Calculate time remaining or get sold status
   const getProgress = () => {
+    // Check if property is sold
+    if (property.status === "sold") {
+      return { 
+        width: "0%", 
+        text: "SOLD", 
+        color: "red",
+        isSold: true 
+      };
+    }
+
     if (!property.adPackage || !property.adPackage.startDate) {
-        return { width: "100%", text: "Pending Approval", color: "yellow" };
+        return { 
+          width: "100%", 
+          text: "Pending Approval", 
+          color: "yellow",
+          isSold: false 
+        };
     }
 
     const start = new Date(property.adPackage.startDate).getTime();
@@ -37,10 +52,15 @@ const AdvertisedPropertyCard = ({
       color = "yellow";
     }
 
-    return { width: `${100 - percentage}%`, text, color };
+    return { 
+      width: `${100 - percentage}%`, 
+      text, 
+      color,
+      isSold: false 
+    };
   };
 
-  const { width, text, color } = getProgress();
+  const { width, text, color, isSold } = getProgress();
 
   return (
     <div className="dash-property-card">
@@ -89,15 +109,23 @@ const AdvertisedPropertyCard = ({
               Status: <strong>{property.status || "Pending"}</strong>
             </p>
           </div>
-          <div className="dash-time-remaining-container">
-            <span className="dash-time-remaining-text">{text}</span>
-            <div className="dash-time-remaining-bar">
-              <div
-                className={`dash-time-remaining-progress dash-progress-${color}`}
-                style={{ width }}
-              ></div>
+          {isSold ? (
+            <div className="dash-sold-badge-container">
+              <span className="dash-sold-badge">
+                <i className="fas fa-check-circle"></i> SOLD
+              </span>
             </div>
-          </div>
+          ) : (
+            <div className="dash-time-remaining-container">
+              <span className="dash-time-remaining-text">{text}</span>
+              <div className="dash-time-remaining-bar">
+                <div
+                  className={`dash-time-remaining-progress dash-progress-${color}`}
+                  style={{ width }}
+                ></div>
+              </div>
+            </div>
+          )}
 
           {isAdmin ? (
             <div className="dash-admin-actions">
@@ -114,7 +142,7 @@ const AdvertisedPropertyCard = ({
                 <i className="fas fa-times"></i> Reject
               </button>
             </div>
-          ) : (
+          ) : !isSold && (
             <button
               onClick={() => onCancel(property._id)}
               className="dash-cancel-package-btn"

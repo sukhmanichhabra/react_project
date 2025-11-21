@@ -311,4 +311,67 @@ export const visitAPI = {
   processOverdueVisits: () => api.post('/visit/process-overdue')
 };
 
+// Advertising API endpoints
+export const advertisingAPI = {
+  // Get advertising page (public)
+  getAdvertisingPage: () => api.get('/advertising', {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Get seller's advertised properties
+  getAdvertisedProperties: () => api.get('/advertising/advertised-properties', {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Get seller's advertising packages
+  getMyPackages: () => api.get('/advertising/my-packages', {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Create new advertising package
+  createPackage: (propertyId, packageType) => api.post('/advertising/create', 
+    { propertyId, packageType }, 
+    { headers: { 'Accept': 'application/json' } }
+  ),
+
+  // Cancel advertising package
+  cancelPackage: (advertisingId) => api.post(`/advertising/cancel/${advertisingId}`, {}, {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Get advertisement by ID
+  getAdvertisementById: (advertisementId) => api.get(`/advertising/${advertisementId}`, {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Track advertisement click
+  trackClick: (advertisementId, destination) => api.post(`/advertising/click/${advertisementId}`, 
+    { destination }, 
+    { headers: { 'Accept': 'application/json' } }
+  )
+};
+
+// Auth API endpoints
+export const authAPI = {
+  // Get user settings
+  getSettings: () => api.get('/auth/settings', {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Setup 2FA
+  getSetup2FA: () => api.get('/auth/setup-2fa', {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Enable 2FA
+  enable2FA: (token) => api.post('/auth/enable-2fa', { token }, {
+    headers: { 'Accept': 'application/json' }
+  }),
+
+  // Disable 2FA
+  disable2FA: () => api.post('/auth/disable-2fa', {}, {
+    headers: { 'Accept': 'application/json' }
+  })
+};
+
 export default api;
