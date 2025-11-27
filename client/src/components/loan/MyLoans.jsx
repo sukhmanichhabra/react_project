@@ -34,7 +34,7 @@ const MyLoans = () => {
       under_review: "#2196f3",
       approved: "#4caf50",
       rejected: "#f44336",
-      disbursed: "#9c27b0"
+      disbursed: "#9c27b0",
     };
     return colors[status] || "#666";
   };
@@ -47,7 +47,7 @@ const MyLoans = () => {
     return new Date(date).toLocaleDateString("en-IN", {
       year: "numeric",
       month: "short",
-      day: "numeric"
+      day: "numeric",
     });
   };
 
@@ -67,34 +67,49 @@ const MyLoans = () => {
           <h1>My Loan Applications</h1>
           <p>Track and manage your loan applications</p>
         </div>
-        <button className="apply-new-btn" onClick={() => navigate("/loans/apply")}>
+        <button
+          className="apply-new-btn"
+          onClick={() => navigate("/loans/apply")}
+        >
           <i className="fas fa-plus"></i> Apply for New Loan
         </button>
       </div>
 
       {applications.length > 0 ? (
         <div className="loans-grid">
-          {applications.map(app => (
+          {applications.map((app) => (
             <div key={app._id} className="loan-card">
               <div className="loan-card-header">
                 <div className="loan-type-badge">
-                  {app.loanDetails?.loanType?.replace("_", " ").toUpperCase() || "HOME LOAN"}
+                  {app.loanDetails?.loanType?.replace("_", " ").toUpperCase() ||
+                    "HOME LOAN"}
                 </div>
-                <div className="loan-status-badge" style={{ backgroundColor: getStatusColor(app.applicationStatus) }}>
+                <div
+                  className="loan-status-badge"
+                  style={{
+                    backgroundColor: getStatusColor(app.applicationStatus),
+                  }}
+                >
                   {app.applicationStatus.replace("_", " ").toUpperCase()}
                 </div>
               </div>
 
               <div className="loan-card-body">
-                <div className="loan-amount">{formatCurrency(app.loanDetails?.loanAmount || 0)}</div>
+                <div className="loan-amount">
+                  {formatCurrency(app.loanDetails?.loanAmount || 0)}
+                </div>
                 <div className="loan-details-grid">
                   <div className="detail-item">
                     <span className="label">Tenure:</span>
-                    <span className="value">{app.loanDetails?.loanTenure || 0} years</span>
+                    <span className="value">
+                      {app.loanDetails?.loanTenure || 0} years
+                    </span>
                   </div>
                   <div className="detail-item">
                     <span className="label">Interest Rate:</span>
-                    <span className="value">{app.loanDetails?.interestRate || 0}%</span>
+                    <span className="value">
+                      {app.loanDetails?.interestRate || 0}%
+                    </span>
                   </div>
                   <div className="detail-item">
                     <span className="label">Applied On:</span>
@@ -102,7 +117,9 @@ const MyLoans = () => {
                   </div>
                   <div className="detail-item">
                     <span className="label">Property Type:</span>
-                    <span className="value">{app.loanDetails?.propertyType || "N/A"}</span>
+                    <span className="value">
+                      {app.loanDetails?.propertyType || "N/A"}
+                    </span>
                   </div>
                 </div>
 
@@ -122,11 +139,21 @@ const MyLoans = () => {
               </div>
 
               <div className="loan-card-footer">
-                <button className="view-details-btn" onClick={() => navigate(`/loans/application/${app._id}`)}>
+                <button
+                  className="view-details-btn"
+                  onClick={() =>
+                    navigate(`/loans/application/${app._id}`, {
+                      state: { loanData: app },
+                    })
+                  }
+                >
                   View Details
                 </button>
                 {app.applicationStatus === "approved" && (
-                  <button className="view-emis-btn" onClick={() => navigate(`/loans/my-emis?loanId=${app._id}`)}>
+                  <button
+                    className="view-emis-btn"
+                    onClick={() => navigate(`/loans/my-emis?loanId=${app._id}`)}
+                  >
                     View EMIs
                   </button>
                 )}
@@ -139,7 +166,10 @@ const MyLoans = () => {
           <i className="fas fa-file-invoice-dollar"></i>
           <h3>No Loan Applications</h3>
           <p>You haven't applied for any loans yet.</p>
-          <button className="apply-btn" onClick={() => navigate("/loans/apply")}>
+          <button
+            className="apply-btn"
+            onClick={() => navigate("/loans/apply")}
+          >
             Apply for Loan
           </button>
         </div>

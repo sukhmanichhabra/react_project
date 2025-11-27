@@ -4,6 +4,7 @@ import { visitAPI } from "../../services/api";
 import { useAppSelector } from "../../store/hooks";
 import { selectAuth } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
+import { useVideoCall } from "../../context/VideoCallContext";
 import "./ManageVisits.css";
 
 const ManageVisits = () => {
@@ -20,6 +21,7 @@ const ManageVisits = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [processingId, setProcessingId] = useState(null);
   const [notes, setNotes] = useState({});
+  const { startVisitCall } = useVideoCall();
 
   useEffect(() => {
     fetchVisits();
@@ -343,6 +345,24 @@ const ManageVisits = () => {
                         className="btn-complete"
                       >
                         <i className="fas fa-check-circle"></i> Mark as Completed
+                      </button>
+                      <button
+                        onClick={() => {
+                          const otherUserId = visit.buyerId?._id;
+                          const otherName = visit.buyerId?.name;
+                          if (otherUserId) {
+                            startVisitCall({
+                              visitId: visit._id,
+                              otherUserId,
+                              otherName,
+                            });
+                          } else {
+                            navigate(`/visits/video/${visit._id}`);
+                          }
+                        }}
+                        className="btn-video"
+                      >
+                        <i className="fas fa-video"></i> Join Video Call
                       </button>
                       <button
                         onClick={() => navigate(`/property/${visit.propertyId?._id}`)}

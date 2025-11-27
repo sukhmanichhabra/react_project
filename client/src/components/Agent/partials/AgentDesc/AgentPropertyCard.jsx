@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../../styles/AgentDesc/AgentPropertyCard.css";
 
 function AgentPropertyCard({ property }) {
@@ -24,18 +25,19 @@ function AgentPropertyCard({ property }) {
           }}
         />
         <div className="agt-desc-prop-card-link-container">
-          <a
-            href={`/property/${property._id}`}
+          <Link
+            to={`/property/${property._id}`}
             className="agt-desc-prop-card-link"
           >
             <i className="fas fa-arrow-right"></i>
-          </a>
+          </Link>
         </div>
       </div>
       <div className="agt-desc-prop-card-info">
         <h3 className="agt-desc-prop-card-price">
           {property.price ? property.price.toLocaleString() : "0"}
         </h3>
+        <h4 className="agt-desc-prop-card-title">{property.title}</h4>
         <p className="agt-desc-prop-card-address">{property.location}</p>
       </div>
     </div>

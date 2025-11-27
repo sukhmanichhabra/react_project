@@ -2,7 +2,6 @@
   min-height: calc(100vh - 200px);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem 1rem;
-  margin-top: 80px;
 }
 
 .setup-2fa-container {
@@ -242,7 +241,7 @@
 
 .secret-key {
   flex: 1;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 1.1rem;
   letter-spacing: 2px;
   color: #1f2937;
@@ -305,7 +304,7 @@
   text-align: center;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-weight: 600;
   transition: all 0.3s ease;
 }
@@ -411,7 +410,7 @@
 }
 
 .important-notes li:before {
-  content: '✓';
+  content: "✓";
   position: absolute;
   left: 0;
   color: #f59e0b;

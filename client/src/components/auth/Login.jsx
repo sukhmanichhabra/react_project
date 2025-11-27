@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   loginUser,
@@ -20,11 +21,19 @@ function Login() {
     isAuthenticated,
   } = useAppSelector(selectAuth);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [twoFactorToken, setTwoFactorToken] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+
+  const {
+    register: registerTwoFactor,
+    handleSubmit: handleSubmitTwoFactor,
+    formState: { errors: twoFactorErrors },
+    reset: resetTwoFactor,
+  } = useForm();
 
   // Clear messages on component mount
   useEffect(() => {
@@ -54,21 +63,12 @@ function Login() {
     }
   }, [isAuthenticated]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const onSubmit = async (data) => {
+    dispatch(loginUser(data));
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    dispatch(loginUser(formData));
-  };
-
-  const handleTwoFactorSubmit = async (e) => {
-    e.preventDefault();
-    dispatch(verifyTwoFactor({ token: twoFactorToken }));
+  const onTwoFactorSubmit = async (data) => {
+    dispatch(verifyTwoFactor({ token: data.token }));
   };
 
   if (requiresTwoFactor) {
@@ -87,7 +87,7 @@ function Login() {
               <div className="alert-message success">{successMessage}</div>
             )}
 
-            <form onSubmit={handleTwoFactorSubmit}>
+            <form onSubmit={handleSubmitTwoFactor(onTwoFactorSubmit)}>
               <h2>Two-Factor Authentication</h2>
               <p>
                 Please enter the verification code from your Google
@@ -98,16 +98,25 @@ function Login() {
               <input
                 type="text"
                 id="token"
-                name="token"
-                className="verification-code"
-                required
+                className={`verification-code ${
+                  twoFactorErrors.token ? "error" : ""
+                }`}
                 placeholder="000000"
                 maxLength="6"
-                minLength="6"
                 autoComplete="one-time-code"
-                value={twoFactorToken}
-                onChange={(e) => setTwoFactorToken(e.target.value)}
+                {...registerTwoFactor("token", {
+                  required: "Verification code is required",
+                  pattern: {
+                    value: /^[0-9]{6}$/,
+                    message: "Please enter a valid 6-digit code",
+                  },
+                })}
               />
+              {twoFactorErrors.token && (
+                <div className="error-message">
+                  {twoFactorErrors.token.message}
+                </div>
+              )}
               <p className="code-help">
                 Enter the 6-digit code from your authenticator app
               </p>
@@ -144,30 +153,44 @@ function Login() {
             <div className="alert-message success">{successMessage}</div>
           )}
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <h2>Log in</h2>
 
             <label htmlFor="email">Email address*</label>
             <input
               type="email"
               id="email"
-              name="email"
-              required
               placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
+              className={errors.email ? "error" : ""}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email address",
+                },
+              })}
             />
+            {errors.email && (
+              <div className="error-message">{errors.email.message}</div>
+            )}
 
             <label htmlFor="password">Password*</label>
             <input
               type="password"
               id="password"
-              name="password"
-              required
               placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
+              className={errors.password ? "error" : ""}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters long",
+                },
+              })}
             />
+            {errors.password && (
+              <div className="error-message">{errors.password.message}</div>
+            )}
 
             <a href="#" className="forgot-password">
               Forgot password?

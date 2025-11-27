@@ -22,7 +22,7 @@ const Messages = () => {
 
       const response = await axios.get("/api/dashboard/messages", {
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
         },
       });
 
@@ -42,31 +42,31 @@ const Messages = () => {
 
   const handleMarkAsRead = async (messageId) => {
     try {
-      setMarkingAsRead(prev => ({ ...prev, [messageId]: true }));
+      setMarkingAsRead((prev) => ({ ...prev, [messageId]: true }));
 
       const response = await axios.put(
         `/api/dashboard/messages/${messageId}/read`,
         {},
         {
           headers: {
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
 
       if (response.data.success) {
         // Update message status in state
-        setMessages(prev =>
-          prev.map(msg =>
+        setMessages((prev) =>
+          prev.map((msg) =>
             msg._id === messageId ? { ...msg, status: "read" } : msg
           )
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (err) {
       console.error("Error marking message as read:", err);
     } finally {
-      setMarkingAsRead(prev => ({ ...prev, [messageId]: false }));
+      setMarkingAsRead((prev) => ({ ...prev, [messageId]: false }));
     }
   };
 
@@ -79,20 +79,25 @@ const Messages = () => {
     try {
       const response = await axios.put(
         `/api/dashboard/messages/${messageId}/reply`,
-        { reply: replyText },
+        { replyText: replyText },
         {
           headers: {
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
 
       if (response.data.success) {
-        // Update message in state
-        setMessages(prev =>
-          prev.map(msg =>
+        // Update message in state with the response from server
+        setMessages((prev) =>
+          prev.map((msg) =>
             msg._id === messageId
-              ? { ...msg, status: "replied", reply: replyText }
+              ? {
+                  ...msg,
+                  status: "replied",
+                  reply: replyText,
+                  repliedAt: new Date(),
+                }
               : msg
           )
         );
@@ -116,13 +121,13 @@ const Messages = () => {
         `/api/dashboard/messages/${messageId}`,
         {
           headers: {
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
 
       if (response.data.success) {
-        setMessages(prev => prev.filter(msg => msg._id !== messageId));
+        setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
       }
     } catch (err) {
       console.error("Error deleting message:", err);
@@ -146,14 +151,14 @@ const Messages = () => {
   const formatDate = (dateString) => {
     try {
       if (!dateString) return "Unknown date";
-      
+
       const date = new Date(dateString);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return "Invalid date";
       }
-      
+
       return date.toLocaleString("en-US", {
         year: "numeric",
         month: "short",
@@ -206,7 +211,9 @@ const Messages = () => {
           messages.map((msg) => (
             <div
               key={msg._id}
-              className={`dash-message-item ${msg.status === "unread" ? "unread" : ""}`}
+              className={`dash-message-item ${
+                msg.status === "unread" ? "unread" : ""
+              }`}
             >
               <div className="dash-message-header">
                 <div className="sender-info">
@@ -216,15 +223,14 @@ const Messages = () => {
                 <div className="message-meta">
                   {getStatusBadge(msg.status)}
                   <span className="dash-message-date">
-                    {/* {formatDate(msg.date)} */}
+                    {formatDate(msg.createdAt)}
                   </span>
                 </div>
               </div>
 
               <div className="dash-message-property">
                 <i className="fas fa-home"></i>
-                Inquiry about:{" "}
-                <strong>{msg.propertyTitle}</strong>
+                Inquiry about: <strong>{msg.propertyTitle}</strong>
               </div>
 
               <p className="dash-message-body">{msg.message}</p>

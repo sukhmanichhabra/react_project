@@ -65,6 +65,7 @@
 .get-started-btn {
   background: #ff6634;
   color: white;
+  max-width: 200px;
   border: none;
   border-radius: 20px;
   padding: 16px 32px;

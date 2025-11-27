@@ -1,4 +1,9 @@
-const { PropertyModel, TransactionModel, MessageModel } = require("../models");
+const {
+  PropertyModel,
+  TransactionModel,
+  MessageModel,
+  LoanApplication,
+} = require("../models");
 const User = require("../models/user");
 const AgentModel = require("../models/agent");
 const { createToken } = require("../service/auth");
@@ -18,6 +23,14 @@ const getDashboard = async (req, res) => {
       // If user is a buyer, populate their loan requests
       if (freshUserData.role === "buyer") {
         freshUserData = await User.findById(userId).populate("loanRequests");
+        console.log(
+          `Dashboard - Buyer ${userId} - Loan requests:`,
+          freshUserData.loanRequests
+        );
+        console.log(
+          `Dashboard - Buyer ${userId} - Loan requests length:`,
+          freshUserData.loanRequests?.length || 0
+        );
       }
     } else {
       freshUserData = req.user;
@@ -81,13 +94,17 @@ const getDashboard = async (req, res) => {
       );
       console.log(
         `Dashboard - Admin - Rejected properties: ${rejectedProperties.length}`
-      );    } else if (freshUserData.role === "seller") {
+      );
+    } else if (freshUserData.role === "seller") {
       // Get only approved seller properties for "My Properties" section
       console.log("Fetching approved properties for seller ID:", userId);
-      const approvedProperties = await PropertyModel.getApprovedPropertiesBySeller(userId);
-      
+      const approvedProperties =
+        await PropertyModel.getApprovedPropertiesBySeller(userId);
+
       // Get all seller properties (including pending/rejected) for stats
-      const allSellerProperties = await PropertyModel.getPropertiesBySeller(userId);
+      const allSellerProperties = await PropertyModel.getPropertiesBySeller(
+        userId
+      );
 
       // Set properties to approved ones for the main dashboard view
       properties = approvedProperties;
@@ -101,11 +118,17 @@ const getDashboard = async (req, res) => {
       // Add property approval stats to seller stats
       const propertyStats = {
         totalProperties: allSellerProperties.length,
-        approvedProperties: allSellerProperties.filter(p => p.approvalStatus === 'approved').length,
-        pendingProperties: allSellerProperties.filter(p => p.approvalStatus === 'pending').length,
-        rejectedProperties: allSellerProperties.filter(p => p.approvalStatus === 'rejected').length
+        approvedProperties: allSellerProperties.filter(
+          (p) => p.approvalStatus === "approved"
+        ).length,
+        pendingProperties: allSellerProperties.filter(
+          (p) => p.approvalStatus === "pending"
+        ).length,
+        rejectedProperties: allSellerProperties.filter(
+          (p) => p.approvalStatus === "rejected"
+        ).length,
       };
-      
+
       // Merge with existing transaction stats
       stats = { ...stats, ...propertyStats };
 
@@ -222,7 +245,7 @@ const getDashboard = async (req, res) => {
     // Sort transactions by date (newest first) - add a check to make sure it's an array
     const sortedTransactions = Array.isArray(transactions)
       ? transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
-      : [];    // Get query parameters for messages
+      : []; // Get query parameters for messages
     const successMessage = req.query.success;
     const errorMessage = req.query.error;
     const section = req.query.section;
@@ -232,7 +255,14 @@ const getDashboard = async (req, res) => {
       console.log(`=== DASHBOARD API FOR SELLER ===`);
       console.log(`Seller ID: ${userId}`);
       console.log(`Approved Properties Count: ${properties.length}`);
-      console.log(`Properties:`, properties.map(p => ({ id: p._id, title: p.title, status: p.approvalStatus })));
+      console.log(
+        `Properties:`,
+        properties.map((p) => ({
+          id: p._id,
+          title: p.title,
+          status: p.approvalStatus,
+        }))
+      );
     }
 
     res.json({
@@ -317,7 +347,7 @@ const updateProfile = async (req, res) => {
         .json({ success: false, message: "User not found or update failed" });
     }
 
-    console.log("User updated successfully:", updatedUser);    // If the user is an agent, update the agent profile as well
+    console.log("User updated successfully:", updatedUser); // If the user is an agent, update the agent profile as well
     if (updatedUser.role === "agent") {
       try {
         const agentProfile = await AgentModel.Agent.findOne({
@@ -341,9 +371,13 @@ const updateProfile = async (req, res) => {
             agentProfile.geolocation = {
               latitude: parseFloat(latitude),
               longitude: parseFloat(longitude),
-              serviceRadius: serviceRadius ? parseInt(serviceRadius) : (agentProfile.geolocation?.serviceRadius || 50)
+              serviceRadius: serviceRadius
+                ? parseInt(serviceRadius)
+                : agentProfile.geolocation?.serviceRadius || 50,
             };
-            console.log(`Updated agent geolocation: ${latitude}, ${longitude}, radius: ${agentProfile.geolocation.serviceRadius}km`);
+            console.log(
+              `Updated agent geolocation: ${latitude}, ${longitude}, radius: ${agentProfile.geolocation.serviceRadius}km`
+            );
           } else if (serviceRadius) {
             // Update only service radius if coordinates already exist
             if (agentProfile.geolocation) {
@@ -361,10 +395,16 @@ const updateProfile = async (req, res) => {
 
           await agentProfile.save();
           console.log("Agent profile updated successfully:", agentProfile._id);
-          
+
           // Log geolocation update for debugging
-          if (agentProfile.geolocation && agentProfile.geolocation.latitude && agentProfile.geolocation.longitude) {
-            console.log(`Agent ${agentProfile.name} location updated - Lat: ${agentProfile.geolocation.latitude}, Lng: ${agentProfile.geolocation.longitude}, Radius: ${agentProfile.geolocation.serviceRadius}km`);
+          if (
+            agentProfile.geolocation &&
+            agentProfile.geolocation.latitude &&
+            agentProfile.geolocation.longitude
+          ) {
+            console.log(
+              `Agent ${agentProfile.name} location updated - Lat: ${agentProfile.geolocation.latitude}, Lng: ${agentProfile.geolocation.longitude}, Radius: ${agentProfile.geolocation.serviceRadius}km`
+            );
           }
         } else {
           console.log("Agent profile not found for user:", updatedUser._id);
@@ -376,7 +416,7 @@ const updateProfile = async (req, res) => {
     }
 
     // Update the user in the session
-    req.user = updatedUser;    // Update the token in the cookie if using token-based auth
+    req.user = updatedUser; // Update the token in the cookie if using token-based auth
     const token = createToken(updatedUser);
     res.cookie("token", token, { httpOnly: true });
 
@@ -389,7 +429,7 @@ const updateProfile = async (req, res) => {
     };
 
     // Check if request expects JSON response (from React frontend)
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
       // Prepare response data
       const responseData = {
         success: true,
@@ -408,13 +448,15 @@ const updateProfile = async (req, res) => {
             role: updatedUser.role,
             accountBalance: updatedUser.accountBalance || 0,
             createdAt: updatedUser.createdAt,
-          }
-        }
+          },
+        },
       };
 
       // If user is an agent, include the updated agent profile
       if (updatedUser.role === "agent") {
-        const agentProfile = await AgentModel.Agent.findOne({ userId: updatedUser._id });
+        const agentProfile = await AgentModel.Agent.findOne({
+          userId: updatedUser._id,
+        });
         if (agentProfile) {
           responseData.data.agentProfile = agentProfile;
         }
@@ -424,11 +466,12 @@ const updateProfile = async (req, res) => {
     } else {
       // Redirect back to dashboard with profile section active (for traditional form submissions)
       return res.redirect("/dashboard?section=profile&updated=true#profile");
-    }  } catch (error) {
+    }
+  } catch (error) {
     console.error("Error updating profile:", error);
-    
+
     // Check if request expects JSON response (from React frontend)
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
       return res.status(500).json({
         success: false,
         message: "Failed to update profile",
@@ -436,7 +479,9 @@ const updateProfile = async (req, res) => {
       });
     } else {
       // Redirect with error for traditional form submissions
-      return res.redirect("/dashboard?section=profile&error=Failed+to+update+profile");
+      return res.redirect(
+        "/dashboard?section=profile&error=Failed+to+update+profile"
+      );
     }
   }
 };
@@ -611,7 +656,10 @@ const replyToMessage = async (req, res) => {
         .json({ success: false, message: "Reply text is required" });
     }
 
-    const updatedMessage = await MessageModel.markAsReplied(messageId);
+    const updatedMessage = await MessageModel.markAsReplied(
+      messageId,
+      replyText
+    );
 
     if (!updatedMessage) {
       return res
@@ -716,7 +764,7 @@ const geocodeAddress = async (req, res) => {
   try {
     const { address } = req.body;
 
-    if (!address || typeof address !== 'string' || address.trim() === '') {
+    if (!address || typeof address !== "string" || address.trim() === "") {
       return res.status(400).json({
         success: false,
         message: "Please provide a valid address",
@@ -728,7 +776,9 @@ const geocodeAddress = async (req, res) => {
     // Use the geocoding service to get coordinates
     const result = await geocodingService.getCoordinatesFromAddress(address);
 
-    console.log(`Geocoding successful: lat=${result.latitude}, lng=${result.longitude}`);
+    console.log(
+      `Geocoding successful: lat=${result.latitude}, lng=${result.longitude}`
+    );
 
     return res.status(200).json({
       success: true,
@@ -754,10 +804,10 @@ const getManagedProperties = async (req, res) => {
     const userId = req.user.id || req.user._id;
 
     // Check if user is an agent
-    if (req.user.role !== 'agent') {
+    if (req.user.role !== "agent") {
       return res.status(403).json({
         success: false,
-        message: 'Only agents can access managed properties'
+        message: "Only agents can access managed properties",
       });
     }
 
@@ -767,7 +817,7 @@ const getManagedProperties = async (req, res) => {
     if (!agentProfile) {
       return res.status(404).json({
         success: false,
-        message: 'Agent profile not found'
+        message: "Agent profile not found",
       });
     }
 
@@ -780,14 +830,15 @@ const getManagedProperties = async (req, res) => {
     const enhancedProperties = await Promise.all(
       managedProperties.map(async (property) => {
         const propertyObj = property.toObject ? property.toObject() : property;
-        
+
         // Get messages for this property
         const messages = await MessageModel.getPropertyMessages(property._id);
-        
+
         return {
           ...propertyObj,
           messageCount: messages.length,
-          unreadMessageCount: messages.filter(m => m.status === 'unread').length
+          unreadMessageCount: messages.filter((m) => m.status === "unread")
+            .length,
         };
       })
     );
@@ -795,47 +846,56 @@ const getManagedProperties = async (req, res) => {
     // Calculate statistics
     const stats = {
       totalProperties: enhancedProperties.length,
-      activeProperties: enhancedProperties.filter(p => p.status === 'active').length,
-      soldProperties: enhancedProperties.filter(p => p.status === 'sold').length,
-      rentedProperties: enhancedProperties.filter(p => p.status === 'rented').length,
-      totalMessages: enhancedProperties.reduce((sum, p) => sum + p.messageCount, 0),
-      unreadMessages: enhancedProperties.reduce((sum, p) => sum + p.unreadMessageCount, 0)
+      activeProperties: enhancedProperties.filter((p) => p.status === "active")
+        .length,
+      soldProperties: enhancedProperties.filter((p) => p.status === "sold")
+        .length,
+      rentedProperties: enhancedProperties.filter((p) => p.status === "rented")
+        .length,
+      totalMessages: enhancedProperties.reduce(
+        (sum, p) => sum + p.messageCount,
+        0
+      ),
+      unreadMessages: enhancedProperties.reduce(
+        (sum, p) => sum + p.unreadMessageCount,
+        0
+      ),
     };
 
     // Check if request wants JSON (from React frontend)
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
       return res.json({
         success: true,
         data: {
           properties: enhancedProperties,
           stats: stats,
-          agentProfile: agentProfile
-        }
+          agentProfile: agentProfile,
+        },
       });
     }
 
     // Otherwise render EJS view
-    res.render('managed-properties', {
-      title: 'Managed Properties',
+    res.render("managed-properties", {
+      title: "Managed Properties",
       properties: enhancedProperties,
       stats: stats,
       agentProfile: agentProfile,
-      user: req.user
+      user: req.user,
     });
   } catch (error) {
-    console.error('Error fetching managed properties:', error);
+    console.error("Error fetching managed properties:", error);
 
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
       return res.status(500).json({
         success: false,
-        message: 'Failed to fetch managed properties',
-        error: error.message
+        message: "Failed to fetch managed properties",
+        error: error.message,
       });
     }
 
-    res.status(500).render('error', {
-      message: 'Failed to fetch managed properties',
-      error: error.message
+    res.status(500).render("error", {
+      message: "Failed to fetch managed properties",
+      error: error.message,
     });
   }
 };

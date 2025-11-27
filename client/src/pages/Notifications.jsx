@@ -298,7 +298,7 @@ const Notifications = () => {
                             {!n.isRead && (
                               <button
                                 type="button"
-                                className="btn btn-outline-success btn-sm"
+                                className="btn btn-outline-success btn-sm w-48"
                                 onClick={() => handleMarkAsRead(n._id)}
                               >
                                 <i className="fas fa-check" /> Mark as Read

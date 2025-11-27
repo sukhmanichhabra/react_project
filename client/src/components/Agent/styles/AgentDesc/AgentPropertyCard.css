@@ -1,14 +1,17 @@
 .agt-desc-prop-card {
   background: white;
-  border-radius: 0;
+  border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
 }
 
 .agt-desc-prop-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 107, 53, 0.3);
 }
 
 .agt-desc-prop-card-image {
@@ -21,65 +24,81 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.agt-desc-prop-card:hover .agt-desc-prop-card-image img {
+  transform: scale(1.05);
 }
 
 .agt-desc-prop-card-badge {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  background: white;
-  padding: 5px 10px;
-  font-size: 12px;
-  color: #666;
+  top: 15px;
+  left: 15px;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Sale badge - Orange gradient */
+.agt-desc-prop-card[data-type="sale"] .agt-desc-prop-card-badge,
+.agt-desc-prop-card[data-type="SALE"] .agt-desc-prop-card-badge {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+}
+
+/* Rent badge - Green gradient */
+.agt-desc-prop-card[data-type="rent"] .agt-desc-prop-card-badge,
+.agt-desc-prop-card[data-type="RENT"] .agt-desc-prop-card-badge {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
 }
 
 /* Property Link Styles */
 .agt-desc-prop-card-link-container {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 15px;
+  right: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.agt-desc-prop-card:hover .agt-desc-prop-card-link-container {
+  opacity: 1;
 }
 
 .agt-desc-prop-card-link {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
   text-decoration: none;
   font-weight: bold;
-  background: black;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   color: white;
-  transition: color 0.3s ease;
-}
-
-.agt-desc-prop-card-link .fas.fa-arrow-right {
-  line-height: 40px;
-  padding-left: 12px;
-  color: white;
-}
-
-.agt-desc-prop-card-link .fas.fa-arrow-right:hover {
-  color: rgb(239, 133, 40);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
 }
 
 .agt-desc-prop-card-link:hover {
-  color: rgb(239, 133, 40);
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #f7931e 0%, #ff6b35 100%);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
 }
 
-.agt-desc-prop-card-link::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -2px;
-  width: 0;
-  height: 2px;
-  background-color: rgb(239, 133, 40);
-  transition: width 0.3s ease, left 0.3s ease;
+.agt-desc-prop-card-link .fas.fa-arrow-right {
+  color: white;
+  font-size: 16px;
+  transition: transform 0.3s ease;
 }
 
-.agt-desc-prop-card-link:hover::after {
-  width: 100%;
-  left: 0;
+.agt-desc-prop-card-link:hover .fas.fa-arrow-right {
+  transform: translateX(2px);
 }
 
 .agt-desc-prop-card-info {
@@ -87,14 +106,25 @@
 }
 
 .agt-desc-prop-card-price {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 5px;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #2c3e50;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.agt-desc-prop-card-price span {
+.agt-desc-prop-card-title {
   font-size: 16px;
-  color: #666;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #34495e;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .agt-desc-prop-card-address {
@@ -105,30 +135,54 @@
 /* Responsive Styles for Card */
 @media (max-width: 900px) {
   .agt-desc-prop-card-image {
-    height: 180px;
+    height: 200px;
   }
   .agt-desc-prop-card-info {
-    padding: 16px;
+    padding: 18px;
+  }
+  .agt-desc-prop-card-price {
+    font-size: 20px;
+  }
+  .agt-desc-prop-card-title {
+    font-size: 15px;
   }
 }
 
 @media (max-width: 600px) {
   .agt-desc-prop-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+  }
+  .agt-desc-prop-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
   }
   .agt-desc-prop-card-image {
-    height: 120px;
+    height: 160px;
   }
   .agt-desc-prop-card-info {
-    padding: 10px;
+    padding: 15px;
   }
   .agt-desc-prop-card-price {
-    font-size: 16px;
+    font-size: 18px;
   }
-  .agt-desc-prop-card-price span {
-    font-size: 13px;
+  .agt-desc-prop-card-title {
+    font-size: 14px;
   }
   .agt-desc-prop-card-address {
     font-size: 12px;
+  }
+  .agt-desc-prop-card-link {
+    width: 40px;
+    height: 40px;
+  }
+  .agt-desc-prop-card-link .fas.fa-arrow-right {
+    font-size: 14px;
+  }
+  .agt-desc-prop-card-badge {
+    top: 12px;
+    left: 12px;
+    padding: 5px 10px;
+    font-size: 10px;
   }
 }

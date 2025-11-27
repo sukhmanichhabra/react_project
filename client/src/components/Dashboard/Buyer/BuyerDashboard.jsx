@@ -39,6 +39,11 @@ const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
         // Get the nested data object
         const { data } = response.data;
 
+        // Debug logging to see what's actually in the response
+        console.log("Dashboard API Response:", response.data);
+        console.log("User object:", data.user);
+        console.log("User loanRequests:", data.user?.loanRequests);
+
         // Extract data from the correct paths
         const userProperties = data.properties || [];
         const userLoanRequests = data.user?.loanRequests || [];
@@ -49,9 +54,20 @@ const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
 
         // Calculate stats based on the fetched data
         const bought = userProperties.filter((p) => p.status === "sold").length;
-        const rented = userProperties.filter((p) => p.status === "rented").length;
-        const totalSpent = userTransactions.reduce((acc, tx) => acc + (tx.amount || 0), 0);
-        const loanStatus = userLoanRequests.find((l) => l.status === "pending") ? "Pending" : "N/A";
+        const rented = userProperties.filter(
+          (p) => p.status === "rented"
+        ).length;
+        const totalSpent = userTransactions.reduce(
+          (acc, tx) => acc + (tx.amount || 0),
+          0
+        );
+        const loanStatus = userLoanRequests.find(
+          (l) =>
+            (l.applicationStatus || l.status) === "pending" ||
+            (l.applicationStatus || l.status) === "under_review"
+        )
+          ? "Pending"
+          : "N/A";
 
         setStats({
           bought,
@@ -63,11 +79,17 @@ const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
         // Dispatch Redux action to sync balance
         dispatch(fetchUserBalance());
       } else {
-        throw new Error(response.data.message || "Failed to fetch dashboard data");
+        throw new Error(
+          response.data.message || "Failed to fetch dashboard data"
+        );
       }
     } catch (err) {
       console.error("Error fetching buyer data:", err);
-      setError(err.response?.data?.message || err.message || "Failed to load buyer data");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to load buyer data"
+      );
     } finally {
       setLoading(false);
     }
@@ -89,15 +111,15 @@ const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
     try {
       // Dispatch the Redux action to update balance
       await dispatch(updateUserBalance(amount)).unwrap();
-      
+
       // Refresh user data to get updated balance
-      if (onUserUpdate && typeof onUserUpdate === 'function') {
+      if (onUserUpdate && typeof onUserUpdate === "function") {
         onUserUpdate();
       }
-      
+
       // Refresh buyer-specific data
       fetchBuyerData();
-      
+
       return Promise.resolve();
     } catch (err) {
       return Promise.reject(err);
@@ -106,12 +128,12 @@ const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
 
   const handleProfileUpdate = (updatedUser, updatedAgentProfile) => {
     console.log("Profile updated:", updatedUser);
-    
+
     // Refresh user data in parent Dashboard component
-    if (onUserUpdate && typeof onUserUpdate === 'function') {
+    if (onUserUpdate && typeof onUserUpdate === "function") {
       onUserUpdate();
     }
-    
+
     // Refresh buyer-specific data
     fetchBuyerData();
   };
@@ -146,14 +168,21 @@ const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
           <MyProperties
             properties={properties.filter((p) => p.status === "sold")}
           />
-        );      case "rented-properties":
+        );
+      case "rented-properties":
         return (
           <RentedProperties
             properties={properties.filter((p) => p.status === "rented")}
           />
         );
       case "profile":
-        return <Profile user={user} agentProfile={null} onProfileUpdate={handleProfileUpdate} />;
+        return (
+          <Profile
+            user={user}
+            agentProfile={null}
+            onProfileUpdate={handleProfileUpdate}
+          />
+        );
       default:
         return (
           <BuyerOverview

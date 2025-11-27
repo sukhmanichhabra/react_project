@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import advertisingAPI from '../services/advertisingAPI';
-import { getPropertyImageUrl } from '../utils/imageUtils';
-import './Advertising.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import advertisingAPI from "../services/advertisingAPI";
+import { getPropertyImageUrl } from "../utils/imageUtils";
+import "./Advertising.css";
 
 const Advertising = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [sellerProperties, setSellerProperties] = useState([]);
   const [isSeller, setIsSeller] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [currentStep, setCurrentStep] = useState('properties');
+  const [currentStep, setCurrentStep] = useState("properties");
   const [packages, setPackages] = useState([]);
 
   useEffect(() => {
@@ -22,14 +22,14 @@ const Advertising = () => {
     try {
       setLoading(true);
       const response = await advertisingAPI.getAdvertisingData();
-      
+
       if (response.success) {
         setSellerProperties(response.data.sellerProperties || []);
         setIsSeller(response.data.isSeller);
         setPackages(response.data.packages || []);
       }
     } catch (error) {
-      console.error('Error fetching advertising data:', error);
+      console.error("Error fetching advertising data:", error);
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ const Advertising = () => {
 
   const handleSelectProperty = (property) => {
     setSelectedProperty(property);
-    setCurrentStep('packages');
+    setCurrentStep("packages");
   };
 
   const handleSelectPackage = (pkg) => {
@@ -45,14 +45,14 @@ const Advertising = () => {
   };
 
   const handleBackToProperties = () => {
-    setCurrentStep('properties');
+    setCurrentStep("properties");
     setSelectedProperty(null);
     setSelectedPackage(null);
   };
 
   const handleFinalizeAdvertising = async () => {
     if (!selectedProperty || !selectedPackage) {
-      alert('Please select both a property and a package');
+      alert("Please select both a property and a package");
       return;
     }
 
@@ -63,40 +63,46 @@ const Advertising = () => {
       });
 
       if (response.success) {
-        alert('Advertising package created successfully!');
+        alert("Advertising package created successfully!");
         // Refresh data
         await fetchAdvertisingData();
         // Reset selection
-        setCurrentStep('properties');
+        setCurrentStep("properties");
         setSelectedProperty(null);
         setSelectedPackage(null);
       }
     } catch (error) {
-      const message = error.response?.data?.message || 'Failed to create advertising package';
+      const message =
+        error.response?.data?.message || "Failed to create advertising package";
       alert(message);
     }
   };
 
   const handleCancelPackage = async (advertisingId) => {
-    if (!window.confirm('Are you sure you want to cancel this advertising package?')) {
+    if (
+      !window.confirm(
+        "Are you sure you want to cancel this advertising package?"
+      )
+    ) {
       return;
     }
 
     try {
       const response = await advertisingAPI.cancelPackage(advertisingId);
       if (response.success) {
-        alert('Package cancelled successfully');
+        alert("Package cancelled successfully");
         await fetchAdvertisingData();
       }
     } catch (error) {
-      alert('Failed to cancel package');
+      alert("Failed to cancel package");
+      console.error("Error canceling package:", error);
     }
   };
 
   const handleGetStarted = () => {
-    const servicesSection = document.querySelector('.services');
+    const servicesSection = document.querySelector(".services");
     if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: 'smooth' });
+      servicesSection.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -106,43 +112,65 @@ const Advertising = () => {
     const startDate = new Date(advertising.startDate);
     const totalDuration = endDate - startDate;
     const timeRemaining = endDate - now;
-    
-    const percentRemaining = timeRemaining > 0 && totalDuration > 0
-      ? Math.max(0, Math.min(100, Math.round((timeRemaining / totalDuration) * 100)))
-      : 0;
-    
-    const daysRemaining = Math.max(0, Math.ceil(timeRemaining / (1000 * 60 * 60 * 24)));
-    
+
+    const percentRemaining =
+      timeRemaining > 0 && totalDuration > 0
+        ? Math.max(
+            0,
+            Math.min(100, Math.round((timeRemaining / totalDuration) * 100))
+          )
+        : 0;
+
+    const daysRemaining = Math.max(
+      0,
+      Math.ceil(timeRemaining / (1000 * 60 * 60 * 24))
+    );
+
     return { percentRemaining, daysRemaining };
   };
 
-  const activeProperties = sellerProperties.filter(p => p.status === 'active');
-  const propertiesWithoutAds = activeProperties.filter(p => !p.advertising);
-  const showNoPropertiesMessage = activeProperties.every(p => p.advertising);
+  const activeProperties = sellerProperties.filter(
+    (p) => p.status === "active"
+  );
+  // const propertiesWithoutAds = activeProperties.filter((p) => !p.advertising);
+  const showNoPropertiesMessage = activeProperties.every((p) => p.advertising);
 
   return (
     <div className="advertising-page">
       {/* Hero Banner */}
       <div className="hero-banner">
-        <img src="/assets/hero-banner.png" alt="Hero Banner" className="banner-image" />
+        <img
+          src="/assets/hero-banner.png"
+          alt="Hero Banner"
+          className="banner-image"
+        />
         <div className="content">
           <h1>Advertise your Property with Max Visibility</h1>
-          <p>Here, posting a listing is just the beginning. Connect with people, seamless onboarding and more.</p>
+          <p>
+            Here, posting a listing is just the beginning. Connect with people,
+            seamless onboarding and more.
+          </p>
           <div className="features">
             <div className="feature-item">
               <i className="fas fa-check"></i>
-              <span>Fill vacancies and manage properties</span>
+              <span className="adv-text-dark">
+                Fill vacancies and manage properties
+              </span>
             </div>
             <div className="feature-item">
               <i className="fas fa-check"></i>
-              <span>Over 30 million visitors each month</span>
+              <span className="adv-text-dark">
+                Over 30 million visitors each month
+              </span>
             </div>
             <div className="feature-item">
               <i className="fas fa-check"></i>
-              <span>A brand you can trust</span>
+              <span className="adv-text-dark">A brand you can trust</span>
             </div>
           </div>
-          <button id="getStartedBtn" onClick={handleGetStarted}>Get Started</button>
+          <button id="getStartedBtn" onClick={handleGetStarted}>
+            Get Started
+          </button>
         </div>
       </div>
 
@@ -150,10 +178,13 @@ const Advertising = () => {
       {isSeller && sellerProperties.length > 0 && (
         <div className="seller-properties reveal">
           <h2>Your Properties</h2>
-          <p>Select a property to advertise and choose from our premium packages to increase visibility</p>
+          <p>
+            Select a property to advertise and choose from our premium packages
+            to increase visibility
+          </p>
 
           {/* Step 1: Property Selection */}
-          {currentStep === 'properties' && (
+          {currentStep === "properties" && (
             <div id="property-selection" className="selection-step active-step">
               <h3 className="step-title">
                 <span className="step-number">1</span> Select a Property
@@ -162,15 +193,23 @@ const Advertising = () => {
               {!showNoPropertiesMessage ? (
                 <div className="property-grid">
                   {activeProperties.map((property) => (
-                    <div key={property._id} className="property-card" data-property-id={property._id}>
+                    <div
+                      key={property._id}
+                      className="property-card"
+                      data-property-id={property._id}
+                    >
                       <div className="property-image">
-                        <img 
-                          src={getPropertyImageUrl(property.images?.[0])} 
+                        <img
+                          src={getPropertyImageUrl(property.images?.[0])}
                           alt={property.title}
-                          onError={(e) => e.target.src = '/assets/property-1.jpg'}
+                          onError={(e) =>
+                            (e.target.src = "/assets/property-1.jpg")
+                          }
                         />
                         {property.tag && (
-                          <div className={`property-tag ${property.tag.toLowerCase()}`}>
+                          <div
+                            className={`property-tag ${property.tag.toLowerCase()}`}
+                          >
                             FOR {property.tag.toUpperCase()}
                           </div>
                         )}
@@ -183,43 +222,70 @@ const Advertising = () => {
                       <div className="property-details">
                         <h3>{property.title}</h3>
                         <p className="property-location">
-                          <i className="fas fa-map-marker-alt"></i> {property.location}
+                          <i className="fas fa-map-marker-alt"></i>{" "}
+                          {property.location}
                         </p>
                         <p className="property-price">{property.price}</p>
                         <div className="property-features">
-                          <span><i className="fas fa-bed"></i> {property.features?.beds} Beds</span>
-                          <span><i className="fas fa-bath"></i> {property.features?.baths} Baths</span>
-                          <span><i className="fas fa-ruler-combined"></i> {property.features?.sqft} sqft</span>
+                          <span>
+                            <i className="fas fa-bed"></i>{" "}
+                            {property.features?.beds} Beds
+                          </span>
+                          <span>
+                            <i className="fas fa-bath"></i>{" "}
+                            {property.features?.baths} Baths
+                          </span>
+                          <span>
+                            <i className="fas fa-ruler-combined"></i>{" "}
+                            {property.features?.sqft} sqft
+                          </span>
                         </div>
 
                         {property.advertising ? (
                           <div className="current-package">
                             <p>
-                              Current Package: <strong>
-                                {property.advertising.packageType?.charAt(0).toUpperCase() + 
-                                 property.advertising.packageType?.slice(1) || 'Standard'}
+                              Current Package:{" "}
+                              <strong>
+                                {property.advertising.packageType
+                                  ?.charAt(0)
+                                  .toUpperCase() +
+                                  property.advertising.packageType?.slice(1) ||
+                                  "Standard"}
                               </strong>
                             </p>
-                            <p>Expires: {new Date(property.advertising.endDate).toLocaleDateString()}</p>
-                            
+                            <p>
+                              Expires:{" "}
+                              {new Date(
+                                property.advertising.endDate
+                              ).toLocaleDateString()}
+                            </p>
+
                             {(() => {
-                              const { percentRemaining, daysRemaining } = calculateTimeRemaining(property.advertising);
+                              const { percentRemaining, daysRemaining } =
+                                calculateTimeRemaining(property.advertising);
                               return (
                                 <>
                                   <div className="time-remaining-container">
                                     <p className="time-remaining-text">
-                                      {daysRemaining} day{daysRemaining !== 1 ? 's' : ''} remaining
+                                      {daysRemaining} day
+                                      {daysRemaining !== 1 ? "s" : ""} remaining
                                     </p>
                                     <div className="time-remaining-bar">
-                                      <div 
+                                      <div
                                         className="time-remaining-progress"
-                                        style={{ width: `${percentRemaining}%` }}
+                                        style={{
+                                          width: `${percentRemaining}%`,
+                                        }}
                                       ></div>
                                     </div>
                                   </div>
-                                  <button 
+                                  <button
                                     className="cancel-package-btn"
-                                    onClick={() => handleCancelPackage(property.advertising._id)}
+                                    onClick={() =>
+                                      handleCancelPackage(
+                                        property.advertising._id
+                                      )
+                                    }
                                   >
                                     Cancel Package
                                   </button>
@@ -228,7 +294,7 @@ const Advertising = () => {
                             })()}
                           </div>
                         ) : (
-                          <button 
+                          <button
                             className="select-property-btn"
                             onClick={() => handleSelectProperty(property)}
                           >
@@ -244,7 +310,10 @@ const Advertising = () => {
                   <div className="empty-state">
                     <i className="fas fa-ad empty-icon"></i>
                     <h3>No Properties Available for Advertising</h3>
-                    <p>All your properties already have active advertising packages.</p>
+                    <p>
+                      All your properties already have active advertising
+                      packages.
+                    </p>
                     <p>You can cancel existing packages to create new ones.</p>
                   </div>
                 </div>
@@ -253,36 +322,54 @@ const Advertising = () => {
           )}
 
           {/* Step 2: Package Selection */}
-          {currentStep === 'packages' && selectedProperty && (
+          {currentStep === "packages" && selectedProperty && (
             <div id="package-selection" className="selection-step active-step">
               <h3 className="step-title">
-                <span className="step-number">2</span> Choose an Advertising Package
+                <span className="step-number">2</span> Choose an Advertising
+                Package
               </h3>
-              <button id="back-to-properties" className="back-button" onClick={handleBackToProperties}>
+              <button
+                id="back-to-properties"
+                className="back-button"
+                onClick={handleBackToProperties}
+              >
                 <i className="fas fa-arrow-left"></i> Back to Properties
               </button>
 
               <div className="selected-property-preview">
-                <h4>Selected Property: <span id="selected-property-title">{selectedProperty.title}</span></h4>
-                <p id="selected-property-location">{selectedProperty.location}</p>
+                <h4>
+                  Selected Property:{" "}
+                  <span id="selected-property-title">
+                    {selectedProperty.title}
+                  </span>
+                </h4>
+                <p id="selected-property-location">
+                  {selectedProperty.location}
+                </p>
               </div>
 
               <div className="packages-container">
                 {packages.map((pkg) => (
-                  <div 
+                  <div
                     key={pkg.type}
-                    className={`package ${pkg.type === 'premium' ? 'recommended' : ''} ${selectedPackage?.type === pkg.type ? 'selected' : ''}`}
+                    className={`package ${
+                      pkg.type === "premium" ? "recommended" : ""
+                    } ${selectedPackage?.type === pkg.type ? "selected" : ""}`}
                   >
-                    {pkg.type === 'premium' && <div className="recommended-badge">RECOMMENDED</div>}
+                    {pkg.type === "premium" && (
+                      <div className="recommended-badge">RECOMMENDED</div>
+                    )}
                     <h5>{pkg.name}</h5>
                     <p className="price">${pkg.price}</p>
                     <p className="duration">{pkg.duration} days</p>
                     <ul>
                       {pkg.features.map((feature, index) => (
-                        <li key={index}><i className="fas fa-check"></i> {feature}</li>
+                        <li key={index}>
+                          <i className="fas fa-check"></i> {feature}
+                        </li>
                       ))}
                     </ul>
-                    <button 
+                    <button
                       className="package-option"
                       onClick={() => handleSelectPackage(pkg)}
                     >
@@ -297,16 +384,23 @@ const Advertising = () => {
                 <div id="selected-package-info">
                   {selectedPackage ? (
                     <div>
-                      <p><strong>Package:</strong> {selectedPackage.name}</p>
-                      <p><strong>Duration:</strong> {selectedPackage.duration} days</p>
-                      <p><strong>Price:</strong> ${selectedPackage.price}</p>
+                      <p>
+                        <strong>Package:</strong> {selectedPackage.name}
+                      </p>
+                      <p>
+                        <strong>Duration:</strong> {selectedPackage.duration}{" "}
+                        days
+                      </p>
+                      <p>
+                        <strong>Price:</strong> ${selectedPackage.price}
+                      </p>
                     </div>
                   ) : (
                     <p>No package selected</p>
                   )}
                 </div>
-                <button 
-                  id="finalize-btn" 
+                <button
+                  id="finalize-btn"
                   className="finalize-button"
                   disabled={!selectedPackage}
                   onClick={handleFinalizeAdvertising}
@@ -322,25 +416,42 @@ const Advertising = () => {
       {/* Services Section */}
       <div className="services reveal">
         <h2>Our Services</h2>
-        <p>Maximize your property's exposure with our premium marketing tools</p>
+        <p>
+          Maximize your property's exposure with our premium marketing tools
+        </p>
 
         <div className="service-container">
           <div className="service-box reveal">
             <i className="fas fa-home"></i>
             <h3>Featured Listing</h3>
-            <p>Get premium placement in search results and enhanced visibility for your property listing</p>
+            <p>
+              Get premium placement in search results and enhanced visibility
+              for your property listing
+            </p>
           </div>
 
-          <div className="service-box reveal" style={{ animationDelay: '0.2s' }}>
+          <div
+            className="service-box reveal"
+            style={{ animationDelay: "0.2s" }}
+          >
             <i className="fas fa-eye"></i>
             <h3>Enhanced Visibility</h3>
-            <p>Stand out with professional photos and detailed property information to attract quality tenants</p>
+            <p>
+              Stand out with professional photos and detailed property
+              information to attract quality tenants
+            </p>
           </div>
 
-          <div className="service-box reveal" style={{ animationDelay: '0.4s' }}>
+          <div
+            className="service-box reveal"
+            style={{ animationDelay: "0.4s" }}
+          >
             <i className="fas fa-tags"></i>
             <h3>Keyword Tagging</h3>
-            <p>Optimize your listing with relevant keywords to reach the right audience searching for your property</p>
+            <p>
+              Optimize your listing with relevant keywords to reach the right
+              audience searching for your property
+            </p>
           </div>
         </div>
       </div>
@@ -357,13 +468,17 @@ const Advertising = () => {
 
           <div className="table-row">
             <div className="col">Ongoing rental pricing guidance</div>
-            <div className="col"><i className="fas fa-check"></i></div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
             <div className="col"></div>
           </div>
 
           <div className="table-row">
             <div className="col">Homescape Premium listings</div>
-            <div className="col"><i className="fas fa-check"></i></div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
             <div className="col"></div>
           </div>
 
@@ -373,24 +488,36 @@ const Advertising = () => {
               <i className="fas fa-check"></i>
               <span className="subtitle">Fast availability</span>
             </div>
-            <div className="col"><i className="fas fa-check"></i></div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
           </div>
 
           <div className="table-row">
             <div className="col">Tenant screening</div>
-            <div className="col"><i className="fas fa-check"></i></div>
-            <div className="col"><i className="fas fa-check"></i></div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
           </div>
 
           <div className="table-row">
             <div className="col">Lease preparation</div>
-            <div className="col"><i className="fas fa-check"></i></div>
-            <div className="col"><i className="fas fa-check"></i></div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
           </div>
 
           <div className="table-row">
             <div className="col">Owner dashboard</div>
-            <div className="col"><i className="fas fa-check"></i></div>
+            <div className="col">
+              <i className="fas fa-check"></i>
+            </div>
             <div className="col"></div>
           </div>
 
@@ -426,7 +553,11 @@ const Advertising = () => {
             <h3>90%</h3>
             <p>Listings updated every 15 min</p>
           </div>
-          <img src="/assets/img-side.png" alt="Side Image" className="side-image" />
+          <img
+            src="/assets/img-side.png"
+            alt="Side Image"
+            className="side-image"
+          />
         </div>
       </div>
 

@@ -19,7 +19,7 @@ const ManagedProperties = () => {
 
       const response = await axios.get("/api/dashboard/managed-properties", {
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
         },
       });
 
@@ -31,7 +31,9 @@ const ManagedProperties = () => {
       }
     } catch (err) {
       console.error("Error fetching managed properties:", err);
-      setError(err.response?.data?.message || "Failed to load managed properties");
+      setError(
+        err.response?.data?.message || "Failed to load managed properties"
+      );
     } finally {
       setLoading(false);
     }
@@ -174,9 +176,14 @@ const ManagedProperties = () => {
                   alt={property.title}
                   className="property-image"
                 />
-                <div className={`property-status ${getStatusColor(property.status)}`}>
+                <div
+                  className={`property-status ${getStatusColor(
+                    property.status
+                  )}`}
+                >
                   <i className={`fas ${getStatusIcon(property.status)}`}></i>
-                  {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+                  {property.status.charAt(0).toUpperCase() +
+                    property.status.slice(1)}
                 </div>
                 <div className="property-badge">
                   {property.tag === "rent" ? "FOR RENT" : "FOR SALE"}
@@ -225,7 +232,9 @@ const ManagedProperties = () => {
                   <div className="messages-badge">
                     <i className="fas fa-envelope"></i>
                     {property.unreadMessageCount > 0 && (
-                      <span className="unread-count">{property.unreadMessageCount}</span>
+                      <span className="unread-count">
+                        {property.unreadMessageCount}
+                      </span>
                     )}
                     {property.messageCount} messages
                   </div>
@@ -236,9 +245,9 @@ const ManagedProperties = () => {
                   <button className="btn btn-view">
                     <i className="fas fa-eye"></i> View
                   </button>
-                  <button className="btn btn-edit">
+                  {/* <button className="btn btn-edit">
                     <i className="fas fa-edit"></i> Edit
-                  </button>
+                  </button> */}
                   <button className="btn btn-messages">
                     <i className="fas fa-comments"></i> Messages
                   </button>

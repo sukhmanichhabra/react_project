@@ -1,6 +1,8 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
 const app = express();
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
@@ -32,10 +34,24 @@ const advertisingRoutes = require("./routes/advertising");
 const chatRoutes = require("./routes/chat");
 const chatbotRoutes = require("./routes/chatbot");
 const notificationRoutes = require("./routes/notification");
+const agreementRoutes = require("./routes/agreement");
 
 const UserModel = require("./models/user");
 
 connectDB();
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: [
+      process.env.CLIENT_URL || "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+    ],
+    credentials: true,
+    methods: ["GET", "POST"],
+  },
+});
 
 // CORS configuration for React frontend
 app.use(
@@ -43,7 +59,7 @@ app.use(
     origin: [
       process.env.CLIENT_URL || "http://localhost:5173",
       "http://localhost:5174",
-      "http://localhost:5175"
+      "http://localhost:5175",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -275,6 +291,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/agreements", agreementRoutes);
 
 // Additional API endpoints
 app.get("/api/pricing", async (req, res) => {
@@ -703,7 +720,145 @@ if (process.env.NODE_ENV === "production") {
 const VisitScheduler = require("./service/visitScheduler");
 VisitScheduler.initScheduler(30); // Check every 30 minutes
 
-app.listen(PORT, () => {
+const visitRooms = new Map();
+const userSockets = new Map();
+
+io.on("connection", (socket) => {
+  socket.on("register-user", (data) => {
+    if (!data || !data.userId) {
+      return;
+    }
+    const userId = String(data.userId);
+    socket.data.userId = userId;
+    const existing = userSockets.get(userId) || new Set();
+    existing.add(socket.id);
+    userSockets.set(userId, existing);
+  });
+
+  socket.on("visit-ring", (data) => {
+    if (!data || !data.toUserId || !data.visitId) {
+      return;
+    }
+    const toUserId = String(data.toUserId);
+    const targets = userSockets.get(toUserId);
+    if (!targets || targets.size === 0) {
+      return;
+    }
+    targets.forEach((sid) => {
+      socket.to(sid).emit("visit-ring", {
+        visitId: String(data.visitId),
+        fromUserId: socket.data.userId || null,
+        fromName: data.fromName || "",
+      });
+    });
+  });
+
+  socket.on("join-visit", (data) => {
+    if (!data || !data.visitId) {
+      return;
+    }
+    const visitId = String(data.visitId);
+    socket.join(visitId);
+    socket.data.visitId = visitId;
+    const existing = visitRooms.get(visitId) || [];
+    const filtered = existing.filter((entry) => entry.socketId !== socket.id);
+    const updated = filtered.concat([
+      {
+        socketId: socket.id,
+        userId: data.userId ? String(data.userId) : null,
+        name: data.name || "",
+        role: data.role || "",
+      },
+    ]);
+    visitRooms.set(visitId, updated);
+    const other = updated.find((entry) => entry.socketId !== socket.id);
+    if (other) {
+      socket.emit("other-user", { otherSocketId: other.socketId });
+      socket.to(other.socketId).emit("user-joined", {
+        otherSocketId: socket.id,
+      });
+    }
+  });
+
+  socket.on("visit-offer", (data) => {
+    if (!data || !data.to || !data.sdp || !data.visitId) {
+      return;
+    }
+    socket.to(data.to).emit("visit-offer", {
+      sdp: data.sdp,
+      from: socket.id,
+      visitId: String(data.visitId),
+    });
+  });
+
+  socket.on("visit-answer", (data) => {
+    if (!data || !data.to || !data.sdp || !data.visitId) {
+      return;
+    }
+    socket.to(data.to).emit("visit-answer", {
+      sdp: data.sdp,
+      from: socket.id,
+      visitId: String(data.visitId),
+    });
+  });
+
+  socket.on("visit-ice-candidate", (data) => {
+    if (!data || !data.to || !data.candidate || !data.visitId) {
+      return;
+    }
+    socket.to(data.to).emit("visit-ice-candidate", {
+      candidate: data.candidate,
+      from: socket.id,
+      visitId: String(data.visitId),
+    });
+  });
+
+  socket.on("visit-call-declined", (data) => {
+    if (!data || !data.to || !data.visitId) {
+      return;
+    }
+    socket.to(data.to).emit("visit-call-declined", {
+      from: socket.id,
+      visitId: String(data.visitId),
+    });
+  });
+
+  socket.on("leave-visit", (data) => {
+    const visitId = data && data.visitId ? String(data.visitId) : socket.data.visitId;
+    if (!visitId) {
+      return;
+    }
+    socket.leave(visitId);
+    const existing = visitRooms.get(visitId) || [];
+    const updated = existing.filter((entry) => entry.socketId !== socket.id);
+    visitRooms.set(visitId, updated);
+    socket.to(visitId).emit("visit-peer-left", { from: socket.id });
+  });
+
+  socket.on("disconnect", () => {
+    const userId = socket.data.userId;
+    if (userId) {
+      const existingSet = userSockets.get(userId) || new Set();
+      existingSet.delete(socket.id);
+      if (existingSet.size === 0) {
+        userSockets.delete(userId);
+      } else {
+        userSockets.set(userId, existingSet);
+      }
+    }
+
+    const visitId = socket.data.visitId;
+    if (!visitId) {
+      return;
+    }
+    const existing = visitRooms.get(visitId) || [];
+    const updated = existing.filter((entry) => entry.socketId !== socket.id);
+    visitRooms.set(visitId, updated);
+    socket.to(visitId).emit("visit-peer-left", { from: socket.id });
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`http://localhost:${PORT}`);
 });

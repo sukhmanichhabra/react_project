@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { propertyAPI, dashboardAPI } from "../../../services/api";
 import "./AddListing.css"; // <-- Import new CSS
 
-const AddListing = () => {  // State for the form
+const AddListing = () => {
+  // State for the form
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -19,12 +20,21 @@ const AddListing = () => {  // State for the form
     latitude: "",
     longitude: "",
     address: "",
+    yearBuilt: "",
+    furnishing: "Unfurnished",
+    parking: "",
+    floor: "",
+    totalFloors: "",
+    facing: "",
+    propertyId: "",
+    reraId: "",
+    documentSummary: "",
   });
   const [images, setImages] = useState([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
-  const [imageUploadError, setImageUploadError] = useState('');
+  const [imageUploadError, setImageUploadError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+  const [submitStatus, setSubmitStatus] = useState({ type: "", message: "" });
   const [searchAddress, setSearchAddress] = useState("");
   const [geocoding, setGeocoding] = useState(false);
 
@@ -32,7 +42,7 @@ const AddListing = () => {  // State for the form
   useEffect(() => {
     return () => {
       // Clean up all preview URLs when component unmounts
-      imagePreviewUrls.forEach(url => URL.revokeObjectURL(url));
+      imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [imagePreviewUrls]);
 
@@ -53,12 +63,12 @@ const AddListing = () => {  // State for the form
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setImageUploadError('');
+    setImageUploadError("");
 
     // Validation rules
     const maxFiles = 10;
     const maxFileSize = 5 * 1024 * 1024; // 5MB per file
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     const minDimensions = { width: 800, height: 600 };
 
     if (files.length > maxFiles) {
@@ -74,25 +84,32 @@ const AddListing = () => {  // State for the form
     files.forEach((file, index) => {
       // Check file type
       if (!allowedTypes.includes(file.type)) {
-        setImageUploadError('Only JPEG, JPG, PNG, and WebP images are allowed.');
+        setImageUploadError(
+          "Only JPEG, JPG, PNG, and WebP images are allowed."
+        );
         return;
       }
 
       // Check file size
       if (file.size > maxFileSize) {
-        setImageUploadError('Each image must be smaller than 5MB.');
+        setImageUploadError("Each image must be smaller than 5MB.");
         return;
       }
 
       // Create preview URL
       const previewUrl = URL.createObjectURL(file);
-      
+
       // Validate image dimensions
       const validationPromise = new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
-          if (img.width < minDimensions.width || img.height < minDimensions.height) {
-            setImageUploadError(`Images must be at least ${minDimensions.width}x${minDimensions.height} pixels for good quality property photos.`);
+          if (
+            img.width < minDimensions.width ||
+            img.height < minDimensions.height
+          ) {
+            setImageUploadError(
+              `Images must be at least ${minDimensions.width}x${minDimensions.height} pixels for good quality property photos.`
+            );
             URL.revokeObjectURL(previewUrl);
             resolve(false);
           } else {
@@ -102,7 +119,7 @@ const AddListing = () => {  // State for the form
           }
         };
         img.onerror = () => {
-          setImageUploadError('One or more files are not valid images.');
+          setImageUploadError("One or more files are not valid images.");
           URL.revokeObjectURL(previewUrl);
           resolve(false);
         };
@@ -114,11 +131,11 @@ const AddListing = () => {  // State for the form
 
     // Wait for all validations to complete
     Promise.all(validationPromises).then((results) => {
-      const allValid = results.every(result => result === true);
+      const allValid = results.every((result) => result === true);
       if (allValid && validFiles.length > 0) {
         // Clean up previous preview URLs
-        imagePreviewUrls.forEach(url => URL.revokeObjectURL(url));
-        
+        imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+
         setImages(validFiles);
         setImagePreviewUrls(previewUrls);
       }
@@ -128,7 +145,10 @@ const AddListing = () => {  // State for the form
   // Geocode address to get coordinates
   const handleFindLocation = async () => {
     if (!searchAddress || searchAddress.trim() === "") {
-      setSubmitStatus({ type: "error", message: "Please enter an address to search" });
+      setSubmitStatus({
+        type: "error",
+        message: "Please enter an address to search",
+      });
       setTimeout(() => setSubmitStatus({ type: "", message: "" }), 3000);
       return;
     }
@@ -141,7 +161,7 @@ const AddListing = () => {  // State for the form
 
       if (response.data.success) {
         const { latitude, longitude, formattedAddress } = response.data.data;
-        
+
         // Update form data with coordinates
         setFormData((prev) => ({
           ...prev,
@@ -150,9 +170,9 @@ const AddListing = () => {  // State for the form
           address: formattedAddress,
         }));
 
-        setSubmitStatus({ 
-          type: "success", 
-          message: `Location found: ${formattedAddress}` 
+        setSubmitStatus({
+          type: "success",
+          message: `Location found: ${formattedAddress}`,
         });
 
         setTimeout(() => setSubmitStatus({ type: "", message: "" }), 5000);
@@ -161,9 +181,12 @@ const AddListing = () => {  // State for the form
       }
     } catch (err) {
       console.error("Geocoding error:", err);
-      setSubmitStatus({ 
-        type: "error", 
-        message: err.response?.data?.message || err.message || "Failed to find location" 
+      setSubmitStatus({
+        type: "error",
+        message:
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to find location",
       });
       setTimeout(() => setSubmitStatus({ type: "", message: "" }), 5000);
     } finally {
@@ -173,21 +196,26 @@ const AddListing = () => {  // State for the form
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate required fields
-    if (!formData.title || !formData.description || !formData.price || !formData.location) {
+    if (
+      !formData.title ||
+      !formData.description ||
+      !formData.price ||
+      !formData.location
+    ) {
       setSubmitStatus({
-        type: 'error',
-        message: 'Please fill in all required fields'
+        type: "error",
+        message: "Please fill in all required fields",
       });
       return;
     }
 
     // Validate tag field specifically
-    if (!formData.tag || (formData.tag !== 'sale' && formData.tag !== 'rent')) {
+    if (!formData.tag || (formData.tag !== "sale" && formData.tag !== "rent")) {
       setSubmitStatus({
-        type: 'error',
-        message: 'Please select a valid property status (For Sale or For Rent)'
+        type: "error",
+        message: "Please select a valid property status (For Sale or For Rent)",
       });
       return;
     }
@@ -195,20 +223,20 @@ const AddListing = () => {  // State for the form
     // Validate type field
     if (!formData.type) {
       setSubmitStatus({
-        type: 'error',
-        message: 'Please select a property type'
+        type: "error",
+        message: "Please select a property type",
       });
       return;
     }
 
     setIsSubmitting(true);
-    setSubmitStatus({ type: '', message: '' });
+    setSubmitStatus({ type: "", message: "" });
 
     try {
-      console.log('📝 Form data before submission:', formData);
-      
+      console.log("📝 Form data before submission:", formData);
+
       const data = new FormData();
-        // Append form data
+      // Append form data
       for (const key in formData) {
         if (key === "amenities") {
           // Handle amenities array properly
@@ -220,7 +248,7 @@ const AddListing = () => {  // State for the form
         } else {
           // Ensure we're appending the actual value, not undefined
           const value = formData[key];
-          if (value !== undefined && value !== null && value !== '') {
+          if (value !== undefined && value !== null && value !== "") {
             data.append(key, value);
             console.log(`  ✅ Appending ${key}: ${value}`);
           } else {
@@ -228,20 +256,21 @@ const AddListing = () => {  // State for the form
           }
         }
       }
-        // Append files
+      // Append files
       images.forEach((image) => data.append("images", image));
-      
+
       // Log what's being sent
-      console.log('📤 Sending FormData with', images.length, 'images');
-      
+      console.log("📤 Sending FormData with", images.length, "images");
+
       // Submit to backend
       const result = await propertyAPI.addListing(data);
 
       if (result.data) {
         setSubmitStatus({
-          type: 'success',
-          message: 'Property submitted successfully! It will be reviewed by our admin team.'
-        });        // Reset form
+          type: "success",
+          message:
+            "Property submitted successfully! It will be reviewed by our admin team.",
+        }); // Reset form
         setFormData({
           title: "",
           description: "",
@@ -257,30 +286,41 @@ const AddListing = () => {  // State for the form
           latitude: "",
           longitude: "",
           address: "",
+          yearBuilt: "",
+          furnishing: "Unfurnished",
+          parking: "",
+          floor: "",
+          totalFloors: "",
+          facing: "",
+          propertyId: "",
+          reraId: "",
+          documentSummary: "",
         });
-        
+
         // Clean up image previews
-        imagePreviewUrls.forEach(url => URL.revokeObjectURL(url));
+        imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
         setImages([]);
         setImagePreviewUrls([]);
-        setImageUploadError('');
-          // Clear status after 3 seconds
+        setImageUploadError("");
+        // Clear status after 3 seconds
         setTimeout(() => {
-          setSubmitStatus({ type: '', message: '' });
+          setSubmitStatus({ type: "", message: "" });
         }, 3000);
       } else {
-        throw new Error('Failed to submit property');
+        throw new Error("Failed to submit property");
       }
     } catch (error) {
-      console.error('Error submitting property:', error);
+      console.error("Error submitting property:", error);
       setSubmitStatus({
-        type: 'error',
-        message: error.response?.data?.message || 'Failed to submit property. Please try again.'
+        type: "error",
+        message:
+          error.response?.data?.message ||
+          "Failed to submit property. Please try again.",
       });
-      
+
       // Clear error after 5 seconds
       setTimeout(() => {
-        setSubmitStatus({ type: '', message: '' });
+        setSubmitStatus({ type: "", message: "" });
       }, 5000);
     } finally {
       setIsSubmitting(false);
@@ -297,7 +337,13 @@ const AddListing = () => {  // State for the form
       {/* Status Message */}
       {submitStatus.message && (
         <div className={`dash-status-message ${submitStatus.type}`}>
-          <i className={`fas ${submitStatus.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}`}></i>
+          <i
+            className={`fas ${
+              submitStatus.type === "success"
+                ? "fa-check-circle"
+                : "fa-exclamation-triangle"
+            }`}
+          ></i>
           {submitStatus.message}
         </div>
       )}
@@ -330,9 +376,12 @@ const AddListing = () => {  // State for the form
               onChange={handleChange}
               required
             ></textarea>
-          </div>          <div className="dash-form-row">
+          </div>{" "}
+          <div className="dash-form-row">
             <div className="dash-form-group">
-              <label htmlFor="tag">Status (Tag) <span style={{color: 'red'}}>*</span></label>
+              <label htmlFor="tag">
+                Status (Tag) <span style={{ color: "red" }}>*</span>
+              </label>
               <select
                 id="tag"
                 name="tag"
@@ -345,7 +394,9 @@ const AddListing = () => {  // State for the form
               </select>
             </div>
             <div className="dash-form-group">
-              <label htmlFor="type">Property Type <span style={{color: 'red'}}>*</span></label>
+              <label htmlFor="type">
+                Property Type <span style={{ color: "red" }}>*</span>
+              </label>
               <select
                 id="type"
                 name="type"
@@ -371,7 +422,8 @@ const AddListing = () => {  // State for the form
               />
             </div>
           </div>
-        </div>        <div className="dash-form-section">
+        </div>{" "}
+        <div className="dash-form-section">
           <h3>Location & Features</h3>
           <div className="dash-form-group">
             <label htmlFor="location">Location (Full Address)</label>
@@ -384,18 +436,25 @@ const AddListing = () => {  // State for the form
               required
             />
           </div>
-          
+
           {/* Optional Geolocation Fields */}
           <div className="dash-form-section geolocation-section">
             <h4>📍 Geolocation (Optional - for better agent assignment)</h4>
             <p className="geolocation-help">
-              Adding coordinates helps us assign the best agent for your property based on location.
+              Adding coordinates helps us assign the best agent for your
+              property based on location.
             </p>
-            
+
             {/* Address Search Field */}
             <div className="dash-form-group">
               <label htmlFor="searchAddress">Search Address</label>
-              <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "flex-start",
+                }}
+              >
                 <input
                   type="text"
                   id="searchAddress"
@@ -405,7 +464,7 @@ const AddListing = () => {  // State for the form
                   placeholder="Enter property address (e.g., 123 Main St, New York, NY)"
                   style={{ flex: 1 }}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       e.preventDefault();
                       handleFindLocation();
                     }
@@ -416,31 +475,40 @@ const AddListing = () => {  // State for the form
                   onClick={handleFindLocation}
                   disabled={geocoding}
                   className="dash-submit-btn"
-                  style={{ 
+                  style={{
                     minWidth: "140px",
                     whiteSpace: "nowrap",
                     opacity: geocoding ? 0.6 : 1,
-                    padding: "10px 20px"
+                    padding: "10px 20px",
                   }}
                 >
                   {geocoding ? (
                     <>
-                      <i className="fas fa-spinner fa-spin" style={{ marginRight: "5px" }}></i>
+                      <i
+                        className="fas fa-spinner fa-spin"
+                        style={{ marginRight: "5px" }}
+                      ></i>
                       Finding...
                     </>
                   ) : (
                     <>
-                      <i className="fas fa-map-marker-alt" style={{ marginRight: "5px" }}></i>
+                      <i
+                        className="fas fa-map-marker-alt"
+                        style={{ marginRight: "5px" }}
+                      ></i>
                       Find Location
                     </>
                   )}
                 </button>
               </div>
-              <small style={{ marginTop: "5px", display: "block", color: "#6b7280" }}>
-                Enter the property address and click "Find Location" to automatically fill latitude and longitude
+              <small
+                style={{ marginTop: "5px", display: "block", color: "#6b7280" }}
+              >
+                Enter the property address and click "Find Location" to
+                automatically fill latitude and longitude
               </small>
             </div>
-            
+
             <div className="dash-form-row">
               <div className="dash-form-group">
                 <label htmlFor="latitude">Latitude</label>
@@ -479,7 +547,7 @@ const AddListing = () => {  // State for the form
               />
             </div>
           </div>
-          
+
           <div className="dash-form-row">
             <div className="dash-form-group">
               <label htmlFor="beds">Bedrooms</label>
@@ -526,7 +594,6 @@ const AddListing = () => {  // State for the form
             </div>
           </div>
         </div>
-
         <div className="dash-form-section">
           <h3>Amenities</h3>
           <div className="dash-amenities-grid">
@@ -551,13 +618,140 @@ const AddListing = () => {  // State for the form
               </label>
             ))}
           </div>
-        </div>        <div className="dash-form-section">
+        </div>{" "}
+        <div className="dash-form-section">
+          <h3>Detailed Specifications</h3>
+          <div className="dash-form-row">
+            <div className="dash-form-group">
+              <label htmlFor="yearBuilt">Year Built</label>
+              <input
+                type="number"
+                id="yearBuilt"
+                name="yearBuilt"
+                value={formData.yearBuilt}
+                onChange={handleChange}
+                placeholder="e.g., 2015"
+              />
+            </div>
+            <div className="dash-form-group">
+              <label htmlFor="furnishing">Furnishing</label>
+              <select
+                id="furnishing"
+                name="furnishing"
+                value={formData.furnishing}
+                onChange={handleChange}
+              >
+                <option value="Unfurnished">Unfurnished</option>
+                <option value="Semi-Furnished">Semi-Furnished</option>
+                <option value="Fully Furnished">Fully Furnished</option>
+              </select>
+            </div>
+            <div className="dash-form-group">
+              <label htmlFor="facing">Property Facing</label>
+              <select
+                id="facing"
+                name="facing"
+                value={formData.facing}
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="East">East</option>
+                <option value="West">West</option>
+                <option value="North">North</option>
+                <option value="South">South</option>
+                <option value="North-East">North-East</option>
+                <option value="North-West">North-West</option>
+                <option value="South-East">South-East</option>
+                <option value="South-West">South-West</option>
+              </select>
+            </div>
+          </div>
+          <div className="dash-form-row">
+            <div className="dash-form-group">
+              <label htmlFor="floor">Floor</label>
+              <input
+                type="number"
+                id="floor"
+                name="floor"
+                value={formData.floor}
+                onChange={handleChange}
+                placeholder="e.g., 5"
+              />
+            </div>
+            <div className="dash-form-group">
+              <label htmlFor="totalFloors">Total Floors in Building</label>
+              <input
+                type="number"
+                id="totalFloors"
+                name="totalFloors"
+                value={formData.totalFloors}
+                onChange={handleChange}
+                placeholder="e.g., 12"
+              />
+            </div>
+            <div className="dash-form-group">
+              <label htmlFor="parking">Parking</label>
+              <select
+                id="parking"
+                name="parking"
+                value={formData.parking}
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="No dedicated parking">No dedicated parking</option>
+                <option value="1 Open Parking">1 Open Parking</option>
+                <option value="1 Covered Parking">1 Covered Parking</option>
+                <option value=">= 2 Parking Spots">2 or more parking spots</option>
+              </select>
+            </div>
+          </div>
+        </div>{" "}
+        <div className="dash-form-section">
+          <h3>Legal &amp; Documents</h3>
+          <div className="dash-form-row">
+            <div className="dash-form-group">
+              <label htmlFor="propertyId">Property / Registration ID</label>
+              <input
+                type="text"
+                id="propertyId"
+                name="propertyId"
+                value={formData.propertyId}
+                onChange={handleChange}
+                placeholder="Official property or registration number"
+              />
+            </div>
+            <div className="dash-form-group">
+              <label htmlFor="reraId">RERA Registration No. (optional)</label>
+              <input
+                type="text"
+                id="reraId"
+                name="reraId"
+                value={formData.reraId}
+                onChange={handleChange}
+                placeholder="Enter RERA ID if applicable"
+              />
+            </div>
+          </div>
+          <div className="dash-form-group">
+            <label htmlFor="documentSummary">Documents &amp; Legal Notes</label>
+            <textarea
+              id="documentSummary"
+              name="documentSummary"
+              rows="4"
+              value={formData.documentSummary}
+              onChange={handleChange}
+              placeholder="Mention key documents available (e.g., Sale Deed, Tax Receipts, Occupancy Certificate) or any special legal notes."
+            ></textarea>
+          </div>
+        </div>{" "}
+        <div className="dash-form-section">
           <h3>Property Images</h3>
           <div className="dash-form-group">
             <label htmlFor="images">Upload Property Images (up to 10)</label>
             <p className="dash-form-hint">
-              Upload high-quality photos of your property. Images should be at least 800x600 pixels. 
-              Supported formats: JPEG, JPG, PNG, WebP. Maximum file size: 5MB per image.
+              Upload high-quality photos of your property. Images should be at
+              least 800x600 pixels. Supported formats: JPEG, JPG, PNG, WebP.
+              Maximum file size: 5MB per image.
             </p>
             <input
               type="file"
@@ -568,7 +762,7 @@ const AddListing = () => {  // State for the form
               accept=".jpeg,.jpg,.png,.webp"
               max="10"
             />
-            
+
             {/* Image Upload Error */}
             {imageUploadError && (
               <div className="dash-image-error">
@@ -576,11 +770,13 @@ const AddListing = () => {  // State for the form
                 {imageUploadError}
               </div>
             )}
-            
+
             {/* Image Preview */}
             {imagePreviewUrls.length > 0 && (
               <div className="dash-image-preview-container">
-                <h4>Image Previews ({imagePreviewUrls.length}/{10})</h4>
+                <h4>
+                  Image Previews ({imagePreviewUrls.length}/{10})
+                </h4>
                 <div className="dash-image-preview-grid">
                   {imagePreviewUrls.map((url, index) => (
                     <div key={index} className="dash-image-preview-item">
@@ -590,12 +786,16 @@ const AddListing = () => {  // State for the form
                         className="dash-remove-image"
                         onClick={() => {
                           // Remove this image from arrays
-                          const newImages = images.filter((_, i) => i !== index);
-                          const newPreviewUrls = imagePreviewUrls.filter((_, i) => i !== index);
-                          
+                          const newImages = images.filter(
+                            (_, i) => i !== index
+                          );
+                          const newPreviewUrls = imagePreviewUrls.filter(
+                            (_, i) => i !== index
+                          );
+
                           // Clean up the removed URL
                           URL.revokeObjectURL(imagePreviewUrls[index]);
-                          
+
                           setImages(newImages);
                           setImagePreviewUrls(newPreviewUrls);
                         }}
@@ -608,14 +808,15 @@ const AddListing = () => {  // State for the form
               </div>
             )}
           </div>
-        </div><div className="dash-form-actions">
-          <button 
-            type="submit" 
+        </div>
+        <div className="dash-form-actions">
+          <button
+            type="submit"
             className="dash-submit-btn"
             disabled={isSubmitting}
           >
-            <i className="fas fa-plus-circle"></i> 
-            {isSubmitting ? 'Submitting...' : 'Submit Property'}
+            <i className="fas fa-plus-circle"></i>
+            {isSubmitting ? "Submitting..." : "Submit Property"}
           </button>
         </div>
       </form>

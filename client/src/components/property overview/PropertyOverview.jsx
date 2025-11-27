@@ -13,6 +13,7 @@ import PropertyDetailsSection from "./PropertyDetailsSection";
 import AgentDetails from "./AgentDetails";
 import ReviewSection from "./ReviewSection";
 import ShareModal from "./ShareModal";
+import RentAgreementModal from "../agreements/RentAgreementModal";
 
 const PropertyOverview = () => {
   const { id } = useParams();
@@ -25,6 +26,9 @@ const PropertyOverview = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [mainImage, setMainImage] = useState("");
   const [rentInfo, setRentInfo] = useState(null);
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [agreement, setAgreement] = useState(null);
+  const [agreementLoading, setAgreementLoading] = useState(false);
 
   useEffect(() => {
     const fetchPropertyData = async () => {
@@ -64,6 +68,32 @@ const PropertyOverview = () => {
     fetchPropertyData();
   }, [id]);
 
+  // Fetch latest agreement for this property and buyer (for rentals)
+  useEffect(() => {
+    const fetchAgreement = async () => {
+      try {
+        if (!user || user.role !== "buyer") return;
+        if (!property || property.tag !== "rent") return;
+
+        setAgreementLoading(true);
+        const { agreementsAPI } = await import("../../services/api");
+        const res = await agreementsAPI.getAgreementForProperty(property._id);
+
+        if (res.data && res.data.success) {
+          setAgreement(res.data.data);
+        } else {
+          setAgreement(null);
+        }
+      } catch (error) {
+        console.error("Error fetching agreement for property:", error);
+      } finally {
+        setAgreementLoading(false);
+      }
+    };
+
+    fetchAgreement();
+  }, [property, user]);
+
   // Fetch fresh user balance from database when component mounts
   useEffect(() => {
     if (user) {
@@ -80,6 +110,65 @@ const PropertyOverview = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const proceedToRent = async () => {
+    if (!property || !user) {
+      alert("Unable to process rental. Please try again.");
+      return;
+    }
+
+    const confirmMessage = `Your rent agreement is approved. Proceed to activate this rental for ${property.price}?`;
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      console.log("Activating rental for property:", property._id);
+
+      const { propertyAPI } = await import("../../services/api");
+
+      const response = await propertyAPI.purchaseProperty(property._id);
+
+      console.log("Rental activation response:", response.data);
+
+      alert(
+        "Rental activated successfully! You can now manage rent payments from your dashboard."
+      );
+
+      setTimeout(() => {
+        navigate("/rent/pay");
+      }, 1000);
+    } catch (error) {
+      console.error("Error activating rental:", error);
+
+      if (error.response) {
+        const errorData = error.response.data;
+
+        if (error.response.status === 400) {
+          if (errorData.message) {
+            alert(errorData.message);
+          } else {
+            alert(
+              "Unable to complete rental activation. Please check your balance and try again."
+            );
+          }
+        } else if (error.response.status === 404) {
+          alert("Property not found.");
+        } else {
+          alert(
+            "Failed to activate rental: " +
+              (errorData.message || "Unknown error")
+          );
+        }
+      } else {
+        alert("Network error. Please check your connection and try again.");
+      }
+
+      dispatch(fetchUserBalance());
+      window.location.reload();
+    }
+  };
+
   const handlePurchase = async (e) => {
     e.preventDefault();
 
@@ -88,12 +177,26 @@ const PropertyOverview = () => {
       return;
     }
 
-    // Confirm purchase
-    const actionText = property.tag === "rent" ? "rent" : "buy";
-    const confirmMessage =
-      property.tag === "rent"
-        ? `Are you sure you want to rent this property for ${property.price}?`
-        : `Are you sure you want to buy this property for ${property.price}?`;
+    // For rentals, use the agreement flow instead of direct purchase
+    if (property.tag === "rent") {
+      if (agreement && agreement.status === "active") {
+        await proceedToRent();
+        return;
+      }
+
+      if (agreement && agreement.status === "pending_seller_approval") {
+        alert(
+          "Your rent agreement is pending seller approval. Once approved, you will be able to proceed to rent."
+        );
+        return;
+      }
+
+      setShowAgreementModal(true);
+      return;
+    }
+
+    // Direct purchase flow for sale properties
+    const confirmMessage = `Are you sure you want to buy this property for ${property.price}?`;
 
     if (!window.confirm(confirmMessage)) {
       return;
@@ -102,35 +205,26 @@ const PropertyOverview = () => {
     try {
       console.log("Processing purchase for property:", property._id);
 
-      // Import API service
       const { propertyAPI } = await import("../../services/api");
 
-      // Make purchase request
       const response = await propertyAPI.purchaseProperty(property._id);
 
       console.log("Purchase response:", response.data);
 
-      // Show success message
-      const successMessage =
-        property.tag === "rent"
-          ? "Property rented successfully! Redirecting to your purchases..."
-          : "Property purchased successfully! Redirecting to your purchases...";
+      alert(
+        "Property purchased successfully! Redirecting to your purchases..."
+      );
 
-      alert(successMessage);
-
-      // Redirect to property list or refresh page
       setTimeout(() => {
         navigate("/properties");
       }, 1000);
     } catch (error) {
       console.error("Error purchasing property:", error);
 
-      // Handle specific error cases
       if (error.response) {
         const errorData = error.response.data;
 
         if (error.response.status === 400) {
-          // Property not available or insufficient funds
           if (errorData.message) {
             alert(errorData.message);
           } else {
@@ -150,7 +244,6 @@ const PropertyOverview = () => {
         alert("Network error. Please check your connection and try again.");
       }
 
-      // Refresh balance and property data
       dispatch(fetchUserBalance());
       window.location.reload();
     }
@@ -241,6 +334,10 @@ const PropertyOverview = () => {
   const userBalance = getUserBalance();
   const hasEnoughBalance = userBalance >= priceValue;
   const amountNeeded = priceValue - userBalance;
+  const isRentListing = property && property.tag === "rent";
+  const hasActiveAgreement = !!agreement && agreement.status === "active";
+  const hasPendingAgreement =
+    !!agreement && agreement.status === "pending_seller_approval";
 
   if (loading) {
     return (
@@ -358,26 +455,48 @@ const PropertyOverview = () => {
                 </>
               ) : (
                 <>
-                  {/* Buy/Rent Button */}
+                  {/* Buy / Request Agreement Button */}
                   <form onSubmit={handlePurchase}>
                     <button
                       type="submit"
                       className={`prop-overview-action-btn-sidebar ${
-                        property.tag === "rent"
+                        isRentListing
                           ? "prop-overview-rent-btn"
                           : "prop-overview-buy-btn"
                       }`}
+                      disabled={hasPendingAgreement}
                     >
                       <i
                         className={`fas ${
-                          property.tag === "rent"
-                            ? "fa-key"
+                          isRentListing
+                            ? hasActiveAgreement
+                              ? "fa-check-circle"
+                              : "fa-file-signature"
                             : "fa-shopping-cart"
                         }`}
                       ></i>
-                      {property.tag === "rent" ? "RENT NOW" : "BUY NOW"}
+                      {isRentListing
+                        ? hasActiveAgreement
+                          ? "PROCEED TO RENT"
+                          : hasPendingAgreement
+                          ? "AGREEMENT PENDING"
+                          : "REQUEST RENT AGREEMENT"
+                        : "BUY NOW"}
                     </button>
                   </form>
+
+                  {isRentListing && hasPendingAgreement && (
+                    <p className="prop-overview-agreement-note">
+                      Your rent agreement request has been sent to the owner
+                      and is awaiting approval.
+                    </p>
+                  )}
+                  {isRentListing && hasActiveAgreement && (
+                    <p className="prop-overview-agreement-note">
+                      Your agreement is approved. Click "PROCEED TO RENT" to
+                      activate this rental.
+                    </p>
+                  )}
 
                   {/* Schedule Visit Button */}
                   <a
@@ -438,11 +557,92 @@ const PropertyOverview = () => {
             <p>{property.description}</p>
           </div>
 
+          {/* Key Property Details */}
+          <div className="prop-overview-section-box">
+            <h2>Key Property Details</h2>
+            <div className="prop-overview-details-grid">
+              {property.features?.yearBuilt && (
+                <p>
+                  <span>Year Built</span>
+                  <strong>{property.features.yearBuilt}</strong>
+                </p>
+              )}
+              {property.features?.furnishing && (
+                <p>
+                  <span>Furnishing</span>
+                  <strong>{property.features.furnishing}</strong>
+                </p>
+              )}
+              {property.features?.floor && property.features?.totalFloors && (
+                <p>
+                  <span>Floor</span>
+                  <strong>
+                    {property.features.floor} of {property.features.totalFloors}
+                  </strong>
+                </p>
+              )}
+              {property.features?.parking && (
+                <p>
+                  <span>Parking</span>
+                  <strong>{property.features.parking}</strong>
+                </p>
+              )}
+              {property.features?.facing && (
+                <p>
+                  <span>Facing</span>
+                  <strong>{property.features.facing}</strong>
+                </p>
+              )}
+            </div>
+          </div>
+
           {/* Property Details */}
           <PropertyDetailsSection
             property={property}
             amenities={property.amenities || []}
           />
+
+          {/* Legal & Documents */}
+          {property.legal &&
+            (property.legal.propertyId ||
+              property.legal.reraId ||
+              property.legal.documentSummary) && (
+              <div className="prop-overview-section-box prop-overview-documents-card">
+                <div className="prop-overview-documents-header">
+                  <img
+                    src="/assets/service-1.png"
+                    alt="Property documents illustration"
+                    className="prop-overview-documents-image"
+                  />
+                  <div>
+                    <h2>Legal &amp; Documents</h2>
+                    <p>
+                      High-level registration details and document notes shared
+                      by the owner.
+                    </p>
+                  </div>
+                </div>
+                <div className="prop-overview-details-grid">
+                  {property.legal.propertyId && (
+                    <p>
+                      <span>Property / Registration ID</span>
+                      <strong>{property.legal.propertyId}</strong>
+                    </p>
+                  )}
+                  {property.legal.reraId && (
+                    <p>
+                      <span>RERA Registration No.</span>
+                      <strong>{property.legal.reraId}</strong>
+                    </p>
+                  )}
+                </div>
+                {property.legal.documentSummary && (
+                  <p className="prop-overview-documents-summary">
+                    {property.legal.documentSummary}
+                  </p>
+                )}
+              </div>
+            )}
 
           {/* Reviews */}
           <ReviewSection
@@ -463,6 +663,19 @@ const PropertyOverview = () => {
         onClose={() => setShowShareModal(false)}
         property={property}
       />
+
+      {/* Rent Agreement Modal for rentals */}
+      {user &&
+        user.role === "buyer" &&
+        property.tag === "rent" &&
+        property.status === "active" && (
+          <RentAgreementModal
+            property={property}
+            isOpen={showAgreementModal}
+            onClose={() => setShowAgreementModal(false)}
+            onCreated={(created) => setAgreement(created)}
+          />
+        )}
 
       {/* Back to Top Button */}
       <button

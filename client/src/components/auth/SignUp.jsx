@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   registerUser,
@@ -14,13 +15,13 @@ function SignUp() {
   const { isLoading, error, successMessage, isAuthenticated } =
     useAppSelector(selectAuth);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    role: "",
-    password: "",
-  });
-  const [fieldErrors, setFieldErrors] = useState({});
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    reset,
+  } = useForm();
 
   // Clear messages on component mount
   useEffect(() => {
@@ -49,90 +50,8 @@ function SignUp() {
     }
   }, [isAuthenticated]);
 
-  // Validation rules
-  const validators = {
-    name: (value) => {
-      if (!value.trim()) return "Name is required";
-      if (value.trim().length < 2) return "Name must be at least 2 characters";
-      if (!/^[a-zA-Z\s]+$/.test(value))
-        return "Name can only contain letters and spaces";
-      return null;
-    },
-    email: (value) => {
-      if (!value.trim()) return "Email is required";
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-        return "Please enter a valid email address";
-      return null;
-    },
-    role: (value) => {
-      if (!value) return "Please select a role";
-      return null;
-    },
-    password: (value) => {
-      if (!value) return "Password is required";
-      if (value.length < 8) return "Password must be at least 8 characters";
-      if (!/(?=.*[a-z])/.test(value))
-        return "Password must contain at least one lowercase letter";
-      if (!/(?=.*[A-Z])/.test(value))
-        return "Password must contain at least one uppercase letter";
-      if (!/(?=.*\d)/.test(value))
-        return "Password must contain at least one number";
-      return null;
-    },
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-
-    // Clear field error if it exists
-    if (fieldErrors[name]) {
-      setFieldErrors({
-        ...fieldErrors,
-        [name]: null,
-      });
-    }
-  };
-
-  const validateField = (fieldName) => {
-    const value = formData[fieldName];
-    const error = validators[fieldName](value);
-
-    setFieldErrors({
-      ...fieldErrors,
-      [fieldName]: error,
-    });
-
-    return !error;
-  };
-
-  const handleBlur = (e) => {
-    validateField(e.target.name);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Validate all fields
-    let isValid = true;
-    const newErrors = {};
-
-    Object.keys(validators).forEach((field) => {
-      const error = validators[field](formData[field]);
-      if (error) {
-        newErrors[field] = error;
-        isValid = false;
-      }
-    });
-
-    setFieldErrors(newErrors);
-
-    if (isValid) {
-      dispatch(registerUser(formData));
-    }
+  const onSubmit = async (data) => {
+    dispatch(registerUser(data));
   };
 
   return (
@@ -173,51 +92,57 @@ function SignUp() {
             <div className="alert-message success">{successMessage}</div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <h2>Sign up</h2>
 
             <label htmlFor="name">Name*</label>
             <input
               type="text"
               id="name"
-              name="name"
-              required
               placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={fieldErrors.name ? "error" : ""}
+              className={errors.name ? "error" : ""}
+              {...register("name", {
+                required: "Name is required",
+                minLength: {
+                  value: 2,
+                  message: "Name must be at least 2 characters",
+                },
+                pattern: {
+                  value: /^[a-zA-Z\s]+$/,
+                  message: "Name can only contain letters and spaces",
+                },
+              })}
             />
-            {fieldErrors.name && (
-              <div className="error-message">{fieldErrors.name}</div>
+            {errors.name && (
+              <div className="error-message">{errors.name.message}</div>
             )}
 
             <label htmlFor="email">Email address*</label>
             <input
               type="email"
               id="email"
-              name="email"
-              required
               placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={fieldErrors.email ? "error" : ""}
+              className={errors.email ? "error" : ""}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email address",
+                },
+              })}
             />
-            {fieldErrors.email && (
-              <div className="error-message">{fieldErrors.email}</div>
+            {errors.email && (
+              <div className="error-message">{errors.email.message}</div>
             )}
 
             <label htmlFor="role">Select role*</label>
             <div className="select-wrapper">
               <select
                 id="role"
-                name="role"
-                required
-                value={formData.role}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={fieldErrors.role ? "error" : ""}
+                className={errors.role ? "error" : ""}
+                {...register("role", {
+                  required: "Please select a role",
+                })}
               >
                 <option value="" disabled>
                   Choose your role
@@ -228,24 +153,31 @@ function SignUp() {
               </select>
               <i className="fas fa-chevron-down"></i>
             </div>
-            {fieldErrors.role && (
-              <div className="error-message">{fieldErrors.role}</div>
+            {errors.role && (
+              <div className="error-message">{errors.role.message}</div>
             )}
 
             <label htmlFor="password">Create password*</label>
             <input
               type="password"
               id="password"
-              name="password"
-              required
               placeholder="Create a password"
-              value={formData.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={fieldErrors.password ? "error" : ""}
+              className={errors.password ? "error" : ""}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters",
+                },
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                  message:
+                    "Password must contain at least one lowercase letter, one uppercase letter, and one number",
+                },
+              })}
             />
-            {fieldErrors.password && (
-              <div className="error-message">{fieldErrors.password}</div>
+            {errors.password && (
+              <div className="error-message">{errors.password.message}</div>
             )}
 
             <button type="submit" disabled={isLoading}>

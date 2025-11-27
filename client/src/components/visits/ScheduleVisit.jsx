@@ -4,24 +4,26 @@ import { visitAPI, propertyAPI } from "../../services/api";
 import { useAppSelector } from "../../store/hooks";
 import { selectAuth } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
+import { useVideoCall } from "../../context/VideoCallContext";
 import "./ScheduleVisit.css";
 
 const ScheduleVisit = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const propertyIdFromUrl = searchParams.get("propertyId");
-  
+
   const { user } = useAppSelector(selectAuth);
+  const { startVisitCall } = useVideoCall();
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [myVisits, setMyVisits] = useState([]);
-  
+
   const [formData, setFormData] = useState({
     propertyId: propertyIdFromUrl || "",
     visitDate: "",
     timeSlot: "",
-    notes: ""
+    notes: "",
   });
 
   const timeSlots = [
@@ -32,7 +34,7 @@ const ScheduleVisit = () => {
     "13:00 - 14:00",
     "14:00 - 15:00",
     "15:00 - 16:00",
-    "16:00 - 17:00"
+    "16:00 - 17:00",
   ];
 
   const [availableSlots, setAvailableSlots] = useState(timeSlots);
@@ -44,7 +46,7 @@ const ScheduleVisit = () => {
 
   useEffect(() => {
     if (propertyIdFromUrl) {
-      setFormData(prev => ({ ...prev, propertyId: propertyIdFromUrl }));
+      setFormData((prev) => ({ ...prev, propertyId: propertyIdFromUrl }));
       fetchPropertyDetails(propertyIdFromUrl);
     }
   }, [propertyIdFromUrl]);
@@ -58,11 +60,11 @@ const ScheduleVisit = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch properties
       const propertiesRes = await propertyAPI.getAllProperties();
       console.log("Properties response:", propertiesRes.data);
-      
+
       // Handle different response structures
       let propertiesData = [];
       if (propertiesRes.data.success) {
@@ -72,15 +74,20 @@ const ScheduleVisit = () => {
       } else if (propertiesRes.data.data) {
         propertiesData = propertiesRes.data.data;
       }
-      
+
       console.log("Extracted properties:", propertiesData);
       setProperties(propertiesData);
 
       // Fetch visits
       try {
         const visitsRes = await visitAPI.getMyVisits();
+        console.log("Visits API response:", visitsRes.data);
         if (visitsRes.data.success) {
-          setMyVisits(visitsRes.data.visits || []);
+          // Handle the nested data structure from the backend API
+          const visitsData =
+            visitsRes.data.data?.visits || visitsRes.data.visits || [];
+          console.log("Extracted visits data:", visitsData);
+          setMyVisits(visitsData);
         }
       } catch (visitError) {
         console.log("No visits found or error fetching visits:", visitError);
@@ -109,7 +116,7 @@ const ScheduleVisit = () => {
     try {
       const response = await visitAPI.getAvailableSlots({
         date: formData.visitDate,
-        propertyId: formData.propertyId
+        propertyId: formData.propertyId,
       });
 
       if (response.data.success) {
@@ -123,14 +130,14 @@ const ScheduleVisit = () => {
 
   const handlePropertySelect = (propertyId) => {
     setFormData({ ...formData, propertyId });
-    const property = properties.find(p => p._id === propertyId);
+    const property = properties.find((p) => p._id === propertyId);
     setSelectedProperty(property);
   };
 
   const handleDateChange = (e) => {
     setFormData({ ...formData, visitDate: e.target.value });
     setSelectedSlot("");
-    setFormData(prev => ({ ...prev, timeSlot: "" }));
+    setFormData((prev) => ({ ...prev, timeSlot: "" }));
   };
 
   const handleSlotSelect = (slot) => {
@@ -152,12 +159,14 @@ const ScheduleVisit = () => {
       const response = await visitAPI.scheduleVisit(formData);
 
       if (response.data.success) {
-        toast.success("Visit scheduled successfully! Waiting for agent approval.");
+        toast.success(
+          "Visit scheduled successfully! Waiting for agent approval."
+        );
         setFormData({
           propertyId: "",
           visitDate: "",
           timeSlot: "",
-          notes: ""
+          notes: "",
         });
         setSelectedSlot("");
         setSelectedProperty(null);
@@ -172,13 +181,13 @@ const ScheduleVisit = () => {
   const getMinDate = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
+    return tomorrow.toISOString().split("T")[0];
   };
 
   const getMaxDate = () => {
     const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 30);
-    return maxDate.toISOString().split('T')[0];
+    return maxDate.toISOString().split("T")[0];
   };
 
   const getStatusClass = (status) => {
@@ -187,7 +196,7 @@ const ScheduleVisit = () => {
       approved: "status-approved",
       rejected: "status-rejected",
       cancelled: "status-cancelled",
-      completed: "status-completed"
+      completed: "status-completed",
     };
     return statusMap[status] || "";
   };
@@ -223,14 +232,26 @@ const ScheduleVisit = () => {
                 <div className="property-details">
                   <h3 className="property-title">{selectedProperty.title}</h3>
                   <p className="property-location">
-                    <i className="fas fa-map-marker-alt"></i> {selectedProperty.location}
+                    <i className="fas fa-map-marker-alt"></i>{" "}
+                    {selectedProperty.location}
                   </p>
-                  <p className="property-price">₹{selectedProperty.price?.toLocaleString("en-IN")}</p>
+                  <p className="property-price">
+                    ₹{selectedProperty.price?.toLocaleString("en-IN")}
+                  </p>
                   {selectedProperty.features && (
                     <div className="property-features">
-                      <span><i className="fas fa-bed"></i> {selectedProperty.features.beds} Beds</span>
-                      <span><i className="fas fa-bath"></i> {selectedProperty.features.baths} Baths</span>
-                      <span><i className="fas fa-ruler-combined"></i> {selectedProperty.features.sqft} sqft</span>
+                      <span>
+                        <i className="fas fa-bed"></i>{" "}
+                        {selectedProperty.features.beds} Beds
+                      </span>
+                      <span>
+                        <i className="fas fa-bath"></i>{" "}
+                        {selectedProperty.features.baths} Baths
+                      </span>
+                      <span>
+                        <i className="fas fa-ruler-combined"></i>{" "}
+                        {selectedProperty.features.sqft} sqft
+                      </span>
                     </div>
                   )}
                 </div>
@@ -247,7 +268,7 @@ const ScheduleVisit = () => {
                     required
                   >
                     <option value="">-- Select a property --</option>
-                    {properties.map(property => (
+                    {properties.map((property) => (
                       <option key={property._id} value={property._id}>
                         {property.title} - {property.location}
                       </option>
@@ -257,10 +278,12 @@ const ScheduleVisit = () => {
 
                 {properties.length > 0 ? (
                   <div className="property-cards">
-                    {properties.slice(0, 6).map(property => (
+                    {properties.slice(0, 6).map((property) => (
                       <div
                         key={property._id}
-                        className={`property-card ${formData.propertyId === property._id ? 'selected' : ''}`}
+                        className={`property-card ${
+                          formData.propertyId === property._id ? "selected" : ""
+                        }`}
                         onClick={() => handlePropertySelect(property._id)}
                       >
                         <img
@@ -271,9 +294,12 @@ const ScheduleVisit = () => {
                         <div className="property-details">
                           <h3 className="property-title">{property.title}</h3>
                           <p className="property-location">
-                            <i className="fas fa-map-marker-alt"></i> {property.location}
+                            <i className="fas fa-map-marker-alt"></i>{" "}
+                            {property.location}
                           </p>
-                          <p className="property-price">₹{property.price?.toLocaleString("en-IN")}</p>
+                          <p className="property-price">
+                            ₹{property.price?.toLocaleString("en-IN")}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -281,7 +307,10 @@ const ScheduleVisit = () => {
                 ) : (
                   <div className="empty-state">
                     <i className="fas fa-home"></i>
-                    <p>No properties available at the moment. Please check back later.</p>
+                    <p>
+                      No properties available at the moment. Please check back
+                      later.
+                    </p>
                   </div>
                 )}
               </>
@@ -305,7 +334,9 @@ const ScheduleVisit = () => {
                 className="form-control"
                 required
               />
-              <small className="form-hint">Select a date between tomorrow and 30 days from now</small>
+              <small className="form-hint">
+                Select a date between tomorrow and 30 days from now
+              </small>
             </div>
           </div>
 
@@ -315,10 +346,12 @@ const ScheduleVisit = () => {
               <span className="step-number">3</span> Select Time Slot
             </h2>
             <div className="time-slot-grid">
-              {timeSlots.map(slot => (
+              {timeSlots.map((slot) => (
                 <div
                   key={slot}
-                  className={`time-slot ${selectedSlot === slot ? 'selected' : ''} ${!availableSlots.includes(slot) ? 'unavailable' : ''}`}
+                  className={`time-slot ${
+                    selectedSlot === slot ? "selected" : ""
+                  } ${!availableSlots.includes(slot) ? "unavailable" : ""}`}
                   onClick={() => handleSlotSelect(slot)}
                 >
                   {slot}
@@ -337,7 +370,9 @@ const ScheduleVisit = () => {
               <textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 className="form-control"
                 rows="3"
                 placeholder="Any specific questions or requirements for your visit?"
@@ -348,7 +383,9 @@ const ScheduleVisit = () => {
           <button
             type="submit"
             className="submit-btn"
-            disabled={!formData.propertyId || !formData.visitDate || !formData.timeSlot}
+            disabled={
+              !formData.propertyId || !formData.visitDate || !formData.timeSlot
+            }
           >
             <i className="fas fa-calendar-check"></i> Schedule Visit
           </button>
@@ -364,14 +401,16 @@ const ScheduleVisit = () => {
         {(() => {
           // Debug: Log all visits to see what we have
           console.log("All visits:", myVisits);
-          
+
           // Filter to only show active visits (not completed/cancelled/rejected)
-          const activeVisits = myVisits.filter(visit => {
+          const activeVisits = myVisits.filter((visit) => {
             const status = visit.status?.toLowerCase();
-            const isActive = status === 'pending' || status === 'approved';
-            
-            console.log(`Visit ${visit._id}: status=${visit.status}, isActive=${isActive}, date=${visit.visitDate}`);
-            
+            const isActive = status === "pending" || status === "approved";
+
+            console.log(
+              `Visit ${visit._id}: status=${visit.status}, isActive=${isActive}, date=${visit.visitDate}`
+            );
+
             return isActive;
           });
 
@@ -379,56 +418,86 @@ const ScheduleVisit = () => {
 
           return activeVisits.length > 0 ? (
             <div className="visit-list">
-              {activeVisits.map(visit => (
-              <div key={visit._id} className="visit-card">
-                <img
-                  src={visit.propertyId?.images?.[0] || "/assets/property-1.jpg"}
-                  alt={visit.propertyId?.title}
-                  className="visit-image"
-                />
-                <div className="visit-details">
-                  <h3 className="visit-property">{visit.propertyId?.title}</h3>
-                  <div className="visit-meta">
-                    <div className="visit-meta-item">
-                      <i className="far fa-calendar"></i>
-                      {new Date(visit.visitDate).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric"
-                      })}
+              {activeVisits.map((visit) => (
+                <div key={visit._id} className="visit-card">
+                  <img
+                    src={
+                      visit.propertyId?.images?.[0] || "/assets/property-1.jpg"
+                    }
+                    alt={visit.propertyId?.title}
+                    className="visit-image"
+                  />
+                  <div className="visit-details">
+                    <h3 className="visit-property">
+                      {visit.propertyId?.title}
+                    </h3>
+                    <div className="visit-meta">
+                      <div className="visit-meta-item">
+                        <i className="far fa-calendar"></i>
+                        {new Date(visit.visitDate).toLocaleDateString("en-US", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </div>
+                      <div className="visit-meta-item">
+                        <i className="far fa-clock"></i>
+                        {visit.timeSlot}
+                      </div>
                     </div>
-                    <div className="visit-meta-item">
-                      <i className="far fa-clock"></i>
-                      {visit.timeSlot}
-                    </div>
+                    <span
+                      className={`visit-status ${getStatusClass(visit.status)}`}
+                    >
+                      {visit.status?.toUpperCase()}
+                    </span>
+                    {visit.agentNotes && (
+                      <div className="visit-notes">
+                        <strong>Agent Notes:</strong> {visit.agentNotes}
+                      </div>
+                    )}
                   </div>
-                  <span className={`visit-status ${getStatusClass(visit.status)}`}>
-                    {visit.status?.toUpperCase()}
-                  </span>
-                  {visit.agentNotes && (
-                    <div className="visit-notes">
-                      <strong>Agent Notes:</strong> {visit.agentNotes}
-                    </div>
-                  )}
+                  <div className="visit-actions">
+                    {visit.status?.toLowerCase() === "approved" && (
+                      <button
+                        onClick={() => {
+                          const otherUserId =
+                            visit.agentId?.userId?._id || visit.agentId?.userId;
+                          const otherName =
+                            visit.agentId?.userId?.name || visit.agentId?.name;
+                          if (otherUserId) {
+                            startVisitCall({
+                              visitId: visit._id,
+                              otherUserId,
+                              otherName,
+                            });
+                          } else {
+                            navigate(`/visits/video/${visit._id}`);
+                          }
+                        }}
+                        className="btn-video-call"
+                      >
+                        <i className="fas fa-video"></i> Join Video Call
+                      </button>
+                    )}
+                    <button
+                      onClick={() =>
+                        navigate(`/property/${visit.propertyId?._id}`)
+                      }
+                      className="btn-outline"
+                    >
+                      <i className="fas fa-eye"></i> View Property
+                    </button>
+                  </div>
                 </div>
-                <div className="visit-actions">
-                  <button
-                    onClick={() => navigate(`/property/${visit.propertyId?._id}`)}
-                    className="btn-outline"
-                  >
-                    <i className="fas fa-eye"></i> View Property
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <i className="fas fa-calendar-times"></i>
-            <p>You have no upcoming visits scheduled.</p>
-          </div>
-        );
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <i className="fas fa-calendar-times"></i>
+              <p>You have no upcoming visits scheduled.</p>
+            </div>
+          );
         })()}
       </div>
     </div>

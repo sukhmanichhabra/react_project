@@ -1,6 +1,6 @@
 .model-page {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  /* background-color: #f5f5f5; */
   padding-top: 80px;
 }
 
@@ -185,6 +185,12 @@
 .content-header p {
   color: #666;
   font-size: 16px;
+}
+
+.required {
+  color: #ff4444;
+  font-weight: bold;
+  margin-left: 4px;
 }
 
 /* Cards Grid */
@@ -601,10 +607,17 @@
   font-size: 48px;
   font-weight: bold;
   color: #ff6634;
-  margin: 30px 0;
+  margin: 20px 0 10px 0;
   padding: 20px;
   border-radius: 10px;
   background: #fff9f7;
+}
+
+.price-per-sqft {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 20px;
+  font-weight: 500;
 }
 
 .price-range {

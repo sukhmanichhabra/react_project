@@ -199,8 +199,12 @@ const getMyVisits = async (req, res) => {
   try {
     // Get all visits for this buyer using the Visit model directly
     const visits = await Visit.find({ buyerId: req.user._id })
-      .populate('propertyId')
-      .populate('buyerId', 'name email phone')
+      .populate("propertyId")
+      .populate("buyerId", "name email phone")
+      .populate({
+        path: "agentId",
+        populate: { path: "userId", select: "name email" },
+      })
       .sort({ visitDate: 1, status: 1 });
 
     res.json({

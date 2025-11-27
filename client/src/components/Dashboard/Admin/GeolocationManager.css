@@ -159,6 +159,22 @@
   background: #1d4ed8;
 }
 
+.coverage-btn {
+  padding: 8px 16px;
+  background: #0f766e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.coverage-btn:hover {
+  background: #115e59;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -254,6 +270,111 @@
   background: #4b5563;
 }
 
+.agent-coverage-panel {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.agent-coverage-panel h3 {
+  margin: 0 0 8px 0;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.coverage-properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.coverage-property-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.coverage-property-main h4 {
+  margin: 0 0 4px 0;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.coverage-property-main .location {
+  margin: 0 0 6px 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.coverage-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.coverage-pill {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.coverage-property-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.distance-chip {
+  font-size: 13px;
+  color: #374151;
+}
+
+.distance-chip strong {
+  font-weight: 600;
+}
+
+.distance-chip .within-radius {
+  margin-left: 6px;
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.distance-chip .outside-radius {
+  margin-left: 6px;
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+.distance-chip .no-distance {
+  color: #9ca3af;
+}
+
+.reassign-btn {
+  padding: 6px 12px;
+  background: #f97316;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.reassign-btn:hover {
+  background: #ea580c;
+}
+
 @media (max-width: 768px) {
   .geolocation-manager {
     padding: 16px;
@@ -288,5 +409,14 @@
   .save-btn,
   .cancel-btn {
     width: 100%;
+  }
+
+  .coverage-property-item {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .coverage-property-meta {
+    align-items: flex-start;
   }
 }

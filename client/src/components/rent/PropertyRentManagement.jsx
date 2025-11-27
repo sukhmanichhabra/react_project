@@ -13,31 +13,31 @@ const PropertyRentManagement = () => {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [processing, setProcessing] = useState(false);
-  
+
   // Rent settings state
   const [rentSettings, setRentSettings] = useState({
     rentAmount: 0,
     frequency: "monthly",
     dueDay: 1,
     gracePeriod: 5,
-    lateFee: 50
+    lateFee: 50,
   });
 
   useEffect(() => {
     let mounted = true;
-    
+
     const loadData = async () => {
       if (!mounted) return;
-      
+
       try {
         await fetchPropertyData();
       } catch (error) {
-        console.error('Error loading property data:', error);
+        console.error("Error loading property data:", error);
       }
     };
-    
+
     loadData();
-    
+
     return () => {
       mounted = false;
     };
@@ -48,19 +48,19 @@ const PropertyRentManagement = () => {
     try {
       setLoading(true);
       const response = await rentAPI.getManageRentPage(propertyId);
-      
+
       if (response.data.success) {
         const data = response.data.data;
         setProperty(data.property);
         setRentHistory(data.rentHistory || []);
-        
+
         // Set rent settings from property
         if (data.property.rentSettings) {
           setRentSettings(data.property.rentSettings);
         } else {
           // Extract rent amount from price
           const rentAmount = extractRentAmount(data.property.price);
-          setRentSettings(prev => ({ ...prev, rentAmount }));
+          setRentSettings((prev) => ({ ...prev, rentAmount }));
         }
       }
     } catch (error) {
@@ -78,11 +78,14 @@ const PropertyRentManagement = () => {
 
   const handleSaveSettings = async (e) => {
     e.preventDefault();
-    
+
     try {
       setProcessing(true);
-      const response = await rentAPI.updateRentSettings(propertyId, rentSettings);
-      
+      const response = await rentAPI.updateRentSettings(
+        propertyId,
+        rentSettings
+      );
+
       if (response.data.success) {
         toast.success("Rent settings updated successfully!");
         setShowSettingsModal(false);
@@ -100,11 +103,11 @@ const PropertyRentManagement = () => {
     if (!window.confirm("Generate next rent payment for this property?")) {
       return;
     }
-    
+
     try {
       setProcessing(true);
       const response = await rentAPI.generateRentPayment(propertyId);
-      
+
       if (response.data.success) {
         toast.success("Rent payment generated successfully!");
         fetchPropertyData();
@@ -121,7 +124,7 @@ const PropertyRentManagement = () => {
     try {
       setProcessing(true);
       const response = await rentAPI.cancelRentalAgreement(propertyId);
-      
+
       if (response.data.success) {
         toast.success("Rental agreement cancelled successfully!");
         setShowCancelModal(false);
@@ -129,7 +132,9 @@ const PropertyRentManagement = () => {
       }
     } catch (error) {
       console.error("Error cancelling agreement:", error);
-      toast.error(error.response?.data?.message || "Failed to cancel agreement");
+      toast.error(
+        error.response?.data?.message || "Failed to cancel agreement"
+      );
     } finally {
       setProcessing(false);
     }
@@ -178,13 +183,20 @@ const PropertyRentManagement = () => {
       <div className="property-rent-header">
         <div>
           <h1>
-            <i className="fas fa-file-invoice-dollar"></i> Manage Rent: {property.title}
+            <i className="fas fa-file-invoice-dollar"></i> Manage Rent:{" "}
+            {property.title}
           </h1>
-          <button onClick={() => navigate("/rent/manage")} className="back-link">
+          <button
+            onClick={() => navigate("/rent/manage")}
+            className="back-link"
+          >
             <i className="fas fa-arrow-left"></i> Back to All Properties
           </button>
         </div>
-        <button onClick={() => navigate(`/property/${property._id}`)} className="view-property-btn">
+        <button
+          onClick={() => navigate(`/property/${property._id}`)}
+          className="view-property-btn"
+        >
           <i className="fas fa-eye"></i> View Property
         </button>
       </div>
@@ -205,9 +217,18 @@ const PropertyRentManagement = () => {
               <i className="fas fa-map-marker-alt"></i> {property.location}
             </p>
             <div className="property-features">
-              <span><i className="fas fa-bed"></i> {property.features?.beds || 0} Beds</span>
-              <span><i className="fas fa-bath"></i> {property.features?.baths || 0} Baths</span>
-              <span><i className="fas fa-ruler-combined"></i> {property.features?.sqft || 0} sqft</span>
+              <span>
+                <i className="fas fa-bed"></i> {property.features?.beds || 0}{" "}
+                Beds
+              </span>
+              <span>
+                <i className="fas fa-bath"></i> {property.features?.baths || 0}{" "}
+                Baths
+              </span>
+              <span>
+                <i className="fas fa-ruler-combined"></i>{" "}
+                {property.features?.sqft || 0} sqft
+              </span>
             </div>
             <p className="property-price">
               <i className="fas fa-money-bill-wave"></i> {property.price}
@@ -226,14 +247,19 @@ const PropertyRentManagement = () => {
       <section className="rent-settings-section">
         <div className="section-header">
           <h2>Rent Settings</h2>
-          <button onClick={() => setShowSettingsModal(true)} className="edit-settings-btn">
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="edit-settings-btn"
+          >
             <i className="fas fa-edit"></i> Edit Settings
           </button>
         </div>
         <div className="settings-display">
           <div className="setting-item">
             <span className="setting-label">Rent Amount:</span>
-            <span className="setting-value">{formatCurrency(rentSettings.rentAmount)}</span>
+            <span className="setting-value">
+              {formatCurrency(rentSettings.rentAmount)}
+            </span>
           </div>
           <div className="setting-item">
             <span className="setting-label">Frequency:</span>
@@ -241,15 +267,21 @@ const PropertyRentManagement = () => {
           </div>
           <div className="setting-item">
             <span className="setting-label">Due Day:</span>
-            <span className="setting-value">Day {rentSettings.dueDay} of month</span>
+            <span className="setting-value">
+              Day {rentSettings.dueDay} of month
+            </span>
           </div>
           <div className="setting-item">
             <span className="setting-label">Grace Period:</span>
-            <span className="setting-value">{rentSettings.gracePeriod} days</span>
+            <span className="setting-value">
+              {rentSettings.gracePeriod} days
+            </span>
           </div>
           <div className="setting-item">
             <span className="setting-label">Late Fee:</span>
-            <span className="setting-value">{formatCurrency(rentSettings.lateFee)}</span>
+            <span className="setting-value">
+              {formatCurrency(rentSettings.lateFee)}
+            </span>
           </div>
         </div>
       </section>
@@ -275,9 +307,10 @@ const PropertyRentManagement = () => {
         <div className="info-box">
           <i className="fas fa-info-circle"></i>
           <p>
-            You can generate a new rent payment for the tenant once the current payment is settled.
-            The rent will be generated based on the settings above and will be due according to the
-            frequency and due date specified.
+            You can generate a new rent payment for the tenant once the current
+            payment is settled. The rent will be generated based on the settings
+            above and will be due according to the frequency and due date
+            specified.
           </p>
         </div>
       </section>
@@ -306,10 +339,15 @@ const PropertyRentManagement = () => {
                     <td>{formatCurrency(rent.amount)}</td>
                     <td>
                       <span className={`status-badge status-${rent.status}`}>
-                        {rent.status.charAt(0).toUpperCase() + rent.status.slice(1)}
+                        {rent.status.charAt(0).toUpperCase() +
+                          rent.status.slice(1)}
                       </span>
                     </td>
-                    <td>{rent.paidDate ? formatDate(rent.paidDate) : "Not paid yet"}</td>
+                    <td>
+                      {rent.paidDate
+                        ? formatDate(rent.paidDate)
+                        : "Not paid yet"}
+                    </td>
                     <td>
                       <button
                         onClick={() => navigate(`/rent/details/${rent._id}`)}
@@ -346,17 +384,13 @@ const PropertyRentManagement = () => {
                 <span className="detail-value">{property.buyer.email}</span>
               </div>
               <div className="tenant-detail-item">
-                <span className="detail-label">Phone:</span>
-                <span className="detail-value">{property.buyer.phone || "N/A"}</span>
-              </div>
-              <div className="tenant-detail-item">
                 <span className="detail-label">Rented Since:</span>
                 <span className="detail-value">
                   {formatDate(property.purchaseDate || property.rentedSince)}
                 </span>
               </div>
             </div>
-            
+
             <div className="tenant-actions">
               <button
                 className="message-tenant-btn"
@@ -382,11 +416,17 @@ const PropertyRentManagement = () => {
 
       {/* Settings Modal */}
       {showSettingsModal && (
-        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowSettingsModal(false)}
+        >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Edit Rent Settings</h3>
-              <button onClick={() => setShowSettingsModal(false)} className="close-modal-btn">
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="close-modal-btn"
+              >
                 <i className="fas fa-times"></i>
               </button>
             </div>
@@ -398,27 +438,35 @@ const PropertyRentManagement = () => {
                   id="rentAmount"
                   value={rentSettings.rentAmount}
                   onChange={(e) =>
-                    setRentSettings({ ...rentSettings, rentAmount: parseFloat(e.target.value) })
+                    setRentSettings({
+                      ...rentSettings,
+                      rentAmount: parseFloat(e.target.value),
+                    })
                   }
                   min="0"
                   step="0.01"
                   required
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="frequency">Payment Frequency</label>
                 <select
                   id="frequency"
                   value={rentSettings.frequency}
-                  onChange={(e) => setRentSettings({ ...rentSettings, frequency: e.target.value })}
+                  onChange={(e) =>
+                    setRentSettings({
+                      ...rentSettings,
+                      frequency: e.target.value,
+                    })
+                  }
                 >
                   <option value="monthly">Monthly</option>
                   <option value="quarterly">Quarterly</option>
                   <option value="yearly">Yearly</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="dueDay">Due Day of Month</label>
                 <input
@@ -426,7 +474,10 @@ const PropertyRentManagement = () => {
                   id="dueDay"
                   value={rentSettings.dueDay}
                   onChange={(e) =>
-                    setRentSettings({ ...rentSettings, dueDay: parseInt(e.target.value) })
+                    setRentSettings({
+                      ...rentSettings,
+                      dueDay: parseInt(e.target.value),
+                    })
                   }
                   min="1"
                   max="31"
@@ -434,7 +485,7 @@ const PropertyRentManagement = () => {
                 />
                 <p className="form-hint">Day of the month when rent is due</p>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="gracePeriod">Grace Period (Days)</label>
                 <input
@@ -442,15 +493,20 @@ const PropertyRentManagement = () => {
                   id="gracePeriod"
                   value={rentSettings.gracePeriod}
                   onChange={(e) =>
-                    setRentSettings({ ...rentSettings, gracePeriod: parseInt(e.target.value) })
+                    setRentSettings({
+                      ...rentSettings,
+                      gracePeriod: parseInt(e.target.value),
+                    })
                   }
                   min="0"
                   max="30"
                   required
                 />
-                <p className="form-hint">Days after due date before rent is marked overdue</p>
+                <p className="form-hint">
+                  Days after due date before rent is marked overdue
+                </p>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="lateFee">Late Fee ($)</label>
                 <input
@@ -458,14 +514,17 @@ const PropertyRentManagement = () => {
                   id="lateFee"
                   value={rentSettings.lateFee}
                   onChange={(e) =>
-                    setRentSettings({ ...rentSettings, lateFee: parseFloat(e.target.value) })
+                    setRentSettings({
+                      ...rentSettings,
+                      lateFee: parseFloat(e.target.value),
+                    })
                   }
                   min="0"
                   step="0.01"
                   required
                 />
               </div>
-              
+
               <div className="modal-actions">
                 <button
                   type="button"
@@ -474,7 +533,11 @@ const PropertyRentManagement = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="save-btn" disabled={processing}>
+                <button
+                  type="submit"
+                  className="save-btn"
+                  disabled={processing}
+                >
                   {processing ? (
                     <>
                       <i className="fas fa-spinner fa-spin"></i> Saving...
@@ -493,11 +556,20 @@ const PropertyRentManagement = () => {
 
       {/* Cancel Agreement Modal */}
       {showCancelModal && (
-        <div className="modal-overlay" onClick={() => setShowCancelModal(false)}>
-          <div className="modal-content confirm-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowCancelModal(false)}
+        >
+          <div
+            className="modal-content confirm-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Cancel Rental Agreement</h3>
-              <button onClick={() => setShowCancelModal(false)} className="close-modal-btn">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="close-modal-btn"
+              >
                 <i className="fas fa-times"></i>
               </button>
             </div>
@@ -505,13 +577,17 @@ const PropertyRentManagement = () => {
               <div className="warning-message">
                 <i className="fas fa-exclamation-triangle"></i>
                 <p>
-                  Are you sure you want to cancel this rental agreement? This action cannot be
-                  undone. The property will be marked as available and the tenant will be notified.
+                  Are you sure you want to cancel this rental agreement? This
+                  action cannot be undone. The property will be marked as
+                  available and the tenant will be notified.
                 </p>
               </div>
             </div>
             <div className="modal-actions">
-              <button onClick={() => setShowCancelModal(false)} className="cancel-btn">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="cancel-btn"
+              >
                 No, Keep Agreement
               </button>
               <button
@@ -525,7 +601,8 @@ const PropertyRentManagement = () => {
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-times-circle"></i> Yes, Cancel Agreement
+                    <i className="fas fa-times-circle"></i> Yes, Cancel
+                    Agreement
                   </>
                 )}
               </button>

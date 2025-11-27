@@ -200,15 +200,21 @@ const NavBar = () => {
                 <div className="dropdown-content">
                   <div className="dropdown-grid">
                     <div className="dropdown-column">
-                      <h3>Property Options</h3>
-                      <Link to="/properties">All Properties</Link>
-                      <Link to="/properties/compare">Compare Properties</Link>
+                      <h3>Browse Properties</h3>
+                      <Link to="/properties">
+                        <i className="fas fa-home"></i> All Properties
+                      </Link>
+                      <Link to="/properties/compare">
+                        <i className="fas fa-exchange-alt"></i> Compare
+                        Properties
+                      </Link>
                     </div>
                     <div className="dropdown-column">
                       <h3>Property Visits</h3>
                       {user?.role === "buyer" && (
                         <Link to="/visits/schedule">
-                          <i className="fas fa-calendar-plus"></i> Schedule Visit
+                          <i className="fas fa-calendar-plus"></i> Schedule
+                          Visit
                         </Link>
                       )}
                       {user?.role === "agent" && (
@@ -218,7 +224,8 @@ const NavBar = () => {
                       )}
                       {!user && (
                         <Link to="/auth/signin">
-                          <i className="fas fa-sign-in-alt"></i> Login to Schedule
+                          <i className="fas fa-sign-in-alt"></i> Login to
+                          Schedule
                         </Link>
                       )}
                     </div>
@@ -247,7 +254,8 @@ const NavBar = () => {
                             <i className="fas fa-file-alt"></i> Apply for Loan
                           </Link>
                           <Link to="/loans/my-applications">
-                            <i className="fas fa-folder-open"></i> My Loan Applications
+                            <i className="fas fa-folder-open"></i> My Loan
+                            Applications
                           </Link>
                           {hasApprovedLoans && (
                             <Link to="/loans/my-emis">
@@ -261,7 +269,8 @@ const NavBar = () => {
                       <h3>Rent Management</h3>
                       {user?.role === "buyer" && (
                         <Link to="/rent/pay">
-                          <i className="fas fa-file-invoice-dollar"></i> Pay Rent
+                          <i className="fas fa-file-invoice-dollar"></i> Pay
+                          Rent
                         </Link>
                       )}
                       {user?.role === "seller" && (
@@ -529,7 +538,9 @@ const NavBar = () => {
                   className="mobile-nav-link"
                   onClick={closeMobileMenu}
                 >
-                  <span>Property</span>
+                  <span>
+                    <i className="fas fa-home"></i> All Properties
+                  </span>
                 </Link>
                 <Link
                   to="/properties/compare"

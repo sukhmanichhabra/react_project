@@ -94,3 +94,35 @@
 .dash-stat-trend i {
   font-size: 0.75rem; /* 12px */
 }
+
+/* Action button styling */
+.dash-stat-action-btn {
+  margin-top: 0.5rem; /* 8px */
+  padding: 0.375rem 0.75rem; /* 6px 12px */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 0.375rem; /* 6px */
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.dash-stat-action-btn:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.dash-stat-action-btn:active {
+  transform: translateY(0);
+}
+
+.dash-stat-action-btn i {
+  font-size: 0.75rem; /* 12px */
+}

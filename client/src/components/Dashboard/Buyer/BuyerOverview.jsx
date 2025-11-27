@@ -3,8 +3,13 @@ import { Link } from "react-router-dom";
 import DashboardStats from "../common/DashboardStats";
 import OverviewCharts from "../common/OverviewCharts";
 import "./BuyerOverview.css";
+import "../Admin/DashboardTable.css";
 
 const BuyerOverview = ({ user, stats, loanRequests, onAddFunds }) => {
+  // Debug logging for loan requests
+  console.log("BuyerOverview - loanRequests prop:", loanRequests);
+  console.log("BuyerOverview - user prop:", user);
+
   // Define stats for the Buyer
   const buyerStats = {
     customStats: [
@@ -40,9 +45,17 @@ const BuyerOverview = ({ user, stats, loanRequests, onAddFunds }) => {
   };
 
   const activeLoan =
-    loanRequests.find((l) => l.status === "approved") || // Prefer 'approved' for the label
-    loanRequests.find((l) => l.status === "pending") ||
+    loanRequests.find(
+      (l) => (l.applicationStatus || l.status) === "approved"
+    ) || // Prefer 'approved' for the label
+    loanRequests.find((l) => (l.applicationStatus || l.status) === "pending") ||
     loanRequests[0];
+
+  console.log("BuyerOverview - activeLoan:", activeLoan);
+  console.log(
+    "BuyerOverview - loanRequests length:",
+    loanRequests?.length || 0
+  );
 
   // Match screenshot stats
   const screenshotStats = {
@@ -80,15 +93,18 @@ const BuyerOverview = ({ user, stats, loanRequests, onAddFunds }) => {
 
   const getLoanStatusClass = (status) => {
     if (status === "approved") return "approved";
-    if (status === "pending") return "pending";
+    if (status === "pending" || status === "under_review") return "pending";
     if (status === "rejected") return "rejected";
+    if (status === "disbursed") return "disbursed";
     return "default";
   };
 
   const getLoanStatusText = (status) => {
     if (status === "approved") return "Loan approved!";
     if (status === "pending") return "Pending";
+    if (status === "under_review") return "Under Review";
     if (status === "rejected") return "Rejected";
+    if (status === "disbursed") return "Disbursed";
     return "N/A";
   };
 
@@ -115,9 +131,14 @@ const BuyerOverview = ({ user, stats, loanRequests, onAddFunds }) => {
                 ? user.accountBalance.toLocaleString()
                 : "0.00"}
             </p>
-            <button onClick={onAddFunds} className="dash-action-btn">
-              <i className="fas fa-plus-circle"></i> Add Funds
-            </button>
+            <div className="dash-loan-buttons">
+              <button
+                onClick={onAddFunds}
+                className="dash-loan-btn dash-add-funds-btn"
+              >
+                <i className="fas fa-plus-circle"></i> Add Funds
+              </button>
+            </div>
           </div>
         </div>
 
@@ -131,31 +152,43 @@ const BuyerOverview = ({ user, stats, loanRequests, onAddFunds }) => {
               <>
                 <span
                   className={`dash-loan-status-badge ${getLoanStatusClass(
-                    activeLoan.status
+                    activeLoan.applicationStatus || activeLoan.status
                   )}`}
                 >
-                  {getLoanStatusText(activeLoan.status)}
+                  {getLoanStatusText(
+                    activeLoan.applicationStatus || activeLoan.status
+                  )}
                 </span>
-                <Link
-                  to="/loan-details"
-                  className="dash-action-btn"
-                  style={{ display: "block" }}
-                >
-                  View Details
-                </Link>
+                <div className="dash-loan-buttons">
+                  <Link
+                    to="/loans/my-applications"
+                    className="dash-loan-btn dash-view-details-btn"
+                  >
+                    <i className="fas fa-eye"></i> View Details
+                  </Link>
+                  {/* <Link
+                    to="/apply-loan"
+                    className="dash-loan-btn dash-apply-loan-btn"
+                  >
+                    <i className="fas fa-file-alt"></i> Apply for a New Loan
+                  </Link> */}
+                </div>
               </>
             ) : (
-              <span className="dash-loan-status-badge default">
-                No Active Loans
-              </span>
+              <>
+                <span className="dash-loan-status-badge default">
+                  No Active Loans
+                </span>
+                <div className="dash-loan-buttons">
+                  <Link
+                    to="/apply-loan"
+                    className="dash-loan-btn dash-apply-loan-btn"
+                  >
+                    <i className="fas fa-file-alt"></i> Apply for a New Loan
+                  </Link>
+                </div>
+              </>
             )}
-            <Link
-              to="/apply-loan"
-              className="dash-action-btn"
-              style={{ display: "block", marginTop: "0.5rem" }}
-            >
-              Apply for a New Loan
-            </Link>
           </div>
         </div>
       </div>
@@ -180,18 +213,27 @@ const BuyerOverview = ({ user, stats, loanRequests, onAddFunds }) => {
               {loanRequests.length > 0 ? (
                 loanRequests.map((loan) => (
                   <tr key={loan._id}>
-                    <td>{loan.propertyTitle}</td>
                     <td>
-                      ${loan.amount ? loan.amount.toLocaleString() : "N/A"}
+                      {loan.loanDetails?.propertyAddress ||
+                        loan.propertyTitle ||
+                        "N/A"}
                     </td>
-                    <td>{loan.type}</td>
+                    <td>
+                      $
+                      {loan.loanDetails?.loanAmount
+                        ? loan.loanDetails.loanAmount.toLocaleString()
+                        : loan.amount
+                        ? loan.amount.toLocaleString()
+                        : "N/A"}
+                    </td>
+                    <td>{loan.loanDetails?.loanType || loan.type || "N/A"}</td>
                     <td>
                       <span
                         className={`dash-status-badge ${getLoanStatusClass(
-                          loan.status
+                          loan.applicationStatus || loan.status
                         )}`}
                       >
-                        {loan.status}
+                        {loan.applicationStatus || loan.status}
                       </span>
                     </td>
                   </tr>

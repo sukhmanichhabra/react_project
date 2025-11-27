@@ -55,9 +55,14 @@ const BlogDetails = () => {
       if (response.data.success) {
         setBlog(response.data.data);
 
-        // Fetch related blogs
-        if (response.data.data.tags && response.data.data.tags.length > 0) {
-          fetchRelatedBlogs(response.data.data.tags[0]);
+        // Fetch related blogs - always try to fetch some related content
+        const blogData = response.data.data;
+        if (blogData.tags && blogData.tags.length > 0) {
+          // Use the first tag for related blogs
+          fetchRelatedBlogs(blogData.tags[0]);
+        } else {
+          // If no tags, just get some recent blogs
+          fetchRelatedBlogs(null);
         }
 
         // Fetch tag counts
@@ -72,13 +77,50 @@ const BlogDetails = () => {
 
   const fetchRelatedBlogs = async (tag) => {
     try {
-      const response = await axios.get(`/api/blog/tag/${tag}`);
-      const filteredBlogs = response.data
-        .filter((b) => b._id !== id)
-        .slice(0, 3);
+      let filteredBlogs = [];
+
+      // If we have a tag, try to get blogs by that tag first
+      if (tag) {
+        try {
+          const response = await axios.get(`/api/blog/tag/${tag}`);
+          filteredBlogs = response.data.filter((b) => b._id !== id).slice(0, 3);
+        } catch (tagError) {
+          console.warn(`Error fetching blogs by tag '${tag}':`, tagError);
+        }
+      }
+
+      // If we don't have enough related blogs by tag (or no tag), get more from all blogs
+      if (filteredBlogs.length < 3) {
+        try {
+          const allBlogsResponse = await axios.get("/api/blog/all");
+          const allBlogs = allBlogsResponse.data.blogs || allBlogsResponse.data;
+
+          // Get additional blogs excluding current blog and already selected ones
+          const additionalBlogs = allBlogs
+            .filter(
+              (b) =>
+                b._id !== id && !filteredBlogs.some((fb) => fb._id === b._id)
+            )
+            .sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn)) // Sort by newest first
+            .slice(0, 3 - filteredBlogs.length);
+
+          filteredBlogs = [...filteredBlogs, ...additionalBlogs];
+        } catch (allBlogsError) {
+          console.error(
+            "Error fetching all blogs for related articles:",
+            allBlogsError
+          );
+        }
+      }
+
+      console.log(
+        `Found ${filteredBlogs.length} related blogs:`,
+        filteredBlogs.map((b) => b.title)
+      );
       setRelatedBlogs(filteredBlogs);
     } catch (error) {
-      console.error("Error fetching related blogs:", error);
+      console.error("Error in fetchRelatedBlogs:", error);
+      setRelatedBlogs([]);
     }
   };
 
@@ -97,7 +139,7 @@ const BlogDetails = () => {
       blogs.forEach((blog) => {
         if (blog.tags) {
           blog.tags.forEach((tag) => {
-            if (counts.hasOwnProperty(tag)) {
+            if (Object.prototype.hasOwnProperty.call(counts, tag)) {
               counts[tag]++;
             }
           });

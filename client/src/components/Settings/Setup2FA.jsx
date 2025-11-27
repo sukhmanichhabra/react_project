@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../../services/api';
-import './Setup2FA.css';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authAPI } from "../../services/api";
+import "./Setup2FA.css";
+import NavBar from "../partials/NavBar";
 
 const Setup2FA = () => {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ const Setup2FA = () => {
   const [error, setError] = useState(null);
   const [qrCode, setQrCode] = useState(null);
   const [secret, setSecret] = useState(null);
-  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationCode, setVerificationCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState(null);
   const [showManualEntry, setShowManualEntry] = useState(false);
@@ -29,14 +30,14 @@ const Setup2FA = () => {
         setQrCode(response.data.data.qrCode);
         setSecret(response.data.data.secret);
       } else {
-        setError('Failed to load 2FA setup');
+        setError("Failed to load 2FA setup");
       }
     } catch (err) {
-      console.error('Error fetching 2FA setup:', err);
+      console.error("Error fetching 2FA setup:", err);
       if (err.response?.status === 401) {
-        navigate('/auth/signin');
+        navigate("/auth/signin");
       } else {
-        setError(err.response?.data?.message || 'Failed to load 2FA setup');
+        setError(err.response?.data?.message || "Failed to load 2FA setup");
       }
     } finally {
       setLoading(false);
@@ -45,9 +46,9 @@ const Setup2FA = () => {
 
   const handleVerify = async (e) => {
     e.preventDefault();
-    
+
     if (!verificationCode || verificationCode.length !== 6) {
-      setVerificationError('Please enter a valid 6-digit code');
+      setVerificationError("Please enter a valid 6-digit code");
       return;
     }
 
@@ -59,20 +60,22 @@ const Setup2FA = () => {
 
       if (response.data.success) {
         // Redirect to settings with success message
-        navigate('/settings?success=2fa-enabled');
+        navigate("/settings?success=2fa-enabled");
       } else {
-        setVerificationError(response.data.message || 'Verification failed');
+        setVerificationError(response.data.message || "Verification failed");
       }
     } catch (err) {
-      console.error('Error verifying 2FA:', err);
-      setVerificationError(err.response?.data?.message || 'Invalid verification code');
+      console.error("Error verifying 2FA:", err);
+      setVerificationError(
+        err.response?.data?.message || "Invalid verification code"
+      );
     } finally {
       setVerifying(false);
     }
   };
 
   const handleCodeChange = (e) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
     setVerificationCode(value);
     setVerificationError(null);
   };
@@ -176,7 +179,7 @@ const Setup2FA = () => {
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText(secret);
-                    alert('Secret key copied to clipboard!');
+                    alert("Secret key copied to clipboard!");
                   }}
                   className="copy-btn"
                   title="Copy to clipboard"
@@ -194,7 +197,10 @@ const Setup2FA = () => {
             <span className="step-number">3</span>
             Verify Setup
           </h2>
-          <p>Enter the 6-digit code from your authenticator app to complete setup:</p>
+          <p>
+            Enter the 6-digit code from your authenticator app to complete
+            setup:
+          </p>
 
           <form onSubmit={handleVerify} className="verification-form">
             <div className="form-group">
@@ -245,8 +251,13 @@ const Setup2FA = () => {
           </h3>
           <ul>
             <li>Save your secret key in a safe place as a backup</li>
-            <li>You'll need your authenticator app to log in to your account</li>
-            <li>If you lose access to your authenticator app, you won't be able to log in</li>
+            <li>
+              You'll need your authenticator app to log in to your account
+            </li>
+            <li>
+              If you lose access to your authenticator app, you won't be able to
+              log in
+            </li>
             <li>You can disable 2FA anytime from your account settings</li>
           </ul>
         </div>
@@ -255,7 +266,7 @@ const Setup2FA = () => {
         <div className="setup-footer">
           <button
             type="button"
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate("/settings")}
             className="btn btn-secondary"
           >
             <i className="fas fa-arrow-left"></i> Back to Settings

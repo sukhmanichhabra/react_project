@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import axios from "axios";
 
 const AgentDetails = ({ agent, propertyId }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
   });
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
 
   const validateName = (name) => {
     const namePattern = /^[a-zA-Z\s]{2,30}$/;
@@ -22,7 +23,7 @@ const AgentDetails = ({ agent, propertyId }) => {
 
   const validatePhone = (phone) => {
     const phonePattern = /^\d{10}$/;
-    return phonePattern.test(phone.replace(/\D/g, ''));
+    return phonePattern.test(phone.replace(/\D/g, ""));
   };
 
   const validateMessage = (message) => {
@@ -32,36 +33,36 @@ const AgentDetails = ({ agent, propertyId }) => {
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
-    
+
     // Clear error when user starts typing
     if (errors[id]) {
-      setErrors({ ...errors, [id]: '' });
+      setErrors({ ...errors, [id]: "" });
     }
   };
 
   const handleBlur = (e) => {
     const { id, value } = e.target;
-    let error = '';
+    let error = "";
 
-    switch(id) {
-      case 'name':
+    switch (id) {
+      case "name":
         if (!validateName(value)) {
-          error = 'Please enter a valid name (2-30 characters, letters only)';
+          error = "Please enter a valid name (2-30 characters, letters only)";
         }
         break;
-      case 'email':
+      case "email":
         if (!validateEmail(value)) {
-          error = 'Please enter a valid email address';
+          error = "Please enter a valid email address";
         }
         break;
-      case 'phone':
+      case "phone":
         if (!validatePhone(value)) {
-          error = 'Please enter a valid 10-digit phone number';
+          error = "Please enter a valid 10-digit phone number";
         }
         break;
-      case 'message':
+      case "message":
         if (!validateMessage(value)) {
-          error = 'Message must be at least 30 characters long';
+          error = "Message must be at least 30 characters long";
         }
         break;
       default:
@@ -73,22 +74,22 @@ const AgentDetails = ({ agent, propertyId }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate all fields
     const newErrors = {};
     if (!validateName(formData.name)) {
-      newErrors.name = 'Please enter a valid name';
+      newErrors.name = "Please enter a valid name";
     }
     if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = "Please enter a valid email";
     }
     if (!validatePhone(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = "Please enter a valid phone number";
     }
     if (!validateMessage(formData.message)) {
-      newErrors.message = 'Message must be at least 30 characters';
+      newErrors.message = "Message must be at least 30 characters";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -97,14 +98,38 @@ const AgentDetails = ({ agent, propertyId }) => {
     }
 
     // Submit form
-    setStatus('sending');
-    
-    // TODO: Replace with actual API call
-    setTimeout(() => {
-      setStatus('success');
-      setFormData({ name: '', email: '', phone: '', message: '' });
-      setTimeout(() => setStatus(''), 3000);
-    }, 1500);
+    setStatus("sending");
+
+    try {
+      const response = await axios.post(
+        `/api/property/${propertyId}/contact`,
+        {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setStatus("success");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+        setTimeout(() => setStatus(""), 3000);
+      } else {
+        setStatus("error");
+        setTimeout(() => setStatus(""), 3000);
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setStatus("error");
+      setTimeout(() => setStatus(""), 3000);
+    }
   };
 
   if (!agent) {
@@ -122,7 +147,11 @@ const AgentDetails = ({ agent, propertyId }) => {
       <div className="prop-overview-agent-info-section">
         <h2>Property Agent</h2>
         <div className="prop-overview-agent-card">
-          <img src={agent.image} alt={agent.name} className="prop-overview-agent-avatar" />
+          <img
+            src={agent.image}
+            alt={agent.name}
+            className="prop-overview-agent-avatar"
+          />
           <div className="prop-overview-agent-details">
             <h3>{agent.name}</h3>
             {agent.verified && (
@@ -131,11 +160,16 @@ const AgentDetails = ({ agent, propertyId }) => {
               </span>
             )}
             <p className="prop-overview-agent-properties">
-              <i className="fas fa-home"></i> {agent.properties || agent.listingCount || 0} Properties
+              <i className="fas fa-home"></i>{" "}
+              {agent.properties || agent.listingCount || 0} Properties
             </p>
             <div className="prop-overview-agent-contact">
-              <p><i className="fas fa-envelope"></i> {agent.email}</p>
-              <p><i className="fas fa-phone"></i> {agent.phone}</p>
+              <p>
+                <i className="fas fa-envelope"></i> {agent.email}
+              </p>
+              <p>
+                <i className="fas fa-phone"></i> {agent.phone}
+              </p>
             </div>
           </div>
         </div>
@@ -146,19 +180,22 @@ const AgentDetails = ({ agent, propertyId }) => {
         <h2>Contact Agent</h2>
         <form className="prop-overview-contact-form" onSubmit={handleSubmit}>
           <div className="prop-overview-form-message">
-            {status === 'sending' && (
+            {status === "sending" && (
               <div className="prop-overview-sending-message">
-                <i className="fas fa-spinner fa-pulse"></i> Sending your message...
+                <i className="fas fa-spinner fa-pulse"></i> Sending your
+                message...
               </div>
             )}
-            {status === 'success' && (
+            {status === "success" && (
               <div className="prop-overview-success-message">
-                <i className="fas fa-check-circle"></i> Message sent successfully!
+                <i className="fas fa-check-circle"></i> Message sent
+                successfully!
               </div>
             )}
-            {status === 'error' && (
+            {status === "error" && (
               <div className="prop-overview-error-message">
-                <i className="fas fa-exclamation-circle"></i> Failed to send message. Please try again.
+                <i className="fas fa-exclamation-circle"></i> Failed to send
+                message. Please try again.
               </div>
             )}
           </div>
@@ -172,10 +209,14 @@ const AgentDetails = ({ agent, propertyId }) => {
               value={formData.name}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.name ? 'invalid' : formData.name ? 'valid' : ''}
+              className={errors.name ? "invalid" : formData.name ? "valid" : ""}
               required
             />
-            {errors.name && <span className="prop-overview-validation-message show">{errors.name}</span>}
+            {errors.name && (
+              <span className="prop-overview-validation-message show">
+                {errors.name}
+              </span>
+            )}
           </div>
 
           <div className="prop-overview-form-group">
@@ -187,10 +228,16 @@ const AgentDetails = ({ agent, propertyId }) => {
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.email ? 'invalid' : formData.email ? 'valid' : ''}
+              className={
+                errors.email ? "invalid" : formData.email ? "valid" : ""
+              }
               required
             />
-            {errors.email && <span className="prop-overview-validation-message show">{errors.email}</span>}
+            {errors.email && (
+              <span className="prop-overview-validation-message show">
+                {errors.email}
+              </span>
+            )}
           </div>
 
           <div className="prop-overview-form-group">
@@ -202,10 +249,16 @@ const AgentDetails = ({ agent, propertyId }) => {
               value={formData.phone}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.phone ? 'invalid' : formData.phone ? 'valid' : ''}
+              className={
+                errors.phone ? "invalid" : formData.phone ? "valid" : ""
+              }
               required
             />
-            {errors.phone && <span className="prop-overview-validation-message show">{errors.phone}</span>}
+            {errors.phone && (
+              <span className="prop-overview-validation-message show">
+                {errors.phone}
+              </span>
+            )}
           </div>
 
           <div className="prop-overview-form-group">
@@ -217,13 +270,23 @@ const AgentDetails = ({ agent, propertyId }) => {
               value={formData.message}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.message ? 'invalid' : formData.message ? 'valid' : ''}
+              className={
+                errors.message ? "invalid" : formData.message ? "valid" : ""
+              }
               required
             ></textarea>
-            {errors.message && <span className="prop-overview-validation-message show">{errors.message}</span>}
+            {errors.message && (
+              <span className="prop-overview-validation-message show">
+                {errors.message}
+              </span>
+            )}
           </div>
 
-          <button type="submit" className="prop-overview-submit-btn" disabled={status === 'sending'}>
+          <button
+            type="submit"
+            className="prop-overview-submit-btn"
+            disabled={status === "sending"}
+          >
             <i className="fas fa-paper-plane"></i> Send Message
           </button>
         </form>

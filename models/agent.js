@@ -878,117 +878,137 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c; // Distance in kilometers
 }
 
-// Find the best agent for a property based on geolocation and workload
+// Find the best agent for a property based on distance (primary) and workload (secondary)
 async function findBestAgentForProperty(propertyLatitude, propertyLongitude) {
   try {
-    console.log(`Finding best agent for property at: ${propertyLatitude}, ${propertyLongitude}`);
-    
-    // Get all verified agents first
-    const verifiedAgents = await Agent.find({ 
+    console.log(
+      `Finding best agent for property at: ${propertyLatitude}, ${propertyLongitude}`
+    );
+
+    // Get all verified agents with geolocation first
+    const verifiedAgents = await Agent.find({
       verified: true,
-      'geolocation.latitude': { $exists: true, $ne: null },
-      'geolocation.longitude': { $exists: true, $ne: null }
+      "geolocation.latitude": { $exists: true, $ne: null },
+      "geolocation.longitude": { $exists: true, $ne: null },
     }).lean();
-    
+
     // If no verified agents with geolocation, get all agents with geolocation
     let availableAgents = verifiedAgents;
     if (availableAgents.length === 0) {
       availableAgents = await Agent.find({
-        'geolocation.latitude': { $exists: true, $ne: null },
-        'geolocation.longitude': { $exists: true, $ne: null }
+        "geolocation.latitude": { $exists: true, $ne: null },
+        "geolocation.longitude": { $exists: true, $ne: null },
       }).lean();
     }
-    
+
     // If still no agents with geolocation, fall back to any agent
     if (availableAgents.length === 0) {
-      console.log('No agents with geolocation found, falling back to any available agent');
+      console.log(
+        "No agents with geolocation found, falling back to any available agent"
+      );
       availableAgents = await Agent.find({ verified: true }).lean();
       if (availableAgents.length === 0) {
         availableAgents = await Agent.find({}).lean();
       }
     }
-    
+
     if (availableAgents.length === 0) {
-      console.log('No agents available for assignment');
+      console.log("No agents available for assignment");
       return null;
     }
-    
-    // Calculate distances and workload for each agent
+
+    // Calculate distance and workload for each agent
     const agentScores = [];
-    
+
     for (const agent of availableAgents) {
       let distance = Infinity;
       let withinServiceRadius = false;
-      
+
       // Calculate distance if both property and agent have coordinates
-      if (propertyLatitude && propertyLongitude && 
-          agent.geolocation && agent.geolocation.latitude && agent.geolocation.longitude) {
+      if (
+        propertyLatitude &&
+        propertyLongitude &&
+        agent.geolocation &&
+        agent.geolocation.latitude &&
+        agent.geolocation.longitude
+      ) {
         distance = calculateDistance(
-          propertyLatitude, 
+          propertyLatitude,
           propertyLongitude,
           agent.geolocation.latitude,
           agent.geolocation.longitude
         );
-        
+
         // Check if property is within agent's service radius
         const serviceRadius = agent.geolocation.serviceRadius || 50;
         withinServiceRadius = distance <= serviceRadius;
       }
-      
-      // Get agent's current workload (property count)
+
+      // Current workload (how many properties already assigned)
       const workload = agent.listingCount || 0;
-      
-      // Calculate score (lower is better)
-      // Prioritize: verified status, proximity, low workload
-      let score = 0;
-      
-      // Verification bonus (lower score is better)
-      if (agent.verified) {
-        score -= 1000; // Big bonus for verified agents
-      }
-      
-      // Distance penalty (only if we have coordinates)
-      if (distance !== Infinity) {
-        score += distance * 10; // 10 points per km
-        
-        // Service radius bonus
-        if (withinServiceRadius) {
-          score -= 500; // Bonus for being within service radius
-        }
-      } else {
-        // No geolocation penalty
-        score += 5000;
-      }
-      
-      // Workload penalty
-      score += workload * 100; // 100 points per property
-      
+
       agentScores.push({
         agent,
         distance,
         workload,
-        score,
         withinServiceRadius,
-        verified: agent.verified
+        verified: !!agent.verified,
       });
     }
-    
-    // Sort by score (ascending - lower is better)
-    agentScores.sort((a, b) => a.score - b.score);
-    
-    // Log top candidates for debugging
-    console.log('Top 3 agent candidates:');
-    agentScores.slice(0, 3).forEach((candidate, index) => {
-      console.log(`${index + 1}. Agent: ${candidate.agent.name}, Score: ${candidate.score}, Distance: ${candidate.distance.toFixed(2)}km, Workload: ${candidate.workload}, Verified: ${candidate.verified}, Within radius: ${candidate.withinServiceRadius}`);
+
+    // Sort using distance as primary, workload as secondary, verification as tie-breaker
+    agentScores.sort((a, b) => {
+      const aHasDistance = a.distance !== Infinity;
+      const bHasDistance = b.distance !== Infinity;
+
+      // Prefer agents where we know the distance
+      if (aHasDistance !== bHasDistance) {
+        return aHasDistance ? -1 : 1;
+      }
+
+      // Prefer agents where the property is within their service radius
+      if (a.withinServiceRadius !== b.withinServiceRadius) {
+        return a.withinServiceRadius ? -1 : 1;
+      }
+
+      // Primary: smaller distance first
+      if (a.distance !== b.distance) {
+        return a.distance - b.distance;
+      }
+
+      // Secondary: lower workload (more equal distribution)
+      if (a.workload !== b.workload) {
+        return a.workload - b.workload;
+      }
+
+      // Final tie-breaker: prefer verified agents
+      if (a.verified !== b.verified) {
+        return a.verified ? -1 : 1;
+      }
+
+      return 0;
     });
-    
+
+    // Log top candidates for debugging
+    console.log("Top 3 agent candidates (sorted by distance, then workload):");
+    agentScores.slice(0, 3).forEach((candidate, index) => {
+      const distanceLabel =
+        candidate.distance === Infinity
+          ? "N/A"
+          : `${candidate.distance.toFixed(2)}km`;
+      console.log(
+        `${index + 1}. Agent: ${candidate.agent.name}, Distance: ${distanceLabel}, Workload: ${candidate.workload}, Verified: ${candidate.verified}, Within radius: ${candidate.withinServiceRadius}`
+      );
+    });
+
     return agentScores[0].agent;
-    
   } catch (error) {
-    console.error('Error finding best agent for property:', error);
-    
-    // Fallback to original round-robin assignment
-    const allAgents = await Agent.find({}).sort({ verified: -1, listingCount: 1 }).limit(1);
+    console.error("Error finding best agent for property:", error);
+
+    // Fallback to original round-robin-style assignment by verification then load
+    const allAgents = await Agent.find({})
+      .sort({ verified: -1, listingCount: 1 })
+      .limit(1);
     return allAgents.length > 0 ? allAgents[0] : null;
   }
 }

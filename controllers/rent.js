@@ -1,4 +1,4 @@
-const { RentModel, PropertyModel } = require("../models");
+const { RentModel, PropertyModel, AgreementModel } = require("../models");
 const mongoose = require("mongoose");
 
 // Get rent payment page - shows all properties rented by the user
@@ -76,7 +76,7 @@ exports.getBuyerRentedProperties = async (req, res) => {
       (property) => property.tag === "rent" && property.status === "rented"
     );
 
-    // Get rent history for each property
+    // Get rent history and agreement info for each property
     const propertiesWithRentHistory = await Promise.all(
       rentedProperties.map(async (property) => {
         const rentHistory = await RentModel.getRentsByPropertyId(property._id);
@@ -87,6 +87,28 @@ exports.getBuyerRentedProperties = async (req, res) => {
           .filter((rent) => rent.status === "paid")
           .sort((a, b) => new Date(b.paidDate) - new Date(a.paidDate))[0];
 
+        // Get active agreement for this rented property and buyer
+        const agreement =
+          await AgreementModel.getActiveAgreementForPropertyAndBuyer(
+            property._id,
+            req.user._id
+          );
+
+        const rentedOn =
+          (agreement && agreement.startDate) ||
+          (lastPaidRent && lastPaidRent.paidDate) ||
+          property.createdAt;
+
+        let leaseDuration = "12 months";
+        if (agreement && agreement.startDate && agreement.endDate) {
+          const start = new Date(agreement.startDate);
+          const end = new Date(agreement.endDate);
+          const months =
+            (end.getFullYear() - start.getFullYear()) * 12 +
+            (end.getMonth() - start.getMonth()) || 1;
+          leaseDuration = `${months} months`;
+        }
+
         return {
           ...property.toObject(),
           rentHistory,
@@ -94,8 +116,26 @@ exports.getBuyerRentedProperties = async (req, res) => {
           lastPaidRent,
           landlordName: property.seller?.name || "Property Owner",
           landlordEmail: property.seller?.email || "",
-          rentedOn: lastPaidRent?.paidDate || property.createdAt,
-          leaseDuration: "12 months", // Default lease duration
+          rentedOn,
+          leaseDuration,
+          agreement: agreement
+            ? {
+                _id: agreement._id,
+                status: agreement.status,
+                startDate: agreement.startDate,
+                endDate: agreement.endDate,
+                monthlyRent: agreement.monthlyRent,
+                lockInEndDate: agreement.lockInEndDate,
+                securityDeposit: agreement.securityDeposit,
+                maintenance: agreement.maintenance,
+                buyerName: agreement.buyerName,
+                buyerEmail: agreement.buyerEmail,
+                buyerPhone: agreement.buyerPhone,
+                sellerName: agreement.sellerName,
+                sellerEmail: agreement.sellerEmail,
+                sellerPhone: agreement.sellerPhone,
+              }
+            : null,
         };
       })
     );
@@ -121,14 +161,16 @@ exports.getBuyerRentedProperties = async (req, res) => {
 exports.getSellerRentedProperties = async (req, res) => {
   try {
     // Get all properties owned by this seller
-    const allProperties = await PropertyModel.getPropertiesBySeller(req.user._id);
+    const allProperties = await PropertyModel.getPropertiesBySeller(
+      req.user._id
+    );
 
     // Filter to only properties that are rented out (status: 'rented' and tag: 'rent')
     const rentedProperties = allProperties.filter(
       (property) => property.tag === "rent" && property.status === "rented"
     );
 
-    // Get rent information for each rented property
+    // Get rent and agreement information for each rented property
     const propertiesWithRentInfo = await Promise.all(
       rentedProperties.map(async (property) => {
         const rentHistory = await RentModel.getRentsByPropertyId(property._id);
@@ -138,10 +180,18 @@ exports.getSellerRentedProperties = async (req, res) => {
         const totalCollected = rentHistory
           .filter((rent) => rent.status === "paid")
           .reduce((sum, rent) => sum + rent.amount, 0);
-        
+
         const lastRentDate = rentHistory
           .filter((rent) => rent.status === "paid")
-          .sort((a, b) => new Date(b.paidDate) - new Date(a.paidDate))[0]?.paidDate;
+          .sort(
+            (a, b) => new Date(b.paidDate) - new Date(a.paidDate)
+          )[0]?.paidDate;
+
+        const agreement =
+          await AgreementModel.getActiveAgreementForPropertyAndBuyer(
+            property._id,
+            property.buyerId
+          );
 
         return {
           ...property.toObject(),
@@ -150,7 +200,25 @@ exports.getSellerRentedProperties = async (req, res) => {
           lastRentDate,
           tenantName: property.buyer?.name || "Tenant",
           tenantEmail: property.buyer?.email || "",
-          rentedSince: property.updatedAt, // When it was marked as rented
+          rentedSince: agreement?.startDate || property.updatedAt,
+          agreement: agreement
+            ? {
+                _id: agreement._id,
+                status: agreement.status,
+                startDate: agreement.startDate,
+                endDate: agreement.endDate,
+                monthlyRent: agreement.monthlyRent,
+                lockInEndDate: agreement.lockInEndDate,
+                securityDeposit: agreement.securityDeposit,
+                maintenance: agreement.maintenance,
+                buyerName: agreement.buyerName,
+                buyerEmail: agreement.buyerEmail,
+                buyerPhone: agreement.buyerPhone,
+                sellerName: agreement.sellerName,
+                sellerEmail: agreement.sellerEmail,
+                sellerPhone: agreement.sellerPhone,
+              }
+            : null,
         };
       })
     );
@@ -160,7 +228,10 @@ exports.getSellerRentedProperties = async (req, res) => {
       data: {
         properties: propertiesWithRentInfo,
         total: propertiesWithRentInfo.length,
-        totalRevenue: propertiesWithRentInfo.reduce((sum, p) => sum + p.totalCollected, 0),
+        totalRevenue: propertiesWithRentInfo.reduce(
+          (sum, p) => sum + p.totalCollected,
+          0
+        ),
       },
     });
   } catch (error) {
@@ -177,7 +248,7 @@ exports.getSellerRentedProperties = async (req, res) => {
 exports.cancelRentalAgreementByBuyer = async (req, res) => {
   try {
     const { propertyId } = req.params;
-    
+
     // Check if property exists and is rented by this user
     const property = await PropertyModel.getPropertyById(propertyId);
     if (!property) {
@@ -188,7 +259,10 @@ exports.cancelRentalAgreementByBuyer = async (req, res) => {
     }
 
     // Check if user is the renter
-    if (!property.buyerId || property.buyerId.toString() !== req.user._id.toString()) {
+    if (
+      !property.buyerId ||
+      property.buyerId.toString() !== req.user._id.toString()
+    ) {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to cancel this rental agreement",
@@ -203,18 +277,44 @@ exports.cancelRentalAgreementByBuyer = async (req, res) => {
       });
     }
 
+    // Check agreement lock-in for buyer (cannot cancel before lock-in end date)
+    const activeAgreement =
+      await AgreementModel.getActiveAgreementForPropertyAndBuyer(
+        propertyId,
+        req.user._id
+      );
+
+    if (activeAgreement) {
+      const lockIn =
+        activeAgreement.lockInEndDate || activeAgreement.endDate || null;
+      if (lockIn && new Date() < new Date(lockIn)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "You cannot cancel this rent agreement before the end of the agreed period.",
+      });
+      }
+    }
+
     // Cancel any pending rent payments
     await RentModel.updateMany(
       { propertyId, status: "pending" },
       { status: "cancelled" }
     );
 
-    // Update property status back to active
-    await PropertyModel.updateProperty(propertyId, {
-      status: "active",
-      buyerId: null,
-      buyer: null,
-    });
+    // Update property status back to active using seller's ID for authorization
+    await PropertyModel.updateProperty(
+      propertyId,
+      {
+        status: "active",
+        buyerId: null,
+        buyer: null,
+      },
+      property.sellerId
+    );
+
+    // Mark related agreements as cancelled for this buyer and property
+    await AgreementModel.cancelAgreementByBuyer(propertyId, req.user._id);
 
     res.json({
       success: true,
@@ -625,6 +725,12 @@ exports.cancelRentalAgreement = async (req, res) => {
             },
           },
           { session }
+        );
+
+        // Seller can cancel the agreement at any time (no lock-in restriction)
+        await AgreementModel.cancelAgreementBySeller(
+          property._id,
+          req.user._id
         );
 
         // We're skipping the creation of a $0 transaction for rental cancellations

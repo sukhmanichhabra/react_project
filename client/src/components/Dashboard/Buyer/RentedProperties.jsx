@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./RentedProperties.css";
+import { agreementsAPI } from "../../../services/api";
+import { generateRentAgreementPdf } from "../../agreements/rentAgreementPdf";
 
 // This is a new, specialized card for rented properties
 const RentedPropertyCard = ({ property, onCancelSuccess }) => {
@@ -15,23 +17,54 @@ const RentedPropertyCard = ({ property, onCancelSuccess }) => {
     )}&body=${encodeURIComponent(body)}`;
   };
 
+  const hasAgreement = !!property.agreement;
+  const rawLockInEnd =
+    property.agreement?.lockInEndDate || property.agreement?.endDate;
+  const lockInEndDate = rawLockInEnd ? new Date(rawLockInEnd) : null;
+  const isWithinLockIn = lockInEndDate && new Date() < lockInEndDate;
+
   const handleCancel = async (e) => {
     e.preventDefault();
-    
-    if (!confirm("Are you sure you want to cancel this rental agreement? This action cannot be undone.")) {
+
+    if (
+      !confirm(
+        "Are you sure you want to cancel this rental agreement? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     try {
       setIsCancelling(true);
-      
-      const response = await fetch(`/api/rent/cancel-by-buyer/${property._id}`, {
-        method: "POST",
-        credentials: "include",
-      });
-      
+
+      const response = await fetch(
+        `/api/rent/cancel-by-buyer/${property._id}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = "Failed to cancel rental agreement";
+
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorMessage;
+        } catch (parseError) {
+          errorMessage = `Server error (${response.status}): ${errorText}`;
+        }
+
+        throw new Error(errorMessage);
+      }
+
       const result = await response.json();
-      
+
       if (result.success) {
         alert("Rental agreement cancelled successfully!");
         // Call the callback to refresh the list
@@ -46,6 +79,23 @@ const RentedPropertyCard = ({ property, onCancelSuccess }) => {
       alert(`Error: ${error.message}`);
     } finally {
       setIsCancelling(false);
+    }
+  };
+
+  const handleDownloadAgreement = async () => {
+    try {
+      const response = await agreementsAPI.getAgreementForProperty(
+        property._id
+      );
+      const agreement = response.data?.data;
+      if (!agreement) {
+        alert("No agreement found for this property.");
+        return;
+      }
+      generateRentAgreementPdf({ property, agreement, role: "tenant" });
+    } catch (error) {
+      console.error("Error downloading agreement:", error);
+      alert("Failed to download agreement PDF.");
     }
   };
 
@@ -89,12 +139,26 @@ const RentedPropertyCard = ({ property, onCancelSuccess }) => {
               <strong>Lease Duration:</strong>{" "}
               {property.leaseDuration || "12 months"}
             </p>
+            {hasAgreement && (
+              <>
+                <p>
+                  <strong>Lease Start:</strong>{" "}
+                  {formatDate(property.agreement.startDate)}
+                </p>
+                <p>
+                  <strong>Lease End:</strong>{" "}
+                  {formatDate(property.agreement.endDate)}
+                </p>
+              </>
+            )}
             <p>
-              <strong>Landlord:</strong> {property.landlordName || "Property Owner"}
+              <strong>Landlord:</strong>{" "}
+              {property.landlordName || "Property Owner"}
             </p>
             {property.currentRent && (
               <p>
-                <strong>Next Rent Due:</strong> {formatDate(property.currentRent.dueDate)}
+                <strong>Next Rent Due:</strong>{" "}
+                {formatDate(property.currentRent.dueDate)}
               </p>
             )}
           </div>
@@ -110,21 +174,42 @@ const RentedPropertyCard = ({ property, onCancelSuccess }) => {
             <i className="fas fa-envelope"></i>
             <span>Contact Landlord</span>
           </button>
+          {hasAgreement && (
+            <button
+              type="button"
+              className="dash-btn green"
+              onClick={handleDownloadAgreement}
+            >
+              <i className="fas fa-file-download"></i>
+              <span>Download Agreement</span>
+            </button>
+          )}
           <form onSubmit={handleCancel} style={{ width: "100%" }}>
             <button
               type="submit"
               className="dash-btn red"
-              disabled={isCancelling}
+              disabled={isCancelling || isWithinLockIn}
             >
               {isCancelling ? (
                 <i className="fas fa-spinner fa-spin"></i>
               ) : (
                 <i className="fas fa-times-circle"></i>
               )}
-              <span>{isCancelling ? "Cancelling..." : "Cancel Agreement"}</span>
+              <span>
+                {isCancelling
+                  ? "Cancelling..."
+                  : isWithinLockIn
+                  ? "Cannot Cancel (Lock-in)"
+                  : "Cancel Agreement"}
+              </span>
             </button>
           </form>
         </div>
+        {isWithinLockIn && lockInEndDate && (
+          <p className="rented-property-lockin-note">
+            You cannot cancel this rent agreement before {formatDate(lockInEndDate)}.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -144,13 +229,15 @@ const RentedProperties = ({ properties = [] }) => {
         const response = await fetch("/api/rent/buyer-rented", {
           credentials: "include",
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
           setRentedProperties(result.data.properties);
         } else {
-          throw new Error(result.message || "Failed to fetch rented properties");
+          throw new Error(
+            result.message || "Failed to fetch rented properties"
+          );
         }
       } catch (err) {
         console.error("Error fetching rented properties:", err);
@@ -175,9 +262,9 @@ const RentedProperties = ({ properties = [] }) => {
         const response = await fetch("/api/rent/buyer-rented", {
           credentials: "include",
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
           setRentedProperties(result.data.properties);
         }
@@ -229,9 +316,9 @@ const RentedProperties = ({ properties = [] }) => {
       <div className="rented-properties-grid">
         {rentedProperties.length > 0 ? (
           rentedProperties.map((prop) => (
-            <RentedPropertyCard 
-              key={prop._id} 
-              property={prop} 
+            <RentedPropertyCard
+              key={prop._id}
+              property={prop}
               onCancelSuccess={handleCancelSuccess}
             />
           ))

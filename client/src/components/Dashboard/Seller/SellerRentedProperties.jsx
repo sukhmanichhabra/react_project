@@ -1,10 +1,31 @@
 import React, { useState, useEffect } from "react";
 import SimplePropertyCard from "../common/PropertyCard";
-import "./SellerRentedProperties.css"; 
+import "./SellerRentedProperties.css";
+import { agreementsAPI } from "../../../services/api";
+import { generateRentAgreementPdf } from "../../agreements/rentAgreementPdf";
 
 // Specialized card component for seller's rented properties
 const SellerRentedPropertyCard = ({ property }) => {
   const [isGeneratingRent, setIsGeneratingRent] = useState(false);
+  const hasAgreement = !!property.agreement;
+  const agreementStatus = property.agreement?.status || "active";
+
+  const handleDownloadAgreement = async () => {
+    try {
+      const response = await agreementsAPI.getAgreementForProperty(
+        property._id
+      );
+      const agreement = response.data?.data;
+      if (!agreement) {
+        alert("No agreement found for this property.");
+        return;
+      }
+      generateRentAgreementPdf({ property, agreement, role: "owner" });
+    } catch (error) {
+      console.error("Error downloading agreement:", error);
+      alert("Failed to download agreement PDF.");
+    }
+  };
 
   const handleGenerateRent = async () => {
     if (!confirm("Generate next rent payment for this property?")) return;
@@ -74,6 +95,23 @@ const SellerRentedPropertyCard = ({ property }) => {
             <p><strong>Rented Since:</strong> {formatDate(property.rentedSince)}</p>
             <p><strong>Total Collected:</strong> ₹{(property.totalCollected || 0).toLocaleString()}</p>
             <p><strong>Last Payment:</strong> {formatDate(property.lastRentDate)}</p>
+            {hasAgreement && (
+              <>
+                <p>
+                  <strong>Agreement Status:</strong> {agreementStatus}
+                </p>
+                <p>
+                  <strong>Lease Start:</strong> {formatDate(
+                    property.agreement.startDate
+                  )}
+                </p>
+                <p>
+                  <strong>Lease End:</strong> {formatDate(
+                    property.agreement.endDate
+                  )}
+                </p>
+              </>
+            )}
           </div>
         </div>
 
@@ -83,6 +121,16 @@ const SellerRentedPropertyCard = ({ property }) => {
             <i className="fas fa-envelope"></i>
             <span>Contact Tenant</span>
           </button>
+          {hasAgreement && (
+            <button
+              type="button"
+              className="dash-btn green"
+              onClick={handleDownloadAgreement}
+            >
+              <i className="fas fa-file-download"></i>
+              <span>Download Agreement</span>
+            </button>
+          )}
           <button 
             onClick={handleGenerateRent} 
             className="dash-btn green"
@@ -106,6 +154,9 @@ const SellerRentedProperties = ({ properties = [] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({ total: 0, totalRevenue: 0 });
+  const [agreements, setAgreements] = useState([]);
+  const [agreementsLoading, setAgreementsLoading] = useState(true);
+  const [agreementsError, setAgreementsError] = useState(null);
 
   // Fetch rented properties from backend
   useEffect(() => {
@@ -142,6 +193,70 @@ const SellerRentedProperties = ({ properties = [] }) => {
 
     fetchRentedProperties();
   }, [properties]);
+
+  useEffect(() => {
+    const fetchSellerAgreements = async () => {
+      try {
+        setAgreementsLoading(true);
+        const response = await agreementsAPI.getSellerAgreements();
+        if (response.data?.success) {
+          setAgreements(response.data.data || []);
+        } else {
+          setAgreementsError(
+            response.data?.message || "Failed to load agreements"
+          );
+        }
+      } catch (err) {
+        console.error("Error fetching seller agreements:", err);
+        setAgreementsError(err.message);
+      } finally {
+        setAgreementsLoading(false);
+      }
+    };
+
+    fetchSellerAgreements();
+  }, []);
+
+  const refreshAgreements = async () => {
+    try {
+      const response = await agreementsAPI.getSellerAgreements();
+      if (response.data?.success) {
+        setAgreements(response.data.data || []);
+      }
+    } catch (err) {
+      console.error("Error refreshing agreements:", err);
+    }
+  };
+
+  const pendingAgreements = agreements.filter(
+    (a) => a.status === "pending_seller_approval"
+  );
+
+  const handleApprove = async (agreementId) => {
+    try {
+      await agreementsAPI.approveAgreement(agreementId);
+      await refreshAgreements();
+      alert("Agreement approved successfully.");
+    } catch (error) {
+      console.error("Error approving agreement:", error);
+      alert("Failed to approve agreement.");
+    }
+  };
+
+  const handleReject = async (agreementId) => {
+    const reason = window.prompt(
+      "Please enter a reason for rejection (optional):"
+    );
+    try {
+      await agreementsAPI.rejectAgreement(agreementId, reason || "");
+      await refreshAgreements();
+      alert("Agreement rejected.");
+    } catch (error) {
+      console.error("Error rejecting agreement:", error);
+      alert("Failed to reject agreement.");
+    }
+  };
+
   return (
     <section
       id="seller-rented-properties"
@@ -190,6 +305,67 @@ const SellerRentedProperties = ({ properties = [] }) => {
           )}
         </div>
       )}
+
+      <div className="seller-pending-agreements">
+        <h3>Pending Rent Agreements</h3>
+        {agreementsLoading ? (
+          <div className="dash-loading-state">
+            <i className="fas fa-spinner fa-spin"></i>
+            <p>Loading agreements...</p>
+          </div>
+        ) : agreementsError ? (
+          <div className="dash-error-state">
+            <i className="fas fa-exclamation-triangle"></i>
+            <h3>Error Loading Agreements</h3>
+            <p>{agreementsError}</p>
+          </div>
+        ) : pendingAgreements.length > 0 ? (
+          <div className="seller-agreements-list">
+            {pendingAgreements.map((agreement) => (
+              <div
+                key={agreement._id}
+                className="seller-agreement-card"
+              >
+                <h4>{agreement.propertyTitle}</h4>
+                <p>
+                  <strong>Tenant:</strong> {agreement.buyerName}
+                </p>
+                <p>
+                  <strong>Period:</strong>{" "}
+                  {new Date(agreement.startDate).toLocaleDateString()} -{" "}
+                  {new Date(agreement.endDate).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Monthly Rent:</strong>{" "}
+                  ₹{(agreement.monthlyRent || 0).toLocaleString("en-IN")}
+                </p>
+                <div className="seller-agreement-card__actions">
+                  <button
+                    type="button"
+                    className="dash-btn green"
+                    onClick={() => handleApprove(agreement._id)}
+                  >
+                    <i className="fas fa-check-circle"></i>
+                    <span>Approve</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="dash-btn red"
+                    onClick={() => handleReject(agreement._id)}
+                  >
+                    <i className="fas fa-times-circle"></i>
+                    <span>Reject</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="seller-no-pending-agreements">
+            You have no pending rent agreement requests.
+          </p>
+        )}
+      </div>
     </section>
   );
 };

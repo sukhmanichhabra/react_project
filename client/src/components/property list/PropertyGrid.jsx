@@ -16,7 +16,10 @@ const PropertyGrid = ({ properties = [] }) => {
     const agent = property.agent || {};
 
     // Handle location - it's a string in the database, not an object
-    const locationStr = property.location || property.geolocation?.address || "Location not specified";
+    const locationStr =
+      property.location ||
+      property.geolocation?.address ||
+      "Location not specified";
 
     const mappedProperty = {
       id: property._id,
@@ -38,28 +41,44 @@ const PropertyGrid = ({ properties = [] }) => {
       title: property.title || "Property Title",
       overviewLink: `/property/${property._id}`,
       description: property.description || "No description available",
-      bedrooms: parseInt(property.features?.bedrooms || property.features?.beds || 0),
-      bathrooms: parseInt(property.features?.bathrooms || property.features?.baths || 0),
-      squareFeet: parseInt(property.features?.squareFootage || property.features?.sqft || 0),
+      bedrooms: parseInt(
+        property.features?.bedrooms || property.features?.beds || 0
+      ),
+      bathrooms: parseInt(
+        property.features?.bathrooms || property.features?.baths || 0
+      ),
+      squareFeet: parseInt(
+        property.features?.squareFootage || property.features?.sqft || 0
+      ),
       agentImage: getAgentImageUrl(agent.image || agent.profileImage),
-      agentName: agent.fullName || agent.name || property.seller?.name || "Estate Agent",
+      agentName:
+        agent.fullName || agent.name || property.seller?.name || "Estate Agent",
       agentId: agent._id || null,
       agentLink: agent._id ? `/agents/${agent._id}` : "#",
-      status: property.status || 'active'
+      status: property.status || "active",
     };
 
-    console.log("Original property:", property);
-    console.log("Mapped property:", mappedProperty);
+    // Debug logging
+    if (process.env.NODE_ENV === "development") {
+      console.log(`PropertyGrid: Mapping property ${property._id}:`, {
+        originalId: property._id,
+        mappedId: mappedProperty.id,
+        title: property.title,
+      });
+    }
 
     return mappedProperty;
   };
 
   // Filter out invalid properties
-  const validProperties = properties.filter(p => p && p._id);
+  const validProperties = properties.filter((p) => p && p._id);
 
   if (!validProperties || validProperties.length === 0) {
     return (
-      <div className="prop-list-listing" style={{ width: "100%", textAlign: "center", padding: "2rem" }}>
+      <div
+        className="prop-list-listing"
+        style={{ width: "100%", textAlign: "center", padding: "2rem" }}
+      >
         <p>No properties available</p>
       </div>
     );
@@ -73,6 +92,7 @@ const PropertyGrid = ({ properties = [] }) => {
           return mappedProperty ? (
             <PropertyCard
               key={property._id}
+              propertyId={property._id}
               {...mappedProperty}
             />
           ) : null;

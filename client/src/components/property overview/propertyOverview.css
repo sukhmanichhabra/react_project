@@ -359,6 +359,44 @@
   margin-left: 10px;
 }
 
+/* Legal & Documents card */
+.prop-overview-documents-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prop-overview-documents-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.prop-overview-documents-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.prop-overview-documents-header h2 {
+  margin-bottom: 4px;
+}
+
+.prop-overview-documents-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.prop-overview-documents-summary {
+  margin-top: 4px;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
 /* Amenities */
 .prop-overview-amenities-list {
   display: grid;
@@ -561,6 +599,8 @@
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 15px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .prop-overview-agent-details h3 {

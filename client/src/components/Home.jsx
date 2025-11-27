@@ -92,7 +92,10 @@ function Home() {
         overviewLink: `/property/${property._id}`,
         agentImage: getAgentImageUrl(agent.image || agent.profileImage),
         agentName:
-          agent.fullName || agent.name || property.seller?.name || "Estate Agent",
+          agent.fullName ||
+          agent.name ||
+          property.seller?.name ||
+          "Estate Agent",
         agentLink: agent._id ? `/agents/${agent._id}` : "#",
       };
     });
@@ -110,11 +113,13 @@ function Home() {
                   <p className="hero-subtitle">
                     <span>PREMIUM REAL ESTATE</span>
                   </p>
-                  <h2 className="hero-title">Find Your Perfect Property With Us</h2>
+                  <h2 className="hero-title">
+                    Find Your Perfect Property With Us
+                  </h2>
                   <p className="hero-text">
-                    We help you find your dream home with our curated selection of
-                    premium properties. Our expert agents provide personalized
-                    guidance throughout your real estate journey.
+                    We help you find your dream home with our curated selection
+                    of premium properties. Our expert agents provide
+                    personalized guidance throughout your real estate journey.
                   </p>
                   <div className="hero-buttons">
                     <Link to="/properties" className="btn">
@@ -126,10 +131,7 @@ function Home() {
                   </div>
                 </div>
                 <figure className="hero-banner">
-                  <img
-                    src="/assets/heroimg.png"
-                    alt="Modern house model"
-                  />
+                  <img src="/assets/heroimg.png" alt="Modern house model" />
                 </figure>
               </div>
               <div className="trusted-by">
@@ -186,10 +188,10 @@ function Home() {
                     The Leading Real Estate Rental-Selling Marketplace.
                   </h2>
                   <p className="about-text">
-                    Over 39,000 people work for us in more than 70 countries all over
-                    the world. This breadth of global coverage, combined with
-                    specialist services, makes us the perfect partner for your
-                    property journey.
+                    Over 39,000 people work for us in more than 70 countries all
+                    over the world. This breadth of global coverage, combined
+                    with specialist services, makes us the perfect partner for
+                    your property journey.
                   </p>
                   <ul className="about-list">
                     <li className="about-item">
@@ -242,8 +244,8 @@ function Home() {
                       <Link to="/properties">Buy a home</Link>
                     </h3>
                     <p className="card-text">
-                      Over 1 million+ homes for sale available on the website, we can
-                      match you with a house you will want to call home.
+                      Over 1 million+ homes for sale available on the website,
+                      we can match you with a house you will want to call home.
                     </p>
                     <Link to="/properties" className="card-link">
                       <span>Find A Home</span>
@@ -278,8 +280,8 @@ function Home() {
                       <Link to="/properties">Sell a home</Link>
                     </h3>
                     <p className="card-text">
-                      We help you list, market, and sell your property at the best
-                      possible price.
+                      We help you list, market, and sell your property at the
+                      best possible price.
                     </p>
                     <Link to="/properties" className="card-link">
                       <span>Find A Home</span>
@@ -303,7 +305,9 @@ function Home() {
               )}
 
               {error && !loading && (
-                <p style={{ textAlign: "center", padding: "1rem", color: "red" }}>
+                <p
+                  style={{ textAlign: "center", padding: "1rem", color: "red" }}
+                >
                   {error}
                 </p>
               )}
@@ -371,14 +375,16 @@ function Home() {
                           <div className="card-author">
                             <figure className="author-avatar">
                               <img
-                                src={item.agentImage}
+                                src={item.agentImage || "/assets/agent1.png"}
                                 alt={item.agentName}
                                 className="w-100"
                               />
                             </figure>
                             <div>
                               <p className="author-name">
-                                <Link to={item.agentLink}>{item.agentName}</Link>
+                                <Link to={item.agentLink}>
+                                  {item.agentName}
+                                </Link>
                               </p>
                               <p className="author-title">Estate Agent</p>
                             </div>
@@ -469,13 +475,25 @@ function Home() {
               <h2 className="section-title">Latest Blog Posts</h2>
 
               {blogsLoading && (
-                <p style={{ textAlign: "center", padding: "2rem", color: "#718096" }}>
+                <p
+                  style={{
+                    textAlign: "center",
+                    padding: "2rem",
+                    color: "#718096",
+                  }}
+                >
                   Loading latest blogs...
                 </p>
               )}
 
               {!blogsLoading && blogs.length === 0 && (
-                <p style={{ textAlign: "center", padding: "2rem", color: "#718096" }}>
+                <p
+                  style={{
+                    textAlign: "center",
+                    padding: "2rem",
+                    color: "#718096",
+                  }}
+                >
                   No blog posts available yet.
                 </p>
               )}
@@ -491,9 +509,14 @@ function Home() {
                         })
                       : "Unknown date";
 
-                    const authorName = blog.author?.name || blog.author || "Anonymous";
-                    const authorImage = blog.author?.image || blog.author?.profileImage || "/images/default-avatar.png";
-                    const blogImage = blog.imageUrl || blog.image || "/assets/house.jpg";
+                    const authorName =
+                      blog.author?.name || blog.author || "Anonymous";
+                    const authorImage =
+                      blog.author?.image ||
+                      blog.author?.profileImage ||
+                      "/assets/agent1.png";
+                    const blogImage =
+                      blog.imageUrl || blog.image || "/assets/house.jpg";
                     const blogTag = blog.tags?.[0] || "Real Estate";
 
                     return (
@@ -512,16 +535,23 @@ function Home() {
                               <Link to={`/blog/${blog._id}`}>{blog.title}</Link>
                             </h3>
                             <p className="blog-card-excerpt">
-                              {blog.excerpt || blog.description || "No description available"}
+                              {blog.excerpt ||
+                                blog.description ||
+                                "No description available"}
                             </p>
                             <div className="blog-card-footer">
                               <div className="blog-card-author">
                                 <figure className="blog-card-author-avatar">
                                   <img src={authorImage} alt={authorName} />
                                 </figure>
-                                <p className="blog-card-author-name">{authorName}</p>
+                                <p className="blog-card-author-name">
+                                  {authorName}
+                                </p>
                               </div>
-                              <Link to={`/blog/${blog._id}`} className="blog-card-read-more">
+                              <Link
+                                to={`/blog/${blog._id}`}
+                                className="blog-card-read-more"
+                              >
                                 <span>Read More</span>
                                 <ion-icon name="arrow-forward-outline"></ion-icon>
                               </Link>

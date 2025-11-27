@@ -16,6 +16,7 @@ const Chatbot = () => {
   const messagesEndRef = useRef(null);
   const placeholderIndex = useRef(0);
   const [placeholder, setPlaceholder] = useState('Ask about buying a property...');
+  const previousMessageCountRef = useRef(0);
 
   const placeholders = [
     'Ask about buying a property...',
@@ -38,13 +39,13 @@ const Chatbot = () => {
     return () => clearInterval(placeholderInterval);
   }, []);
 
+  // Auto-scroll only when new messages are added, and jump instantly (no smooth animation)
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, showTyping]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    if (messages.length > previousMessageCountRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+    }
+    previousMessageCountRef.current = messages.length;
+  }, [messages]);
 
   const fetchChatbotData = async () => {
     try {

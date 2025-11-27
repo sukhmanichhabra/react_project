@@ -10,6 +10,7 @@ const RentModel = require('./rent');
 const { ChatModel } = require('./chat');
 const { VisitModel } = require('./visit');
 const NotificationModel = require('./notification');
+const AgreementModel = require('./agreement');
 
 // Set up model relationships
 PropertyModel.setAgentModel(AgentModel);
@@ -30,5 +31,6 @@ module.exports = {
     RentModel,
     ChatModel,
     VisitModel,
-    NotificationModel
+    NotificationModel,
+    AgreementModel
 };

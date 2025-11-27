@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import './Messages.css';
+import React, { useEffect, useState, useRef } from "react";
+import "./Messages.css";
 
 // Helper to format time similar to views/chat.ejs
 const formatTime = (input) => {
-  if (!input) return '';
+  if (!input) return "";
   const date = input instanceof Date ? input : new Date(input);
-  if (Number.isNaN(date.getTime())) return '';
+  if (Number.isNaN(date.getTime())) return "";
 
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -14,21 +14,21 @@ const formatTime = (input) => {
   if (diff < 24 * 60 * 60 * 1000) {
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    return `${hours.toString().padStart(2, '0')}:${minutes
+    return `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
-      .padStart(2, '0')}`;
+      .padStart(2, "0")}`;
   }
 
   // If less than 7 days ago, show day name
   if (diff < 7 * 24 * 60 * 60 * 1000) {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return days[date.getDay()];
   }
 
   // Otherwise show date DD/MM/YYYY
-  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+  return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
     .toString()
-    .padStart(2, '0')}/${date.getFullYear()}`;
+    .padStart(2, "0")}/${date.getFullYear()}`;
 };
 
 const Messages = () => {
@@ -43,14 +43,15 @@ const Messages = () => {
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(false);
-  const [newChatReceiverId, setNewChatReceiverId] = useState('');
-  const [newChatMessage, setNewChatMessage] = useState('');
+  const [newChatReceiverId, setNewChatReceiverId] = useState("");
+  const [newChatMessage, setNewChatMessage] = useState("");
   const [creatingConversation, setCreatingConversation] = useState(false);
 
-  const [messageInput, setMessageInput] = useState('');
+  const [messageInput, setMessageInput] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
 
   const messagesEndRef = useRef(null);
+  const previousMessagesLengthRef = useRef(0);
 
   useEffect(() => {
     loadInitialData();
@@ -63,10 +64,15 @@ const Messages = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  // Auto-scroll only when new messages are added, and jump instantly (no smooth animation)
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (
+      messages.length > previousMessagesLengthRef.current &&
+      messagesEndRef.current
+    ) {
+      messagesEndRef.current.scrollIntoView({ behavior: "auto", block: "end" });
     }
+    previousMessagesLengthRef.current = messages.length;
   }, [messages]);
 
   const loadInitialData = async () => {
@@ -79,11 +85,11 @@ const Messages = () => {
       // and only returns { unreadCount, conversationsCount }.
       // Instead, send an Accept header without the word "json" so we get
       // the full conversations payload.
-      const res = await fetch('/api/chat', {
+      const res = await fetch("/api/chat", {
         headers: {
-          Accept: 'text/html, */*;q=0.9',
+          Accept: "text/html, */*;q=0.9",
         },
-        credentials: 'include',
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -93,7 +99,7 @@ const Messages = () => {
       }
 
       const json = await res.json();
-      console.log('Chat response:', json);
+      console.log("Chat response:", json);
 
       // When Accept does NOT contain 'json', the controller returns
       // the full shape: { success: true, data: { conversations, unreadCount, currentUser, ... } }
@@ -107,25 +113,28 @@ const Messages = () => {
           };
         });
 
-        console.log('Conversations loaded:', convs);
+        console.log("Conversations loaded:", convs);
         setConversations(convs);
         setCurrentUser(data.currentUser || null);
         setActiveConversation(null);
         setMessages([]);
-      } else if (json && typeof json.conversationsCount === 'number') {
+      } else if (json && typeof json.conversationsCount === "number") {
         // Fallback: if we somehow still hit the AJAX summary path,
         // just show an empty list instead of throwing.
-        console.warn('Received summary chat payload, no conversations array:', json);
+        console.warn(
+          "Received summary chat payload, no conversations array:",
+          json
+        );
         setConversations([]);
         setCurrentUser(null);
         setActiveConversation(null);
         setMessages([]);
       } else {
-        throw new Error('Unexpected chat response format');
+        throw new Error("Unexpected chat response format");
       }
     } catch (e) {
-      console.error('Error loading conversations:', e);
-      setError('Failed to load chat messages');
+      console.error("Error loading conversations:", e);
+      setError("Failed to load chat messages");
     } finally {
       setLoadingInitial(false);
     }
@@ -133,16 +142,21 @@ const Messages = () => {
 
   const refreshConversationsSilently = async () => {
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch("/api/chat", {
         headers: {
-          Accept: 'text/html, */*;q=0.9',
+          Accept: "text/html, */*;q=0.9",
         },
-        credentials: 'include',
+        credentials: "include",
       });
       if (!res.ok) return;
       const json = await res.json();
 
-      if (json && json.success && json.data && Array.isArray(json.data.conversations)) {
+      if (
+        json &&
+        json.success &&
+        json.data &&
+        Array.isArray(json.data.conversations)
+      ) {
         const data = json.data;
         const updated = data.conversations.map((conv) => {
           const lastTimestamp = conv.lastMessage?.timestamp || conv.createdAt;
@@ -161,7 +175,7 @@ const Messages = () => {
         });
       }
     } catch (e) {
-      console.error('Error refreshing conversations:', e);
+      console.error("Error refreshing conversations:", e);
     }
   };
 
@@ -195,35 +209,37 @@ const Messages = () => {
       setError(null);
 
       const res = await fetch(`/api/chat/${conversationId}/ajax`, {
-        headers: { Accept: 'application/json' },
-        credentials: 'include',
+        headers: { Accept: "application/json" },
+        credentials: "include",
       });
 
       if (!res.ok) {
-        throw new Error('Failed to load conversation');
+        throw new Error("Failed to load conversation");
       }
 
       const json = await res.json();
       if (!json.success) {
-        throw new Error(json.message || 'Failed to load conversation');
+        throw new Error(json.message || "Failed to load conversation");
       }
 
       const { conversation, messages: rawMessages } = json;
 
-      const formattedMessages = (rawMessages || []).map((m) => ({
-        ...m,
-        formattedTime: m.formattedTime || formatTime(m.timestamp),
-      }));
+      const formattedMessages = (rawMessages || [])
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        .map((m) => ({
+          ...m,
+          formattedTime: m.formattedTime || formatTime(m.timestamp),
+        }));
 
       setActiveConversation(conversation);
       setMessages(formattedMessages);
 
       // Mark messages as read (fire and forget)
       fetch(`/api/chat/${conversationId}/mark-read`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      }).catch((err) => console.error('Error marking messages as read:', err));
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }).catch((err) => console.error("Error marking messages as read:", err));
 
       // Locally clear unread count for this conversation
       setConversations((prev) =>
@@ -236,7 +252,7 @@ const Messages = () => {
         })
       );
     } catch (e) {
-      console.error('Error loading conversation:', e);
+      console.error("Error loading conversation:", e);
       setError(e.message);
     } finally {
       setLoadingConversation(false);
@@ -251,12 +267,12 @@ const Messages = () => {
 
     try {
       setSendingMessage(true);
-      setMessageInput('');
+      setMessageInput("");
 
       const res = await fetch(`/api/chat/${activeConversation._id}/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ message: text }),
       });
 
@@ -266,7 +282,7 @@ const Messages = () => {
 
       const json = await res.json();
       if (!json.success) {
-        throw new Error(json.message || 'Failed to send message');
+        throw new Error(json.message || "Failed to send message");
       }
 
       // Build local message object
@@ -275,6 +291,7 @@ const Messages = () => {
         senderId: currentUser._id,
         senderName: currentUser.name,
         message: text,
+        timestamp: new Date(),
         formattedTime: formatTime(new Date()),
       };
 
@@ -297,16 +314,20 @@ const Messages = () => {
 
         // Move active conversation to top (after header if needed)
         updated.sort((a, b) => {
-          const ta = new Date(a.lastMessage?.timestamp || a.createdAt).getTime();
-          const tb = new Date(b.lastMessage?.timestamp || b.createdAt).getTime();
+          const ta = new Date(
+            a.lastMessage?.timestamp || a.createdAt
+          ).getTime();
+          const tb = new Date(
+            b.lastMessage?.timestamp || b.createdAt
+          ).getTime();
           return tb - ta;
         });
 
         return updated;
       });
     } catch (e) {
-      console.error('Error sending message:', e);
-      setError(e.message || 'Failed to send message');
+      console.error("Error sending message:", e);
+      setError(e.message || "Failed to send message");
       // Restore text on failure
       setMessageInput(text);
     } finally {
@@ -323,16 +344,16 @@ const Messages = () => {
 
   const closeNewChatModal = () => {
     setShowNewChatModal(false);
-    setNewChatReceiverId('');
-    setNewChatMessage('');
+    setNewChatReceiverId("");
+    setNewChatMessage("");
   };
 
   const loadContacts = async () => {
     try {
       setContactsLoading(true);
-      const res = await fetch('/api/chat/contacts/list', {
-        headers: { Accept: 'application/json' },
-        credentials: 'include',
+      const res = await fetch("/api/chat/contacts/list", {
+        headers: { Accept: "application/json" },
+        credentials: "include",
       });
 
       const json = await res.json();
@@ -342,7 +363,7 @@ const Messages = () => {
         setContacts([]);
       }
     } catch (e) {
-      console.error('Error loading contacts:', e);
+      console.error("Error loading contacts:", e);
     } finally {
       setContactsLoading(false);
     }
@@ -368,25 +389,25 @@ const Messages = () => {
     try {
       setCreatingConversation(true);
 
-      const res = await fetch('/api/chat/new', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const res = await fetch("/api/chat/new", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
-        throw new Error('Failed to start conversation');
+        throw new Error("Failed to start conversation");
       }
 
       const json = await res.json();
       if (!json.success) {
-        throw new Error(json.message || 'Failed to start conversation');
+        throw new Error(json.message || "Failed to start conversation");
       }
 
       const { conversation } = json.data || {};
       if (!conversation) {
-        throw new Error('No conversation returned from server');
+        throw new Error("No conversation returned from server");
       }
 
       // Add/merge conversation in list
@@ -399,7 +420,9 @@ const Messages = () => {
         const exists = prev.find((c) => c._id === conversation._id);
         let updated;
         if (exists) {
-          updated = prev.map((c) => (c._id === conversation._id ? convWithTime : c));
+          updated = prev.map((c) =>
+            c._id === conversation._id ? convWithTime : c
+          );
         } else {
           updated = [convWithTime, ...prev];
         }
@@ -414,8 +437,8 @@ const Messages = () => {
 
       closeNewChatModal();
     } catch (e) {
-      console.error('Error creating conversation:', e);
-      setError(e.message || 'Failed to start conversation');
+      console.error("Error creating conversation:", e);
+      setError(e.message || "Failed to start conversation");
     } finally {
       setCreatingConversation(false);
     }
@@ -446,14 +469,15 @@ const Messages = () => {
           {conversations.map((conv) => {
             const other = getOtherParticipant(conv);
             const unread = getUnreadCountForConversation(conv);
-            const isActive = activeConversation && conv._id === activeConversation._id;
+            const isActive =
+              activeConversation && conv._id === activeConversation._id;
 
             return (
               <button
                 key={conv._id}
                 type="button"
-                className={`conversation-item ${isActive ? 'active' : ''} ${
-                  unread > 0 ? 'unread' : ''
+                className={`conversation-item ${isActive ? "active" : ""} ${
+                  unread > 0 ? "unread" : ""
                 }`}
                 onClick={() => handleConversationClick(conv._id)}
               >
@@ -475,7 +499,7 @@ const Messages = () => {
                   {unread > 0 && <span className="unread-badge">{unread}</span>}
                 </div>
                 <div className="conversation-lastMsg">
-                  {conv.lastMessage?.text || 'Start a conversation'}
+                  {conv.lastMessage?.text || "Start a conversation"}
                 </div>
                 <div className="conversation-time">{conv.formattedTime}</div>
                 {conv.propertyTitle && (
@@ -542,12 +566,13 @@ const Messages = () => {
                     )}
                   </>
                 ) : (
-                  'Conversation'
+                  "Conversation"
                 )}
               </h2>
               {activeConversation.propertyTitle && (
                 <div className="chat-property">
-                  <i className="fas fa-home" /> {activeConversation.propertyTitle}
+                  <i className="fas fa-home" />{" "}
+                  {activeConversation.propertyTitle}
                 </div>
               )}
             </div>
@@ -557,19 +582,21 @@ const Messages = () => {
         <div className="chat-messages" id="chatMessages">
           {messages && messages.length > 0 ? (
             messages.map((msg) => {
-              const senderId = msg.senderId && msg.senderId._id
-                ? msg.senderId._id
-                : msg.senderId;
-              const isSentByMe = currentUser && String(senderId) === String(currentUser._id);
+              const senderId =
+                msg.senderId && msg.senderId._id
+                  ? msg.senderId._id
+                  : msg.senderId;
+              const isSentByMe =
+                currentUser && String(senderId) === String(currentUser._id);
 
               return (
                 <div
                   key={msg._id}
-                  className={`message ${isSentByMe ? 'sent' : 'received'}`}
+                  className={`message ${isSentByMe ? "sent" : "received"}`}
                 >
                   <div className="message-content">{msg.message}</div>
                   <div className="message-info">
-                    <span>{isSentByMe ? 'You' : msg.senderName}</span>
+                    <span>{isSentByMe ? "You" : msg.senderName}</span>
                     <span>{msg.formattedTime}</span>
                   </div>
                 </div>
@@ -593,7 +620,11 @@ const Messages = () => {
             onChange={(e) => setMessageInput(e.target.value)}
             required
           />
-          <button type="submit" className="message-send" disabled={sendingMessage}>
+          <button
+            type="submit"
+            className="message-send"
+            disabled={sendingMessage}
+          >
             <i className="fas fa-paper-plane" />
           </button>
         </form>
@@ -601,7 +632,7 @@ const Messages = () => {
     );
   };
 
-  const supportContacts = contacts.filter((c) => c.category === 'Support');
+  const supportContacts = contacts.filter((c) => c.category === "Support");
   const propertyContacts = contacts.filter((c) => !c.category);
 
   return (
@@ -657,7 +688,7 @@ const Messages = () => {
                           {propertyContacts.map((c) => (
                             <option key={c.userId} value={c.userId}>
                               {c.name} ({c.role})
-                              {c.propertyTitle ? ` - ${c.propertyTitle}` : ''}
+                              {c.propertyTitle ? ` - ${c.propertyTitle}` : ""}
                             </option>
                           ))}
                         </optgroup>
@@ -691,7 +722,7 @@ const Messages = () => {
                   className="btn btn-send"
                   disabled={creatingConversation}
                 >
-                  {creatingConversation ? 'Sending...' : 'Send Message'}
+                  {creatingConversation ? "Sending..." : "Send Message"}
                 </button>
               </div>
             </form>

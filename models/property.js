@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const TransactionModel = require('./transaction');
 const User = require('./user');
+const AgreementModel = require('./agreement');
 
 // Forward declarations to avoid circular dependencies
 let AgentModel;
@@ -51,11 +52,22 @@ const propertySchema = new mongoose.Schema({
             type: String,
             enum: ['Apartment', 'House', 'Villa', 'Townhouse', 'Studio', 'Loft', 'Cottage', 'Cabin'],
             required: true
-        }
+        },
+        yearBuilt: String,
+        furnishing: String,
+        parking: String,
+        floor: String,
+        totalFloors: String,
+        facing: String
         },
     amenities: [{
         type: String
     }],
+    legal: {
+        propertyId: String,
+        reraId: String,
+        documentSummary: String
+    },
     description: {
         type: String,
         required: [true, 'Description is required']
@@ -452,6 +464,18 @@ const PropertyModel = {
 
             if (property.status !== 'active') {
                 throw new Error('This property is no longer available');
+            }
+
+            // For rentals, enforce that an active agreement exists between buyer and seller
+            if (property.tag === 'rent') {
+                const activeAgreement = await AgreementModel.getActiveAgreementForPropertyAndBuyer(
+                    propertyId,
+                    buyerId
+                );
+
+                if (!activeAgreement) {
+                    throw new Error('You must have an approved rent agreement with the owner before renting this property');
+                }
             }
             
             // Get numeric price value for calculations

@@ -116,3 +116,82 @@
 .dash-action-btn.dash-delete-btn:hover {
   background-color: #fecaca; /* hover:bg-red-200 */
 }
+
+/* --- Loan-related Button Styles --- */
+.dash-loan-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* 12px */
+  margin-top: 1rem;
+}
+
+.dash-loan-btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem; /* 8px */
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 140px;
+}
+
+.dash-loan-btn i {
+  font-size: 0.875rem;
+}
+
+.dash-loan-btn.dash-add-funds-btn {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8); /* blue gradient */
+  color: #ffffff;
+  border: 2px solid transparent;
+}
+
+.dash-loan-btn.dash-add-funds-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.dash-loan-btn.dash-view-details-btn {
+  background: linear-gradient(135deg, #10b981, #047857); /* green gradient */
+  color: #ffffff;
+  border: 2px solid transparent;
+}
+
+.dash-loan-btn.dash-view-details-btn:hover {
+  background: linear-gradient(135deg, #059669, #065f46);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.dash-loan-btn.dash-apply-loan-btn {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed); /* purple gradient */
+  color: #ffffff;
+  border: 2px solid transparent;
+}
+
+.dash-loan-btn.dash-apply-loan-btn:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+}
+
+/* Responsive adjustments for loan buttons */
+@media (min-width: 640px) {
+  .dash-loan-buttons {
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .dash-loan-btn {
+    min-width: 120px;
+  }
+}

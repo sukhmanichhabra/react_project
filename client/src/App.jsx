@@ -1,469 +1,3 @@
-// function App() {
-//   const dispatch = useAppDispatch();
-//   const { isAuthenticated, isLoading } = useAppSelector(selectAuth);
-
-//   // Check auth status on app load
-//   useEffect(() => {
-//     dispatch(checkAuthStatus());
-//   }, [dispatch]);
-
-//   if (isLoading) {
-//     return (
-//       <div
-//         style={{
-//           display: "flex",
-//           justifyContent: "center",
-//           alignItems: "center",
-//           height: "100vh",
-//           fontSize: "18px",
-//         }}
-//       >
-//         Loading...
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <Router>
-//       <div className="App">
-//         <Toaster
-//           position="top-right"
-//           toastOptions={{
-//             duration: 4000,
-//             style: {
-//               background: "#363636",
-//               color: "#fff",
-//             },
-//             success: {
-//               duration: 3000,
-//               style: {
-//                 background: "#10B981",
-//               },
-//             },
-//             error: {
-//               duration: 5000,
-//               style: {
-//                 background: "#EF4444",
-//               },
-//             },
-//           }}
-//         />
-//         {isAuthenticated && <NavBar />}
-//         {isAuthenticated && <Header />}
-//         <main>
-//           <Routes>
-//             {/* Public routes */}
-//             <Route
-//               path="/auth/signin"
-//               element={
-//                 isAuthenticated ? <Navigate to="/" replace /> : <Login />
-//               }
-//             />
-//             <Route
-//               path="/auth/signup"
-//               element={
-//                 isAuthenticated ? <Navigate to="/" replace /> : <SignUp />
-//               }
-//             />
-//             {/* Protected routes */}
-//             <Route
-//               path="/"
-//               element={
-//                 isAuthenticated ? (
-//                   <Home />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/dashboard"
-//               element={
-//                 isAuthenticated ? (
-//                   <Dashboard />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Property routes */}
-//             <Route
-//               path="/properties"
-//               element={
-//                 isAuthenticated ? (
-//                   <PropertyList />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             {/* <Route
-//               path="/properties/compare"
-//               element={
-//                 isAuthenticated ? (
-//                   <PropertyCompare />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             /> */}
-//             <Route
-//               path="/properties/listing"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>List Property</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/properties/my-properties"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>My Properties</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/properties/my-purchases"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>My Purchases</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/property/:id"
-//               element={
-//                 isAuthenticated ? (
-//                   <PropertyOverview />
-//                 ) : (
-//                   // <div>Property Overview</div>
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Agent routes */}
-//             <Route
-//               path="/agents"
-//               element={
-//                 isAuthenticated ? (
-//                   <AgentList />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/agent/:id"
-//               element={
-//                 isAuthenticated ? (
-//                   <AgentDesc />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Finance routes */}
-//             <Route
-//               path="/loans/emi-calculator"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Loan and EMI Calculator</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/loans/my-emis"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Pay EMI</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/model"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Price Prediction Model</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/pricing"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Pricing</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/trend"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Market Trends</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Visit routes */}
-//             <Route
-//               path="/visits/my-visits"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>My Visits</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/visits/agent"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Agent Visit Requests</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/schedule-visit/:id"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Schedule Visit</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Blog routes */}
-//             <Route
-//               path="/blogs"
-//               element={
-//                 isAuthenticated ? (
-//                   <BlogList />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/blog/add"
-//               element={
-//                 isAuthenticated ? (
-//                   <AddBlog />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/blog/edit/:id"
-//               element={
-//                 isAuthenticated ? (
-//                   <EditBlog />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/blog/:id"
-//               element={
-//                 isAuthenticated ? (
-//                   <BlogDetails />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Communication routes */}
-//             <Route
-//               path="/chat"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Messages</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/chatbot"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Chatbot</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/chatbot/admin"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Chatbot Admin</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Notification routes */}
-//             <Route
-//               path="/notifications"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Notifications</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Advertising routes */}
-//             <Route
-//               path="/advertising"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Advertise with Us</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Admin routes */}
-//             <Route
-//               path="/approve-property"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Property Approvals</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/activity/log"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Activity Log</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Information pages */}
-//             {/* <Route
-//               path="/about"
-//               element={
-//                 isAuthenticated ? (
-//                   <AboutUs />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/contact"
-//               element={
-//                 isAuthenticated ? (
-//                   <Contact />
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             /> */}
-//             <Route
-//               path="/faq"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>FAQ</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/terms"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Terms & Conditions</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Rent management routes */}
-//             <Route
-//               path="/rent/manage"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Manage Rent</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-//             <Route
-//               path="/rent/pay"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Pay Rent</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Transaction routes */}
-//             <Route
-//               path="/transactions"
-//               element={
-//                 isAuthenticated ? (
-//                   <div>Transactions</div>
-//                 ) : (
-//                   <Navigate to="/auth/signin" replace />
-//                 )
-//               }
-//             />
-
-//             {/* Fallback route */}
-//             <Route path="*" element={<Navigate to="/" replace />} />
-//           </Routes>
-//         </main>
-//         {isAuthenticated && <Footer />}
-//       </div>
-//     </Router>
-//   );
-// }
-
-// export default App;
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -485,6 +19,8 @@ import AgentList from "./components/Agent/AgentList";
 import AgentDesc from "./components/Agent/AgentDesc";
 import PropertyList from "./components/property list/PropertyList";
 import PropertyOverview from "./components/property overview/PropertyOverview";
+import PropertyCompare from "./components/property/PropertyCompare";
+import CompareFloatingButton from "./components/partials/CompareFloatingButton";
 import Dashboard from "./components/Dashboard/Dashboard";
 import BlogList from "./components/blog/BlogList";
 import BlogDetails from "./components/blog/BlogDetails";
@@ -504,9 +40,14 @@ import ManageRent from "./components/rent/ManageRent";
 import PropertyRentManagement from "./components/rent/PropertyRentManagement";
 import LoanApplication from "./components/loan/LoanApplication";
 import MyLoans from "./components/loan/MyLoans";
+import LoanDetails from "./components/loan/LoanDetails";
 import PayEMI from "./components/loan/PayEMI";
 import ScheduleVisit from "./components/visits/ScheduleVisit";
 import ManageVisits from "./components/visits/ManageVisits";
+import VisitVideoCall from "./components/visits/VisitVideoCall";
+import { VideoCallProvider } from "./context/VideoCallContext";
+import About from "./components/About/About";
+import Contact from "./components/Contact/Contact";
 import "./App.css";
 
 // This new component handles all layout and routing logic
@@ -562,6 +103,16 @@ function AppLayout() {
         element={
           isAuthenticated ? (
             <PropertyList />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/properties/compare"
+        element={
+          isAuthenticated ? (
+            <PropertyCompare />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -772,7 +323,11 @@ function AppLayout() {
       <Route
         path="/chat"
         element={
-          isAuthenticated ? <Messages /> : <Navigate to="/auth/signin" replace />
+          isAuthenticated ? (
+            <Messages />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
         }
       />
 
@@ -780,11 +335,7 @@ function AppLayout() {
       <Route
         path="/chatbot"
         element={
-          isAuthenticated ? (
-            <Chatbot />
-          ) : (
-            <Navigate to="/auth/signin" replace />
-          )
+          isAuthenticated ? <Chatbot /> : <Navigate to="/auth/signin" replace />
         }
       />
       <Route
@@ -802,11 +353,7 @@ function AppLayout() {
       <Route
         path="/rent/pay"
         element={
-          isAuthenticated ? (
-            <PayRent />
-          ) : (
-            <Navigate to="/auth/signin" replace />
-          )
+          isAuthenticated ? <PayRent /> : <Navigate to="/auth/signin" replace />
         }
       />
       <Route
@@ -844,8 +391,14 @@ function AppLayout() {
       <Route
         path="/loans/my-applications"
         element={
+          isAuthenticated ? <MyLoans /> : <Navigate to="/auth/signin" replace />
+        }
+      />
+      <Route
+        path="/loans/application/:id"
+        element={
           isAuthenticated ? (
-            <MyLoans />
+            <LoanDetails />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -858,11 +411,7 @@ function AppLayout() {
       <Route
         path="/loans/my-emis"
         element={
-          isAuthenticated ? (
-            <PayEMI />
-          ) : (
-            <Navigate to="/auth/signin" replace />
-          )
+          isAuthenticated ? <PayEMI /> : <Navigate to="/auth/signin" replace />
         }
       />
 
@@ -882,6 +431,16 @@ function AppLayout() {
         element={
           isAuthenticated ? (
             <ManageVisits />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/visits/video/:visitId"
+        element={
+          isAuthenticated ? (
+            <VisitVideoCall />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -910,11 +469,24 @@ function AppLayout() {
         }
       />
 
-      {/* Model/Price Prediction route */}
+      {/* About route */}
       <Route
-        path="/model"
-        element={<Model />}
+        path="/about"
+        element={
+          isAuthenticated ? <About /> : <Navigate to="/auth/signin" replace />
+        }
       />
+
+      {/* Contact route */}
+      <Route
+        path="/contact"
+        element={
+          isAuthenticated ? <Contact /> : <Navigate to="/auth/signin" replace />
+        }
+      />
+
+      {/* Model/Price Prediction route */}
+      <Route path="/model" element={<Model />} />
 
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -936,8 +508,14 @@ function AppLayout() {
       {/* --- UPDATE THIS LOGIC --- */}
 
       {/* Show Nav/Header only if NOT dashboard AND NOT auth AND NOT model AND logged in */}
-      {!isDashboardRoute && !isAuthRoute && !isModelRoute && isAuthenticated && <NavBar />}
-      {!isDashboardRoute && !isAuthRoute && !isModelRoute && isAuthenticated && <Header />}
+      {!isDashboardRoute &&
+        !isAuthRoute &&
+        !isModelRoute &&
+        isAuthenticated && <NavBar />}
+      {!isDashboardRoute &&
+        !isAuthRoute &&
+        !isModelRoute &&
+        isAuthenticated && <Header />}
 
       {/* Show routes wrapper logic */}
       {isDashboardRoute || isAuthRoute || isModelRoute ? (
@@ -947,7 +525,16 @@ function AppLayout() {
       )}
 
       {/* Show Footer only if NOT dashboard AND NOT auth AND NOT model AND logged in */}
-      {!isDashboardRoute && !isAuthRoute && !isModelRoute && isAuthenticated && <Footer />}
+      {!isDashboardRoute &&
+        !isAuthRoute &&
+        !isModelRoute &&
+        isAuthenticated && <Footer />}
+
+      {/* Show Compare Floating Button on property-related pages */}
+      {!isDashboardRoute &&
+        !isAuthRoute &&
+        !isModelRoute &&
+        isAuthenticated && <CompareFloatingButton />}
     </div>
   );
 }
@@ -963,7 +550,9 @@ function App() {
 
   return (
     <Router>
-      <AppLayout /> {/* Render the new layout component */}
+      <VideoCallProvider>
+        <AppLayout /> {/* Render the new layout component */}
+      </VideoCallProvider>
     </Router>
   );
 }

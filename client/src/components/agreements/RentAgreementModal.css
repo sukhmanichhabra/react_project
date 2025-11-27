@@ -1,0 +1,162 @@
+.rent-agreement-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.rent-agreement-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4);
+  animation: rentAgreementFadeIn 0.2s ease-out;
+}
+
+.rent-agreement-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rent-agreement-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.rent-agreement-close-btn {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.rent-agreement-modal-body {
+  padding: 16px 24px 20px;
+  overflow-y: auto;
+}
+
+.rent-agreement-property-summary h3 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.rent-agreement-location {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.rent-agreement-price {
+  margin: 6px 0 12px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.rent-agreement-form {
+  margin-top: 8px;
+}
+
+.rent-agreement-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 16px;
+}
+
+.rent-agreement-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.rent-agreement-form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #374151;
+}
+
+.rent-agreement-form-group input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.rent-agreement-form-group input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.1);
+}
+
+.rent-agreement-terms {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.rent-agreement-terms h4 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+}
+
+.rent-agreement-terms ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.rent-agreement-modal-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.rent-agreement-secondary-btn,
+.rent-agreement-primary-btn {
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+}
+
+.rent-agreement-secondary-btn {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.rent-agreement-primary-btn {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+}
+
+.rent-agreement-primary-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+@keyframes rentAgreementFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
