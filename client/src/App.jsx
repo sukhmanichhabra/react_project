@@ -48,6 +48,10 @@ import VisitVideoCall from "./components/visits/VisitVideoCall";
 import { VideoCallProvider } from "./context/VideoCallContext";
 import About from "./components/About/About";
 import Contact from "./components/Contact/Contact";
+import LoanAndEMI from "./components/LoanAndEMI/LoanAndEMI"; // Import the new component
+import Pricing from "./components/Pricing/Pricing"; // Import the new component
+import FAQ from "./components/FAQ/FAQ"; // Import the new component
+import BuyerMyPurchases from "./components/Buyer-My-Purchases/BuyerMyPurchases"; // Import the new component
 import "./App.css";
 
 // This new component handles all layout and routing logic
@@ -142,7 +146,7 @@ function AppLayout() {
         path="/properties/my-purchases"
         element={
           isAuthenticated ? (
-            <div>My Purchases</div>
+            <BuyerMyPurchases />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -186,7 +190,7 @@ function AppLayout() {
         path="/loans/emi-calculator"
         element={
           isAuthenticated ? (
-            <div>Loan and EMI Calculator</div>
+            <LoanAndEMI />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -196,7 +200,7 @@ function AppLayout() {
         path="/pricing"
         element={
           isAuthenticated ? (
-            <div>Pricing</div>
+            <Pricing />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -207,6 +211,16 @@ function AppLayout() {
         element={
           isAuthenticated ? (
             <div>Market Trends</div>
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/faq"
+        element={
+          isAuthenticated ? (
+            <FAQ />
           ) : (
             <Navigate to="/auth/signin" replace />
           )
@@ -404,10 +418,7 @@ function AppLayout() {
           )
         }
       />
-      <Route
-        path="/loans/emi-calculator"
-        element={<Navigate to="/loan/emi-calculator" replace />}
-      />
+      {/* Removed duplicate route definition for /loans/emi-calculator */}
       <Route
         path="/loans/my-emis"
         element={

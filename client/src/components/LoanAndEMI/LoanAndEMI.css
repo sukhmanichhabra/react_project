@@ -1,0 +1,1320 @@
+/* Reset and Global Styles */
+/* Note: Removed global reset * selector to avoid conflicts with other app styles, but kept specific styles */
+
+.loan-and-emi-container {
+    font-family: "Inter", Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background-color: rgb(255, 255, 255);
+}
+
+/* Container and Layout */
+.loan-and-emi-container .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* About Section Styles */
+.loan-and-emi-container .about-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    margin-bottom: 60px;
+}
+
+.loan-and-emi-container .left-column {
+    flex: 1;
+    padding-right: 20px;
+}
+
+.loan-and-emi-container .right-column {
+    flex: 1;
+    background: #fff;
+    padding: 35px;
+    margin-top: 50px;
+    border-radius: 12px;
+    border: 1px solid #e6e6e6;
+    transition: transform 0.3s ease;
+}
+
+.loan-and-emi-container .right-column:hover {
+    transform: translateY(-5px);
+}
+
+/* Typography */
+.loan-and-emi-container .about-us {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+.loan-and-emi-container .main-heading {
+    font-size: 52px;
+    margin-bottom: 25px;
+    position: relative;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.loan-and-emi-container .underline {
+    position: absolute;
+    bottom: 5px;
+    width: 120px;
+    height: 3px;
+    background: #ff5722;
+    transition: width 0.3s ease;
+}
+
+.loan-and-emi-container .main-heading:hover .underline {
+    width: 180px;
+}
+
+/* Button Styles */
+.loan-and-emi-container .contact-btn {
+    display: inline-block;
+    padding: 16px 32px;
+    background: #ff5722;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin: 25px 0;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.loan-and-emi-container .contact-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 87, 34, 0.2);
+}
+
+/* Stats Section */
+.loan-and-emi-container .stats {
+    display: flex;
+    gap: 60px;
+    margin-top: 60px;
+}
+
+.loan-and-emi-container .stat-item h2 {
+    font-size: 48px;
+    margin-bottom: 10px;
+    color: #222;
+    font-weight: 700;
+}
+
+.loan-and-emi-container .stat-item p {
+    color: #666;
+    font-size: 16px;
+}
+
+/* Right Column Content */
+.loan-and-emi-container .section-title {
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: #222;
+    font-weight: 600;
+}
+
+.loan-and-emi-container .section-content {
+    color: #666;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.loan-and-emi-container .divider {
+    height: 1px;
+    background: #eee;
+    margin: 35px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+    .loan-and-emi-container .about-section {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .loan-and-emi-container .main-heading {
+        font-size: 42px;
+    }
+
+    .loan-and-emi-container .stats {
+        gap: 40px;
+    }
+
+    .loan-and-emi-container .stat-item h2 {
+        font-size: 38px;
+    }
+}
+
+@media (max-width: 576px) {
+    .loan-and-emi-container .container {
+        padding: 20px;
+    }
+
+    .loan-and-emi-container .main-heading {
+        font-size: 32px;
+    }
+
+    .loan-and-emi-container .stats {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .loan-and-emi-container .right-column {
+        padding: 25px;
+    }
+
+    .loan-and-emi-container .section-title {
+        font-size: 22px;
+    }
+}
+
+/* Animation Effects */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loan-and-emi-container .about-section {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.loan-and-emi-container h1 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.loan-and-emi-container .description {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.loan-and-emi-container .calculator-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.loan-and-emi-container .input-group {
+    position: relative;
+    margin-bottom: 35px;
+    min-height: 48px;
+}
+
+.loan-and-emi-container .input-wrapper {
+    position: relative;
+}
+
+.loan-and-emi-container .currency {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.loan-and-emi-container label {
+    display: block;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.loan-and-emi-container input,
+.loan-and-emi-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.loan-and-emi-container input[type="number"] {
+    padding-left: 25px;
+}
+
+.loan-and-emi-container .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.loan-and-emi-container .recalculate-btn {
+    background: #e32726;
+    /* Replaced var(--primary) with explicit color from other parts of css */
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 25px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.loan-and-emi-container .result-section {
+    background: #f8fbff;
+    padding: 30px;
+    border-radius: 12px;
+}
+
+.loan-and-emi-container .emi-result {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.loan-and-emi-container .emi-result h2 {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.loan-and-emi-container .emi-amount {
+    color: #333;
+    font-size: 36px;
+}
+
+.loan-and-emi-container .chart-container {
+    margin: 30px 0;
+    height: 200px;
+    position: relative;
+}
+
+.loan-and-emi-container .amount-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.loan-and-emi-container .dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.loan-and-emi-container .principal-dot {
+    background: #00a19c;
+}
+
+.loan-and-emi-container .interest-dot {
+    background: #ffb800;
+}
+
+.loan-and-emi-container .amount {
+    display: block;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.loan-and-emi-container .bank-offers h3 {
+    margin-bottom: 20px;
+}
+
+.loan-and-emi-container .bank-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.loan-and-emi-container .bank-card {
+    min-width: 300px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    scroll-snap-align: start;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.loan-and-emi-container .bank-card:hover {
+    transform: translateY(-5px);
+}
+
+.loan-and-emi-container .bank-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.loan-and-emi-container .bank-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.loan-and-emi-container .bank-header h3 {
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.loan-and-emi-container .recommended-tag {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #fff5e5;
+    color: #ffb800;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.loan-and-emi-container .loan-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.loan-and-emi-container .detail-item {
+    text-align: center;
+}
+
+.loan-and-emi-container .detail-item .value {
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.loan-and-emi-container .detail-item .label {
+    font-size: 12px;
+    color: #666;
+}
+
+.loan-and-emi-container .disbursement-info {
+    text-align: center;
+    color: #505c66;
+    font-size: 14px;
+    margin: 15px 0;
+    padding: 12px;
+    background: #f8fbff;
+    border-radius: 6px;
+    width: 100%;
+}
+
+.loan-and-emi-container .reward-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff5e5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: auto;
+    width: 100%;
+}
+
+.loan-and-emi-container .reward-amount {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.loan-and-emi-container .upto {
+    font-size: 10px;
+    color: #666;
+    font-weight: 500;
+}
+
+.loan-and-emi-container .amount {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.2;
+}
+
+.loan-and-emi-container .text {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
+.loan-and-emi-container .claim-btn {
+    background: #e32726;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.loan-and-emi-container .claim-btn:hover {
+    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(227, 39, 38, 0.3);
+}
+
+/* Ensure consistent spacing between sections */
+.loan-and-emi-container .bank-card>*+* {
+    margin-top: 15px;
+}
+
+/* Scrollbar Styling */
+.loan-and-emi-container .banks-carousel::-webkit-scrollbar {
+    height: 8px;
+}
+
+.loan-and-emi-container .banks-carousel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.loan-and-emi-container .banks-carousel::-webkit-scrollbar-thumb {
+    background: #e32726;
+    border-radius: 4px;
+}
+
+.loan-and-emi-container .banks-carousel::-webkit-scrollbar-thumb:hover {
+    background: #d32f2f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .loan-and-emi-container .calculator-container {
+        grid-template-columns: 1fr;
+    }
+
+    .loan-and-emi-container .input-row {
+        grid-template-columns: 1fr;
+    }
+
+    .loan-and-emi-container .bank-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .loan-and-emi-container .bank-card {
+        min-width: 280px;
+        padding: 15px;
+    }
+
+    .loan-and-emi-container .reward-section {
+        padding: 12px;
+    }
+
+    .loan-and-emi-container .amount {
+        font-size: 18px;
+    }
+
+    .loan-and-emi-container .claim-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+.loan-and-emi-container .col-md-8 {
+    padding: 20px;
+}
+
+.loan-and-emi-container canvas {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.loan-and-emi-container .amortization-table-container {
+    margin-top: 60px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    padding: 40px 20px;
+    margin: 0 auto;
+}
+
+.loan-and-emi-container .year-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.loan-and-emi-container .year-navigation button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #e32726;
+}
+
+.loan-and-emi-container #currentYear {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.loan-and-emi-container .table-wrapper {
+    overflow-x: auto;
+}
+
+.loan-and-emi-container #amortizationTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.loan-and-emi-container #amortizationTable th,
+.loan-and-emi-container #amortizationTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.loan-and-emi-container #amortizationTable th {
+    background-color: #f8fbff;
+    font-weight: 600;
+}
+
+.loan-and-emi-container #amortizationTable tr:hover {
+    background-color: #f8fbff;
+}
+
+/* Loan Information Styles */
+.loan-and-emi-container .loan-info-container {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.loan-and-emi-container .loan-info-container h1 {
+    font-size: 36px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.loan-and-emi-container .loan-info-container h2 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin: 40px 0 20px;
+    font-weight: 600;
+}
+
+.loan-and-emi-container .info-section {
+    margin-bottom: 40px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.loan-and-emi-container .info-section p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #505c66;
+    margin-bottom: 20px;
+}
+
+.loan-and-emi-container .description {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+.loan-and-emi-container .instruction {
+    font-size: 17px;
+    color: #505c66;
+    background: #f8fbff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e32726;
+    margin: 30px 0;
+}
+
+/* Animation for content sections */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .loan-and-emi-container .loan-info-container {
+        margin: 40px auto;
+    }
+
+    .loan-and-emi-container .loan-info-container h1 {
+        font-size: 28px;
+    }
+
+    .loan-and-emi-container .loan-info-container h2 {
+        font-size: 24px;
+    }
+
+    .loan-and-emi-container .description {
+        font-size: 16px;
+    }
+
+    .loan-and-emi-container .instruction {
+        font-size: 15px;
+        padding: 15px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .loan-and-emi-container .loan-info-container {
+        margin: 20px auto;
+    }
+
+    .loan-and-emi-container .instruction {
+        border: 1px solid #ddd;
+        background: none;
+    }
+}
+
+/* Bank Offers Section */
+.loan-and-emi-container .bank-offers-container {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.loan-and-emi-container .offers-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.loan-and-emi-container .offers-header h2 {
+    font-size: 36px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.loan-and-emi-container .new-tag {
+    background: #ffb800;
+    color: #000;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.loan-and-emi-container .offers-subtitle {
+    font-size: 24px;
+    color: #505c66;
+}
+
+.loan-and-emi-container .loan-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.loan-and-emi-container .stat-pill {
+    background: #f5f5f5;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    color: #505c66;
+}
+
+.loan-and-emi-container .banks-carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.loan-and-emi-container .bank-card {
+    min-width: 300px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    scroll-snap-align: start;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.loan-and-emi-container .bank-card:hover {
+    transform: translateY(-5px);
+}
+
+.loan-and-emi-container .bank-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.loan-and-emi-container .bank-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.loan-and-emi-container .bank-header h3 {
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+/* Pricing/Loan Categories */
+.loan-and-emi-container .pricing-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.loan-and-emi-container .pricing-title {
+    font-size: 42px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.loan-and-emi-container .title-highlight {
+    background: #f8fbff;
+    padding: 30px;
+    border-radius: 12px;
+    display: inline-block;
+    max-width: 800px;
+}
+
+.loan-and-emi-container .highlight-tag {
+    background: #e32726;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.loan-and-emi-container .subtitle {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.loan-and-emi-container .title-description {
+    color: #666;
+    font-size: 16px;
+}
+
+.loan-and-emi-container .loan-categories-container {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.loan-and-emi-container .categories-title {
+    text-align: center;
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.loan-and-emi-container .categories-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.loan-and-emi-container .loan-category-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.loan-and-emi-container .category-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+.loan-and-emi-container .category-card:hover {
+    transform: translateY(-10px);
+}
+
+.loan-and-emi-container .category-card.affordable {
+    border-top: 4px solid #4caf50;
+}
+
+.loan-and-emi-container .category-card.premium {
+    border-top: 4px solid #2196f3;
+}
+
+.loan-and-emi-container .category-card.luxury {
+    border-top: 4px solid #9c27b0;
+}
+
+.loan-and-emi-container .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+.loan-and-emi-container .loan-amount h3 {
+    font-size: 22px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.loan-and-emi-container .amount-range {
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+}
+
+.loan-and-emi-container .card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.loan-and-emi-container .affordable .card-icon {
+    background: #e8f5e9;
+    color: #4caf50;
+}
+
+.loan-and-emi-container .premium .card-icon {
+    background: #e3f2fd;
+    color: #2196f3;
+}
+
+.loan-and-emi-container .luxury .card-icon {
+    background: #f3e5f5;
+    color: #9c27b0;
+}
+
+.loan-and-emi-container .card-details {
+    margin-bottom: 25px;
+}
+
+.loan-and-emi-container .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.loan-and-emi-container .detail-label {
+    color: #666;
+    font-size: 14px;
+}
+
+.loan-and-emi-container .detail-value {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.loan-and-emi-container .card-features {
+    margin-bottom: 25px;
+}
+
+.loan-and-emi-container .card-features h4 {
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.loan-and-emi-container .card-features ul {
+    list-style: none;
+}
+
+.loan-and-emi-container .card-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+.loan-and-emi-container .card-features i {
+    color: #4caf50;
+}
+
+.loan-and-emi-container .apply-now-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.loan-and-emi-container .affordable .apply-now-btn {
+    background: #4caf50;
+    color: white;
+}
+
+.loan-and-emi-container .premium .apply-now-btn {
+    background: #2196f3;
+    color: white;
+}
+
+.loan-and-emi-container .luxury .apply-now-btn {
+    background: #9c27b0;
+    color: white;
+}
+
+.loan-and-emi-container .apply-now-btn:hover {
+    opacity: 0.9;
+}
+
+/* Loan Application Form */
+.loan-and-emi-container .loan-application-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+}
+
+.loan-and-emi-container .loan-application-container.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.loan-and-emi-container .application-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.loan-and-emi-container .application-header h2 {
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.loan-and-emi-container .application-header p {
+    color: #666;
+}
+
+.loan-and-emi-container .form-section {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.loan-and-emi-container .form-section:last-child {
+    border-bottom: none;
+}
+
+.loan-and-emi-container .form-section h3 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    padding-left: 15px;
+    border-left: 4px solid #e32726;
+}
+
+.loan-and-emi-container .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loan-and-emi-container .upload-info {
+    background: #f8fbff;
+    padding: 15px;
+    border-radius: 8px;
+    color: #505c66;
+    font-size: 14px;
+    margin-bottom: 20px;
+    border: 1px dashed #2196f3;
+}
+
+.loan-and-emi-container .document-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loan-and-emi-container .document-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.loan-and-emi-container .document-item {
+    position: relative;
+}
+
+.loan-and-emi-container .document-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.loan-and-emi-container input[type="file"] {
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px dashed #ccc;
+    cursor: pointer;
+}
+
+.loan-and-emi-container .file-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.loan-and-emi-container .form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.loan-and-emi-container .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.loan-and-emi-container .submit-btn {
+    background: #e32726;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.loan-and-emi-container .submit-btn:hover {
+    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(227, 39, 38, 0.2);
+}
+
+.loan-and-emi-container .submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Form Validation Styles */
+.loan-and-emi-container .input-group.error input,
+.loan-and-emi-container .input-group.error select {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+}
+
+.loan-and-emi-container .error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.loan-and-emi-container .error-message.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Application Status Styles */
+.loan-and-emi-container .application-status {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.loan-and-emi-container .application-status .success {
+    background: #d4edda;
+    color: #155724;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+}
+
+.loan-and-emi-container .application-status .error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+}
+
+.loan-and-emi-container .application-status i {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.loan-and-emi-container .status-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: #155724;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.loan-and-emi-container .loading {
+    color: #0056b3;
+    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+    .loan-and-emi-container .document-row {
+        grid-template-columns: 1fr;
+    }
+
+    .loan-and-emi-container .form-footer {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .loan-and-emi-container .submit-btn {
+        width: 100%;
+    }
+
+    .loan-and-emi-container .loan-application-container {
+        padding: 20px;
+    }
+}
+
+/* Missing Button Styles */
+.loan-and-emi-container .explore-more {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.loan-and-emi-container .explore-btn {
+    background: none;
+    border: 2px solid #e32726;
+    color: #e32726;
+    padding: 15px 40px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.loan-and-emi-container .explore-btn:hover {
+    background: #e32726;
+    color: white;
+}
+
+.loan-and-emi-container .view-btn {
+    background: none;
+    border: 2px solid #e32726;
+    color: #e32726;
+    margin: 5px auto;
+    padding: 5px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.loan-and-emi-container .view-btn:hover {
+    background: #e32726;
+    color: white;
+}
+
+.loan-and-emi-container .check-offers-btn {
+    background: #e32726;
+    /* var(--primary) */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 240px;
+    margin-top: 20px;
+}
+
+.loan-and-emi-container .check-offers-btn:hover {
+    background: #d32f2f;
+    /* var(--primary-hover) */
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(227, 39, 38, 0.3);
+}
+
+.loan-and-emi-container .bank-info {
+    margin-bottom: 10px;
+}
+
+.loan-and-emi-container .bank-info p {
+    font-size: 14px;
+    color: #666;
+}
+
+.loan-and-emi-container .bank-info h4 {
+    font-size: 18px;
+    color: #2c3e50;
+}
