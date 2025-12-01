@@ -146,18 +146,27 @@
   margin-bottom: 0;
 }
 
-/* 3-button action grid */
+/* Action buttons grid */
 .rented-property-card__actions {
   display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 0.75rem; /* 12px */
+  grid-template-columns: 1fr;
+  gap: 0.5rem; /* 8px */
   padding-top: 1rem; /* 16px */
   border-top: 1px solid #f3f4f6; /* border-gray-100 */
 }
 
-@media (min-width: 640px) {
+/* On small screens, stack buttons vertically */
+@media (min-width: 480px) {
   .rented-property-card__actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem; /* 12px */
+  }
+}
+
+/* On larger screens, allow up to 3 columns for more buttons */
+@media (min-width: 768px) {
+  .rented-property-card__actions {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 }
 
@@ -165,8 +174,8 @@
 .dash-btn {
   width: 100%;
   text-align: center;
-  padding: 0.5rem 1rem; /* 8px 16px */
-  border-radius: 0.5rem; /* 8px */
+  padding: 0.75rem 1rem; /* 12px 16px - increased padding */
+  border-radius: 0.375rem; /* 6px - slightly smaller radius */
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
   display: flex;
@@ -177,7 +186,9 @@
   color: #fff;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  min-height: 2.5rem; /* 40px - consistent height */
 }
 
 .dash-btn i {
@@ -189,6 +200,13 @@
 }
 .dash-btn.blue:hover {
   background-color: #2563eb; /* hover:bg-blue-600 */
+}
+
+.dash-btn.green {
+  background-color: #10b981; /* bg-green-500 */
+}
+.dash-btn.green:hover {
+  background-color: #059669; /* hover:bg-green-600 */
 }
 
 .dash-btn.red {
@@ -249,7 +267,8 @@
 }
 
 /* Loading and Error States */
-.dash-loading-state, .dash-error-state {
+.dash-loading-state,
+.dash-error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -258,7 +277,8 @@
   text-align: center;
 }
 
-.dash-loading-state i, .dash-error-state i {
+.dash-loading-state i,
+.dash-error-state i {
   font-size: 3rem;
   margin-bottom: 1rem;
   color: #9ca3af;
@@ -268,7 +288,8 @@
   color: #ef4444;
 }
 
-.dash-loading-state p, .dash-error-state p {
+.dash-loading-state p,
+.dash-error-state p {
   color: #6b7280;
   font-size: 1rem;
 }
@@ -277,4 +298,16 @@
   color: #ef4444;
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
+}
+
+/* Lock-in period note */
+.rented-property-lockin-note {
+  font-size: 0.75rem; /* 12px */
+  color: #f59e0b; /* text-amber-500 */
+  background-color: #fef3c7; /* bg-amber-50 */
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+  border-left: 3px solid #f59e0b;
+  font-style: italic;
 }

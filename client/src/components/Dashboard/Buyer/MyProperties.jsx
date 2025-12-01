@@ -55,13 +55,16 @@ const MyProperties = ({ properties = [] }) => {
       }
     }
 
-    // Debug logging for agent data
-    console.log(`MyProperties: Agent data for ${property._id}:`, {
-      agent: property.agent,
+    // Enhanced debug logging for agent data
+    console.log(`MyProperties: Enhanced Agent debug for ${property._id}:`, {
+      originalAgent: property.agent,
+      agentType: typeof property.agent,
+      extractedAgent: agent,
       agentId: agent._id,
-      agentName: agent.fullName || agent.name,
+      agentName: agent.fullName || agent.name || property.seller?.name,
       rawAgentImage: agent.image || agent.profileImage,
       processedAgentImage: getAgentImageUrl(agent.image || agent.profileImage),
+      finalAgentLink: agent._id ? `/agent/${agent._id}` : "#",
     });
 
     // Handle location - it's a string in the database, not an object
@@ -111,8 +114,14 @@ const MyProperties = ({ properties = [] }) => {
       agentImage: getAgentImageUrl(agent.image || agent.profileImage),
       agentName:
         agent.fullName || agent.name || property.seller?.name || "Estate Agent",
-      agentId: agent._id || null,
-      agentLink: agent._id ? `/agents/${agent._id}` : "#",
+      agentId:
+        agent._id ||
+        (typeof property.agent === "string" ? property.agent : null),
+      agentLink:
+        agent._id ||
+        (typeof property.agent === "string" ? property.agent : null)
+          ? `/agent/${agent._id || property.agent}`
+          : "#",
       status: property.status || "active",
     };
   };

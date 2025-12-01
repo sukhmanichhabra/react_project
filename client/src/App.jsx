@@ -43,6 +43,7 @@ import MyLoans from "./components/loan/MyLoans";
 import LoanDetails from "./components/loan/LoanDetails";
 import PayEMI from "./components/loan/PayEMI";
 import ScheduleVisit from "./components/visits/ScheduleVisit";
+import MyVisits from "./components/visits/MyVisits";
 import ManageVisits from "./components/visits/ManageVisits";
 import VisitVideoCall from "./components/visits/VisitVideoCall";
 import { VideoCallProvider } from "./context/VideoCallContext";
@@ -207,6 +208,16 @@ function AppLayout() {
           )
         }
       />
+      <Route
+        path="/agents/:id"
+        element={
+          isAuthenticated ? (
+            <AgentDesc />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
 
       {/* Finance routes */}
       <Route
@@ -243,6 +254,16 @@ function AppLayout() {
       {/* Visit routes */}
       <Route
         path="/visits/my-visits"
+        element={
+          isAuthenticated ? (
+            <MyVisits />
+          ) : (
+            <Navigate to="/auth/signin" replace />
+          )
+        }
+      />
+      <Route
+        path="/visits/schedule"
         element={
           isAuthenticated ? (
             <ScheduleVisit />

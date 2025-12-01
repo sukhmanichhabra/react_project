@@ -6,10 +6,21 @@ const NotificationService = require("../service/notificationService");
 
 // Middleware functions (moved from routes)
 const requireBuyer = (req, res, next) => {
-  if (!req.user || req.user.role !== "buyer") {
+  console.log("requireBuyer middleware - User:", req.user);
+  console.log("requireBuyer middleware - User role:", req.user?.role);
+
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: "Authentication required. Please log in.",
+    });
+  }
+
+  if (req.user.role !== "buyer") {
     return res.status(403).json({
       success: false,
       message: "Access denied. Only buyers can access this page.",
+      userRole: req.user.role,
     });
   }
   next();
@@ -239,7 +250,16 @@ const cancelVisit = async (req, res) => {
     }
 
     // Check if the visit belongs to this buyer
-    if (visit.buyerId.toString() !== req.user._id.toString()) {
+    // Handle both populated and non-populated buyerId
+    const visitBuyerId = visit.buyerId?._id
+      ? visit.buyerId._id.toString()
+      : visit.buyerId.toString();
+    const currentUserId = req.user._id.toString();
+
+    console.log("Cancel visit - Visit Buyer ID:", visitBuyerId);
+    console.log("Cancel visit - Current User ID:", currentUserId);
+
+    if (visitBuyerId !== currentUserId) {
       return res.status(403).json({
         success: false,
         message: "You can only cancel your own visits",
@@ -247,10 +267,21 @@ const cancelVisit = async (req, res) => {
     }
 
     // Check if the visit can be cancelled (not completed or cancelled)
+    // Allow cancellation of pending and approved visits
     if (visit.status === "completed" || visit.status === "cancelled") {
       return res.status(400).json({
         success: false,
         message: `Cannot cancel a visit with status: ${visit.status}`,
+      });
+    }
+
+    // Check if the visit date has not passed
+    const visitDate = new Date(visit.visitDate);
+    const now = new Date();
+    if (visitDate < now) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot cancel a past visit",
       });
     }
 
@@ -762,12 +793,12 @@ const getAgentVisitsAPI = async (req, res) => {
 
     // First, find the agent document for this user using mongoose model
     const agent = await Agent.findOne({ userId: userId });
-    
+
     if (!agent) {
       return res.json({
         success: true,
         visits: [],
-        message: "No agent profile found for this user"
+        message: "No agent profile found for this user",
       });
     }
 
@@ -822,7 +853,9 @@ const getAvailableSlotsAPI = async (req, res) => {
     });
 
     const bookedSlots = bookedVisits.map((v) => v.timeSlot);
-    const availableSlots = allSlots.filter((slot) => !bookedSlots.includes(slot));
+    const availableSlots = allSlots.filter(
+      (slot) => !bookedSlots.includes(slot)
+    );
 
     res.json({
       success: true,

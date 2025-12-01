@@ -75,8 +75,17 @@ const ScheduleVisit = () => {
         propertiesData = propertiesRes.data.data;
       }
 
+      // Filter to show only approved properties that are available (not sold/rented)
+      const availableProperties = propertiesData.filter(
+        (property) =>
+          property.approvalStatus === "approved" &&
+          property.status !== "sold" &&
+          property.status !== "rented"
+      );
+
       console.log("Extracted properties:", propertiesData);
-      setProperties(propertiesData);
+      console.log("Available properties for visits:", availableProperties);
+      setProperties(availableProperties);
 
       // Fetch visits
       try {
@@ -235,9 +244,9 @@ const ScheduleVisit = () => {
                     <i className="fas fa-map-marker-alt"></i>{" "}
                     {selectedProperty.location}
                   </p>
-                  <p className="property-price">
+                  {/* <p className="property-price">
                     ₹{selectedProperty.price?.toLocaleString("en-IN")}
-                  </p>
+                  </p> */}
                   {selectedProperty.features && (
                     <div className="property-features">
                       <span>
@@ -286,20 +295,53 @@ const ScheduleVisit = () => {
                         }`}
                         onClick={() => handlePropertySelect(property._id)}
                       >
-                        <img
-                          src={property.images?.[0] || "/assets/property-1.jpg"}
-                          alt={property.title}
-                          className="property-image"
-                        />
+                        <div className="property-card-image-wrapper">
+                          <img
+                            src={
+                              property.images?.[0] || "/assets/property-1.jpg"
+                            }
+                            alt={property.title || "Property"}
+                            className="property-image"
+                            onError={(e) => {
+                              e.target.src = "/assets/property-1.jpg";
+                            }}
+                          />
+                        </div>
                         <div className="property-details">
-                          <h3 className="property-title">{property.title}</h3>
+                          <h3 className="property-title" title={property.title}>
+                            {property.title || "Untitled Property"}
+                          </h3>
                           <p className="property-location">
                             <i className="fas fa-map-marker-alt"></i>{" "}
-                            {property.location}
+                            {property.location || "Location not specified"}
                           </p>
-                          <p className="property-price">
-                            ₹{property.price?.toLocaleString("en-IN")}
-                          </p>
+                          {/* {property.price && (
+                            <p className="property-price">
+                              ₹{property.price.toLocaleString("en-IN")}
+                            </p>
+                          )} */}
+                          {property.features && (
+                            <div className="property-features-mini">
+                              {property.features.beds && (
+                                <span>
+                                  <i className="fas fa-bed"></i>{" "}
+                                  {property.features.beds}
+                                </span>
+                              )}
+                              {property.features.baths && (
+                                <span>
+                                  <i className="fas fa-bath"></i>{" "}
+                                  {property.features.baths}
+                                </span>
+                              )}
+                              {property.features.sqft && (
+                                <span>
+                                  <i className="fas fa-ruler-combined"></i>{" "}
+                                  {property.features.sqft}
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -308,9 +350,13 @@ const ScheduleVisit = () => {
                   <div className="empty-state">
                     <i className="fas fa-home"></i>
                     <p>
-                      No properties available at the moment. Please check back
-                      later.
+                      No properties available for scheduling visits at the
+                      moment.
                     </p>
+                    <small>
+                      Properties must be approved and available (not sold or
+                      rented).
+                    </small>
                   </div>
                 )}
               </>
@@ -392,113 +438,22 @@ const ScheduleVisit = () => {
         </form>
       </div>
 
-      {/* My Visits Section */}
-      <div className="my-visits-section">
-        <h2 className="section-title">
-          <i className="fas fa-list"></i> Your Scheduled Visits
-        </h2>
-
-        {(() => {
-          // Debug: Log all visits to see what we have
-          console.log("All visits:", myVisits);
-
-          // Filter to only show active visits (not completed/cancelled/rejected)
-          const activeVisits = myVisits.filter((visit) => {
-            const status = visit.status?.toLowerCase();
-            const isActive = status === "pending" || status === "approved";
-
-            console.log(
-              `Visit ${visit._id}: status=${visit.status}, isActive=${isActive}, date=${visit.visitDate}`
-            );
-
-            return isActive;
-          });
-
-          console.log("Filtered active visits:", activeVisits);
-
-          return activeVisits.length > 0 ? (
-            <div className="visit-list">
-              {activeVisits.map((visit) => (
-                <div key={visit._id} className="visit-card">
-                  <img
-                    src={
-                      visit.propertyId?.images?.[0] || "/assets/property-1.jpg"
-                    }
-                    alt={visit.propertyId?.title}
-                    className="visit-image"
-                  />
-                  <div className="visit-details">
-                    <h3 className="visit-property">
-                      {visit.propertyId?.title}
-                    </h3>
-                    <div className="visit-meta">
-                      <div className="visit-meta-item">
-                        <i className="far fa-calendar"></i>
-                        {new Date(visit.visitDate).toLocaleDateString("en-US", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </div>
-                      <div className="visit-meta-item">
-                        <i className="far fa-clock"></i>
-                        {visit.timeSlot}
-                      </div>
-                    </div>
-                    <span
-                      className={`visit-status ${getStatusClass(visit.status)}`}
-                    >
-                      {visit.status?.toUpperCase()}
-                    </span>
-                    {visit.agentNotes && (
-                      <div className="visit-notes">
-                        <strong>Agent Notes:</strong> {visit.agentNotes}
-                      </div>
-                    )}
-                  </div>
-                  <div className="visit-actions">
-                    {visit.status?.toLowerCase() === "approved" && (
-                      <button
-                        onClick={() => {
-                          const otherUserId =
-                            visit.agentId?.userId?._id || visit.agentId?.userId;
-                          const otherName =
-                            visit.agentId?.userId?.name || visit.agentId?.name;
-                          if (otherUserId) {
-                            startVisitCall({
-                              visitId: visit._id,
-                              otherUserId,
-                              otherName,
-                            });
-                          } else {
-                            navigate(`/visits/video/${visit._id}`);
-                          }
-                        }}
-                        className="btn-video-call"
-                      >
-                        <i className="fas fa-video"></i> Join Video Call
-                      </button>
-                    )}
-                    <button
-                      onClick={() =>
-                        navigate(`/property/${visit.propertyId?._id}`)
-                      }
-                      className="btn-outline"
-                    >
-                      <i className="fas fa-eye"></i> View Property
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <i className="fas fa-calendar-times"></i>
-              <p>You have no upcoming visits scheduled.</p>
-            </div>
-          );
-        })()}
+      {/* Quick Link to My Visits */}
+      <div className="my-visits-link-section">
+        <div className="visits-link-card">
+          <div className="link-content">
+            <h3>
+              <i className="fas fa-list"></i> View Your Scheduled Visits
+            </h3>
+            <p>Check the status of your upcoming and past property visits</p>
+          </div>
+          <button
+            onClick={() => navigate("/visits/my-visits")}
+            className="view-visits-btn"
+          >
+            <i className="fas fa-arrow-right"></i> My Visits
+          </button>
+        </div>
       </div>
     </div>
   );

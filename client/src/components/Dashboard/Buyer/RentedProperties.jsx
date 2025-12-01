@@ -57,6 +57,7 @@ const RentedPropertyCard = ({ property, onCancelSuccess }) => {
           const errorData = JSON.parse(errorText);
           errorMessage = errorData.message || errorMessage;
         } catch (parseError) {
+          console.log("Error parsing error response JSON:", parseError);
           errorMessage = `Server error (${response.status}): ${errorText}`;
         }
 
@@ -199,7 +200,7 @@ const RentedPropertyCard = ({ property, onCancelSuccess }) => {
                 {isCancelling
                   ? "Cancelling..."
                   : isWithinLockIn
-                  ? "Cannot Cancel (Lock-in)"
+                  ? "Cannot Cancel"
                   : "Cancel Agreement"}
               </span>
             </button>
@@ -207,7 +208,8 @@ const RentedPropertyCard = ({ property, onCancelSuccess }) => {
         </div>
         {isWithinLockIn && lockInEndDate && (
           <p className="rented-property-lockin-note">
-            You cannot cancel this rent agreement before {formatDate(lockInEndDate)}.
+            You cannot cancel this rent agreement before{" "}
+            {formatDate(lockInEndDate)}.
           </p>
         )}
       </div>

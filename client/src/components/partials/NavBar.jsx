@@ -363,7 +363,7 @@ const NavBar = () => {
 
               {user.role === "buyer" && (
                 <>
-                  <Link to="/properties/my-purchases" className="nav-link">
+                  <Link to="/dashboard#my-properties" className="nav-link">
                     My Properties
                   </Link>
                   <div className="nav-dropdown">
@@ -668,7 +668,7 @@ const NavBar = () => {
                     {user.role === "seller" && (
                       <>
                         <Link
-                          to="/properties/my-properties"
+                          to="/dashboard#my-properties"
                           className="mobile-nav-link"
                           onClick={closeMobileMenu}
                         >
@@ -687,7 +687,7 @@ const NavBar = () => {
                     {user.role === "buyer" && (
                       <>
                         <Link
-                          to="/properties/my-purchases"
+                          to="/dashboard#my-properties"
                           className="mobile-nav-link"
                           onClick={closeMobileMenu}
                         >

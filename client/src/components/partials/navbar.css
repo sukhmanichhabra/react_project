@@ -126,6 +126,32 @@
   align-items: center;
 }
 
+/* Fix for Font Awesome icons */
+.navbar i,
+.mobile-menu i {
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: none !important;
+}
+
+.navbar .fa,
+.navbar .fas,
+.navbar .far,
+.navbar .fal,
+.navbar .fab,
+.mobile-menu .fa,
+.mobile-menu .fas,
+.mobile-menu .far,
+.mobile-menu .fal,
+.mobile-menu .fab {
+  transform: none !important;
+  display: inline-block;
+}
+
 .dropdown-content {
   display: none;
   position: absolute;

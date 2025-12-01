@@ -29,23 +29,24 @@ const agentSchema = new mongoose.Schema(
     image: {
       type: String,
       default: "/assets/agent1.png",
-    },    location: {
+    },
+    location: {
       type: String,
       default: "",
     },
     geolocation: {
       latitude: {
         type: Number,
-        required: false
+        required: false,
       },
       longitude: {
         type: Number,
-        required: false
+        required: false,
       },
       serviceRadius: {
         type: Number,
-        default: 50 // Default service radius in kilometers
-      }
+        default: 50, // Default service radius in kilometers
+      },
     },
     phone: {
       type: String,
@@ -65,13 +66,12 @@ const agentSchema = new mongoose.Schema(
     },
     verificationStatus: {
       type: String,
-      enum: ["pending", "verified", "rejected"],
-      default: "pending",
+      enum: ["unverified", "pending", "verified", "rejected"],
+      default: "unverified",
     },
     verificationMessage: {
       type: String,
-      default:
-        "Your documents are being reviewed. This process may take 1-3 business days.",
+      default: "Complete your profile and submit documents for verification.",
     },
     documents: {
       idProof: {
@@ -105,7 +105,8 @@ const agentSchema = new mongoose.Schema(
           mimeType: String,
           uploadedAt: Date,
         },
-      ],    },
+      ],
+    },
     documentsSubmittedAt: {
       type: Date,
       default: null,
@@ -143,26 +144,31 @@ const Agent = mongoose.model("Agent", agentSchema);
 // Helper function to automatically geocode agent location
 async function geocodeAgentLocation(agentData) {
   try {
-    if (!agentData.location || agentData.location.trim() === '') {
+    if (!agentData.location || agentData.location.trim() === "") {
       console.log("No location provided for agent geocoding");
       return agentData;
     }
 
     console.log(`Attempting to geocode agent location: ${agentData.location}`);
-    
+
     // Get coordinates from the location
-    const geocodeResult = await geocodingService.getCoordinatesFromAddress(agentData.location);
-    
+    const geocodeResult = await geocodingService.getCoordinatesFromAddress(
+      agentData.location
+    );
+
     // Add geolocation data to agent
     agentData.geolocation = {
       latitude: geocodeResult.latitude,
       longitude: geocodeResult.longitude,
-      serviceRadius: agentData.geolocation?.serviceRadius || 50 // Keep existing radius or default to 50km
+      serviceRadius: agentData.geolocation?.serviceRadius || 50, // Keep existing radius or default to 50km
     };
-    
-    console.log(`Agent geocoding successful: ${geocodeResult.latitude, geocodeResult.longitude}`);
+
+    console.log(
+      `Agent geocoding successful: ${
+        (geocodeResult.latitude, geocodeResult.longitude)
+      }`
+    );
     return agentData;
-    
   } catch (geocodeError) {
     console.error("Agent geocoding failed:", geocodeError.message);
     // Continue without geocoding - agent can still be created/updated
@@ -619,7 +625,11 @@ async function addAgent(userData) {
     const newAgent = new Agent(agentData);
     await newAgent.save();
 
-    console.log(`New agent created with ID: ${newAgent._id}, Location geocoded: ${!!newAgent.geolocation?.latitude}`);
+    console.log(
+      `New agent created with ID: ${
+        newAgent._id
+      }, Location geocoded: ${!!newAgent.geolocation?.latitude}`
+    );
 
     // Re-initialize property assignments to include the new agent
     await initializePropertyAssignments();
@@ -635,9 +645,11 @@ async function addAgent(userData) {
 async function updateAgent(id, updateData) {
   try {
     // Check if location is being updated and needs geocoding
-    if (updateData.location && updateData.location.trim() !== '') {
-      console.log(`Agent ${id} location update detected, geocoding: ${updateData.location}`);
-      
+    if (updateData.location && updateData.location.trim() !== "") {
+      console.log(
+        `Agent ${id} location update detected, geocoding: ${updateData.location}`
+      );
+
       // Geocode the new location
       updateData = await geocodeAgentLocation(updateData);
     }
@@ -649,12 +661,17 @@ async function updateAgent(id, updateData) {
     );
 
     if (updatedAgent) {
-      console.log(`Agent ${id} updated successfully, Location geocoded: ${!!updatedAgent.geolocation?.latitude}`);
-      
+      console.log(
+        `Agent ${id} updated successfully, Location geocoded: ${!!updatedAgent
+          .geolocation?.latitude}`
+      );
+
       // If the agent's location was updated, re-initialize property assignments
       // to optimize property-agent matching based on new location
       if (updateData.geolocation) {
-        console.log(`Re-initializing property assignments due to agent ${id} location update`);
+        console.log(
+          `Re-initializing property assignments due to agent ${id} location update`
+        );
         await initializePropertyAssignments();
       }
     }
@@ -796,11 +813,15 @@ async function updateAgentDocuments(agentId, documents) {
       });
     }
 
-    // Update verification status to pending if it was rejected before
-    if (agent.verificationStatus === "rejected") {
+    // Update verification status to pending when documents are uploaded
+    if (
+      agent.verificationStatus === "rejected" ||
+      agent.verificationStatus === "unverified"
+    ) {
       agent.verificationStatus = "pending";
       agent.verificationMessage =
         "Your documents are being reviewed. This process may take 1-3 business days.";
+      agent.documentsSubmittedAt = new Date();
     }
 
     // Save the updated agent
@@ -869,11 +890,14 @@ async function getAgentByUserId(userId) {
 // Calculate distance between two geographical points using Haversine formula
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth's radius in kilometers
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c; // Distance in kilometers
 }
@@ -997,7 +1021,13 @@ async function findBestAgentForProperty(propertyLatitude, propertyLongitude) {
           ? "N/A"
           : `${candidate.distance.toFixed(2)}km`;
       console.log(
-        `${index + 1}. Agent: ${candidate.agent.name}, Distance: ${distanceLabel}, Workload: ${candidate.workload}, Verified: ${candidate.verified}, Within radius: ${candidate.withinServiceRadius}`
+        `${index + 1}. Agent: ${
+          candidate.agent.name
+        }, Distance: ${distanceLabel}, Workload: ${
+          candidate.workload
+        }, Verified: ${candidate.verified}, Within radius: ${
+          candidate.withinServiceRadius
+        }`
       );
     });
 
@@ -1014,31 +1044,41 @@ async function findBestAgentForProperty(propertyLatitude, propertyLongitude) {
 }
 
 // Assign agent to property based on geolocation
-async function assignAgentByGeolocation(propertyId, propertyLatitude, propertyLongitude) {
+async function assignAgentByGeolocation(
+  propertyId,
+  propertyLatitude,
+  propertyLongitude
+) {
   try {
-    console.log(`Assigning agent for property ${propertyId} at coordinates: ${propertyLatitude, propertyLongitude}`);
-    
-    const bestAgent = await findBestAgentForProperty(propertyLatitude, propertyLongitude);
-    
+    console.log(
+      `Assigning agent for property ${propertyId} at coordinates: ${
+        (propertyLatitude, propertyLongitude)
+      }`
+    );
+
+    const bestAgent = await findBestAgentForProperty(
+      propertyLatitude,
+      propertyLongitude
+    );
+
     if (!bestAgent) {
-      console.log('No suitable agent found for property assignment');
+      console.log("No suitable agent found for property assignment");
       return null;
     }
-    
+
     console.log(`Selected agent: ${bestAgent.name} (ID: ${bestAgent._id})`);
-    
+
     // Update property with assigned agent
     if (PropertyModel && PropertyModel.updatePropertyAgent) {
       await PropertyModel.updatePropertyAgent(propertyId, bestAgent._id);
     }
-    
+
     // Update agent's listing count
     await updateAgentListingCount(bestAgent._id);
-    
+
     return bestAgent;
-    
   } catch (error) {
-    console.error('Error in geolocation-based agent assignment:', error);
+    console.error("Error in geolocation-based agent assignment:", error);
     return null;
   }
 }

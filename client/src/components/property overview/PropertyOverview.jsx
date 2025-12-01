@@ -388,30 +388,36 @@ const PropertyOverview = () => {
           </div>
 
           {/* Rent Management Link for Buyers who rented this property */}
-          {user && user.role === "buyer" && property.status === "rented" && property.buyerId === user._id && (
-            <div className="prop-overview-buyer-actions-sidebar">
-              <a
-                href="/rent/pay"
-                className="prop-overview-action-btn-sidebar"
-                style={{ backgroundColor: "#2196f3", color: "white" }}
-              >
-                <i className="fas fa-file-invoice-dollar"></i> PAY RENT
-              </a>
-            </div>
-          )}
+          {user &&
+            user.role === "buyer" &&
+            property.status === "rented" &&
+            property.buyerId === user._id && (
+              <div className="prop-overview-buyer-actions-sidebar">
+                <a
+                  href="/rent/pay"
+                  className="prop-overview-action-btn-sidebar"
+                  style={{ backgroundColor: "#2196f3", color: "white" }}
+                >
+                  <i className="fas fa-file-invoice-dollar"></i> PAY RENT
+                </a>
+              </div>
+            )}
 
           {/* Seller Rent Management Link */}
-          {user && user.role === "seller" && property.status === "rented" && property.sellerId === user._id && (
-            <div className="prop-overview-buyer-actions-sidebar">
-              <a
-                href="/rent/manage"
-                className="prop-overview-action-btn-sidebar"
-                style={{ backgroundColor: "#9c27b0", color: "white" }}
-              >
-                <i className="fas fa-cog"></i> MANAGE RENT
-              </a>
-            </div>
-          )}
+          {user &&
+            user.role === "seller" &&
+            property.status === "rented" &&
+            property.sellerId === user._id && (
+              <div className="prop-overview-buyer-actions-sidebar">
+                <a
+                  href="/rent/manage"
+                  className="prop-overview-action-btn-sidebar"
+                  style={{ backgroundColor: "#9c27b0", color: "white" }}
+                >
+                  <i className="fas fa-cog"></i> MANAGE RENT
+                </a>
+              </div>
+            )}
 
           {/* Buyer Action Buttons - Right Side */}
           {user && user.role === "buyer" && property.status === "active" && (
@@ -487,8 +493,8 @@ const PropertyOverview = () => {
 
                   {isRentListing && hasPendingAgreement && (
                     <p className="prop-overview-agreement-note">
-                      Your rent agreement request has been sent to the owner
-                      and is awaiting approval.
+                      Your rent agreement request has been sent to the owner and
+                      is awaiting approval.
                     </p>
                   )}
                   {isRentListing && hasActiveAgreement && (
@@ -499,40 +505,18 @@ const PropertyOverview = () => {
                   )}
 
                   {/* Schedule Visit Button */}
-                  <a
-                    href={`/visit/schedule/${property._id}`}
+                  <button
+                    onClick={() =>
+                      navigate(`/visits/schedule?propertyId=${property._id}`)
+                    }
                     className="prop-overview-action-btn-sidebar prop-overview-schedule-btn"
                   >
                     <i className="far fa-calendar-alt"></i> SCHEDULE VISIT
-                  </a>
+                  </button>
                 </>
               )}
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Bottom Action Buttons Row */}
-      <div className="prop-overview-property-actions">
-        <div className="prop-overview-action-grid">
-          <button
-            className="prop-overview-action-btn"
-            style={{ backgroundColor: "#4caf50", color: "white" }}
-          >
-            <i className="fas fa-shopping-cart"></i> Buy Property
-          </button>
-          <button className="prop-overview-action-btn prop-overview-schedule-btn">
-            <i className="fas fa-calendar-alt"></i> Schedule Visit
-          </button>
-          <button className="prop-overview-action-btn prop-overview-compare-btn">
-            <i className="fas fa-exchange-alt"></i> Add to Compare
-          </button>
-          <a
-            href={`/property/${property._id}/neighbourhood`}
-            className="prop-overview-action-btn prop-overview-neighborhood-btn"
-          >
-            <i className="fas fa-map-marker-alt"></i> Neighbourhood Info
-          </a>
         </div>
       </div>
 

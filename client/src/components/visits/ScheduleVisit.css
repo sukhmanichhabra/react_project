@@ -24,8 +24,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .page-title {
@@ -134,7 +138,7 @@ textarea.form-control {
 /* Property Cards */
 .property-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
@@ -146,6 +150,8 @@ textarea.form-control {
   transition: all 0.3s ease;
   cursor: pointer;
   background: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .property-card:hover {
@@ -160,14 +166,29 @@ textarea.form-control {
   transform: translateY(-5px);
 }
 
-.property-image {
+.property-card-image-wrapper {
   width: 100%;
   height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.property-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.property-card:hover .property-image {
+  transform: scale(1.05);
 }
 
 .property-details {
   padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .property-title {
@@ -176,6 +197,11 @@ textarea.form-control {
   margin-bottom: 0.5rem;
   color: #1a1a1a;
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .property-location {
@@ -189,6 +215,7 @@ textarea.form-control {
 
 .property-location i {
   color: #667eea;
+  flex-shrink: 0;
 }
 
 .property-price {
@@ -196,6 +223,28 @@ textarea.form-control {
   font-weight: 700;
   font-size: 1.3rem;
   margin-bottom: 0.75rem;
+}
+
+.property-features-mini {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.property-features-mini span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.property-features-mini i {
+  color: #667eea;
+  font-size: 0.9rem;
 }
 
 .property-features {
@@ -507,6 +556,76 @@ textarea.form-control {
 
   .btn-outline {
     flex: 1;
+    justify-content: center;
+  }
+}
+
+/* My Visits Link Section */
+.my-visits-link-section {
+  margin-top: 3rem;
+}
+
+.visits-link-card {
+  background: linear-gradient(135deg, orange 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.visits-link-card:hover {
+  transform: translateY(-5px);
+}
+
+.link-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.link-content p {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.view-visits-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.view-visits-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+  .visits-link-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .link-content h3 {
     justify-content: center;
   }
 }
