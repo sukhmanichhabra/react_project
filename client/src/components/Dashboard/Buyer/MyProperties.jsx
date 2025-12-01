@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import EnhancedPropertyCard from "../../partials/EnhancedPropertyCard";
 import "./MyProperties.css";
 import PropertyCard from "../../partials/PropertyCard";
+import {
+  getPropertyImageUrl,
+  getAgentImageUrl,
+} from "../../../utils/imageUtils";
 
 // Mock data as requested
 const mockProperty = {
@@ -17,36 +21,99 @@ const mockProperty = {
   baths: 3,
   sqft: 1200,
   price: 40000,
+  agent: {
+    _id: "mock-agent-1",
+    fullName: "John Doe",
+    name: "John Doe",
+    image: "/assets/agent-1.jpg",
+    profileImage: "/assets/agent-1.jpg",
+  },
 };
 
 const MyProperties = ({ properties = [] }) => {
   // Combine mock data with API data
   const allProperties = [mockProperty, ...properties];
 
-  // Helper function to map property data for enhanced card
+  // Helper function to map property data for enhanced card (same as PropertyGrid)
   const mapPropertyToEnhancedCard = (property) => {
+    // Validate property exists
+    if (!property || !property._id) {
+      console.warn("Invalid property:", property);
+      return null;
+    }
+
+    // Get agent info if available - handle both populated and unpopulated agent fields
+    let agent = {};
+    if (property.agent) {
+      // If agent is a string (ObjectId), we need to find the agent data
+      if (typeof property.agent === "string") {
+        // Agent is not populated, we have only the ID
+        agent = { _id: property.agent };
+      } else if (typeof property.agent === "object") {
+        // Agent is populated with full data
+        agent = property.agent;
+      }
+    }
+
+    // Debug logging for agent data
+    console.log(`MyProperties: Agent data for ${property._id}:`, {
+      agent: property.agent,
+      agentId: agent._id,
+      agentName: agent.fullName || agent.name,
+      rawAgentImage: agent.image || agent.profileImage,
+      processedAgentImage: getAgentImageUrl(agent.image || agent.profileImage),
+    });
+
+    // Handle location - it's a string in the database, not an object
+    const locationStr =
+      property.location ||
+      property.geolocation?.address ||
+      "Location not specified";
+
     return {
       id: property._id,
-      propertyType: property.features?.type || "Property",
+      propertyType: property.features?.type || property.type || "Apartment",
       amenities: property.amenities || [],
       badge: property.tag === "rent" ? "green" : "orange",
       badgeText: property.tag === "rent" ? "RENTED" : "PURCHASED",
-      location: `${property.location?.address || ''}, ${property.location?.city || ''}, ${property.location?.state || ''}`.replace(/^,\s*|,\s*$/g, '') || "Location not specified",
+      location: locationStr,
       imagesCount: property.images?.length || 0,
       videosCount: 0,
-      imageUrl: property.images && property.images.length > 0 ? property.images[0] : "/assets/property-1.jpg",
-      price: typeof property.price === "string" ? property.price : `$${property.price?.toLocaleString() || "0"}`,
+      imageUrl:
+        property.images && property.images.length > 0
+          ? getPropertyImageUrl(property.images[0])
+          : "/assets/property-1.jpg",
+      price:
+        typeof property.price === "string"
+          ? property.price
+          : `$${property.price?.toLocaleString() || "0"}`,
       title: property.title || "Property Title",
       overviewLink: `/property/${property._id}`,
       description: property.description || "No description available",
-      bedrooms: property.features?.bedrooms || property.features?.beds || property.beds || 0,
-      bathrooms: property.features?.bathrooms || property.features?.baths || property.baths || 0,
-      squareFeet: property.features?.squareFootage || property.features?.sqft || property.sqft || 0,
-      agentImage: null,
-      agentName: "Property Owner",
-      agentId: null,
-      agentLink: "#",
-      status: property.status || 'active'
+      bedrooms: parseInt(
+        property.features?.bedrooms ||
+          property.features?.beds ||
+          property.beds ||
+          0
+      ),
+      bathrooms: parseInt(
+        property.features?.bathrooms ||
+          property.features?.baths ||
+          property.baths ||
+          0
+      ),
+      squareFeet: parseInt(
+        property.features?.squareFootage ||
+          property.features?.sqft ||
+          property.sqft ||
+          0
+      ),
+      agentImage: getAgentImageUrl(agent.image || agent.profileImage),
+      agentName:
+        agent.fullName || agent.name || property.seller?.name || "Estate Agent",
+      agentId: agent._id || null,
+      agentLink: agent._id ? `/agents/${agent._id}` : "#",
+      status: property.status || "active",
     };
   };
 
@@ -58,12 +125,16 @@ const MyProperties = ({ properties = [] }) => {
       </div>
       <div className="my-properties-grid enhanced-dashboard-grid">
         {allProperties.length > 0 ? (
-          allProperties.map((prop) => (
-            <PropertyCard
-              key={prop._id} 
-              {...mapPropertyToEnhancedCard(prop)} 
-            />
-          ))
+          allProperties.map((prop) => {
+            const mappedProperty = mapPropertyToEnhancedCard(prop);
+            return mappedProperty ? (
+              <PropertyCard
+                key={prop._id}
+                propertyId={prop._id}
+                {...mappedProperty}
+              />
+            ) : null;
+          })
         ) : (
           <div className="dash-empty-state">
             <i className="fas fa-building"></i>

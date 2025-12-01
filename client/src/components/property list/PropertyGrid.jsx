@@ -58,20 +58,32 @@ const PropertyGrid = ({ properties = [] }) => {
       status: property.status || "active",
     };
 
-    // Debug logging
-    if (process.env.NODE_ENV === "development") {
-      console.log(`PropertyGrid: Mapping property ${property._id}:`, {
-        originalId: property._id,
-        mappedId: mappedProperty.id,
-        title: property.title,
-      });
-    }
+    // // Debug logging
+    // if (process.env.NODE_ENV === "development") {
+    //   console.log(`PropertyGrid: Mapping property ${property._id}:`, {
+    //     originalId: property._id,
+    //     mappedId: mappedProperty.id,
+    //     title: property.title,
+    //   });
+    // }
 
     return mappedProperty;
   };
 
-  // Filter out invalid properties
-  const validProperties = properties.filter((p) => p && p._id);
+  // Filter out invalid properties and sold/rented properties
+  const validProperties = properties.filter((p) => {
+    if (!p || !p._id) return false;
+
+    // Filter out sold and rented properties
+    const status = (p.status || "").toLowerCase();
+    const isAvailable =
+      status === "active" ||
+      status === "available" ||
+      status === "pending" ||
+      !status;
+
+    return isAvailable;
+  });
 
   if (!validProperties || validProperties.length === 0) {
     return (

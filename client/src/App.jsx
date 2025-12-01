@@ -5,7 +5,7 @@ import {
   Navigate,
   useLocation, // Import useLocation
 } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { checkAuthStatus, selectAuth } from "./store/slices/authSlice";
@@ -50,10 +50,33 @@ import About from "./components/About/About";
 import Contact from "./components/Contact/Contact";
 import "./App.css";
 
+// Loading component for page transitions
+function PageLoader() {
+  return (
+    <div className="page-loader">
+      <div className="loader-container">
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    </div>
+  );
+}
+
 // This new component handles all layout and routing logic
 function AppLayout() {
   const location = useLocation();
   const { isAuthenticated, isLoading } = useAppSelector(selectAuth);
+  const [pageLoading, setPageLoading] = useState(false);
+
+  // Handle page transition loading
+  useEffect(() => {
+    setPageLoading(true);
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 500); // Show loading for 500ms on route change
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   // Check for different route types
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
@@ -62,6 +85,10 @@ function AppLayout() {
 
   if (isLoading) {
     return <div className="loading-spinner">Loading...</div>;
+  }
+
+  if (pageLoading) {
+    return <PageLoader />;
   }
 
   // Define all your routes in one place
@@ -545,7 +572,11 @@ function App() {
 
   // Check auth status on app load
   useEffect(() => {
-    dispatch(checkAuthStatus());
+    // Small delay to prevent race conditions during fast refreshes
+    const checkAuth = async () => {
+      await dispatch(checkAuthStatus());
+    };
+    checkAuth();
   }, [dispatch]);
 
   return (

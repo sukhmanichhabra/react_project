@@ -5,7 +5,7 @@ import {
   fetchUserBalance,
   updateUserBalance,
 } from "../../../store/slices/authSlice.js";
-import { dashboardAPI } from "../../../services/api";
+import { dashboardAPI, propertyAPI } from "../../../services/api";
 
 // Import Sections
 import Profile from "../common/Profile";
@@ -32,29 +32,46 @@ const BuyerDashboard = ({ user, activeSection, onUserUpdate }) => {
       setLoading(true);
       setError(null);
 
-      // Fetch from the main dashboard endpoint using API service
-      const response = await dashboardAPI.getDashboardData();
+      // Fetch from both dashboard and property endpoints to get complete data
+      const [dashboardResponse, propertiesResponse] = await Promise.all([
+        dashboardAPI.getDashboardData(),
+        propertyAPI.getAllProperties(),
+      ]);
 
-      if (response.data.success) {
-        // Get the nested data object
-        const { data } = response.data;
+      if (dashboardResponse.data.success) {
+        // Get the nested data object from dashboard
+        const { data } = dashboardResponse.data;
 
         // Debug logging to see what's actually in the response
-        console.log("Dashboard API Response:", response.data);
+        console.log("Dashboard API Response:", dashboardResponse.data);
         console.log("User object:", data.user);
         console.log("User loanRequests:", data.user?.loanRequests);
 
+        // Get properties with agent data from property API
+        const allPropertiesWithAgents = Array.isArray(propertiesResponse.data)
+          ? propertiesResponse.data
+          : propertiesResponse.data?.properties || [];
+
+        // Filter to get only user's properties (you might need to adjust this logic based on your data structure)
+        const userPropertyIds = (data.properties || []).map((p) => p._id);
+        const userPropertiesWithAgents = allPropertiesWithAgents.filter((p) =>
+          userPropertyIds.includes(p._id)
+        );
+
+        console.log("Properties with agent data:", userPropertiesWithAgents);
+
         // Extract data from the correct paths
-        const userProperties = data.properties || [];
         const userLoanRequests = data.user?.loanRequests || [];
         const userTransactions = data.transactions || [];
 
-        setProperties(userProperties);
+        setProperties(userPropertiesWithAgents);
         setLoanRequests(userLoanRequests);
 
         // Calculate stats based on the fetched data
-        const bought = userProperties.filter((p) => p.status === "sold").length;
-        const rented = userProperties.filter(
+        const bought = userPropertiesWithAgents.filter(
+          (p) => p.status === "sold"
+        ).length;
+        const rented = userPropertiesWithAgents.filter(
           (p) => p.status === "rented"
         ).length;
         const totalSpent = userTransactions.reduce(

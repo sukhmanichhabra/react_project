@@ -119,11 +119,11 @@
 
 .blg-details-search-box button {
   position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
+  right: -330px;
+  top: -55px;
   background: none;
   border: none;
+  max-width: 20px;
   color: #666;
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import FilterSidebar from "./FilterSidebar";
 import PropertyGrid from "./PropertyGrid";
 import FeaturedSection from "./FeaturedSection";
@@ -11,7 +11,23 @@ const PropertyList = () => {
   // Fetch properties from database
   const { properties: dbProperties, loading, error } = useProperties("all");
 
-  // Use the custom hook for filters - pass database properties
+  // Filter out sold and rented properties
+  const availableProperties = useMemo(() => {
+    if (!dbProperties) return [];
+
+    return dbProperties.filter((property) => {
+      const status = (property.status || "").toLowerCase();
+      // Only show active, available, pending, or properties without status
+      return (
+        status === "active" ||
+        status === "available" ||
+        status === "pending" ||
+        !status
+      );
+    });
+  }, [dbProperties]);
+
+  // Use the custom hook for filters - pass available properties only
   const {
     filters,
     filteredProperties,
@@ -25,7 +41,7 @@ const PropertyList = () => {
     applyFilters,
     resetFilters,
     setShowSuggestions,
-  } = usePropertyFilters(dbProperties);
+  } = usePropertyFilters(availableProperties);
 
   useEffect(() => {
     window.scrollTo(0, 0);
