@@ -164,7 +164,7 @@ const ManagedProperties = () => {
       <div className="managed-properties-grid">
         {properties.length > 0 ? (
           properties.map((property) => (
-            <div key={property._id} className="property-card">
+            <div key={property._id} className="agt-property-card">
               {/* Property Image */}
               <div className="property-image-container">
                 <img

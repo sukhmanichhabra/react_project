@@ -31,6 +31,8 @@
   display: flex;
   align-items: center;
   gap: 1rem; /* 16px */
+  flex-direction: column;
+  text-align: center;
 }
 
 .dash-stat-icon {
@@ -85,10 +87,22 @@
 
 .dash-stat-trend.positive {
   color: #22c55e; /* text-green-500 */
+  font-weight: 500;
+  font-size: 1.05rem; /* 12px */
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  gap: 0.25rem;
 }
 
 .dash-stat-trend.negative {
   color: #ef4444; /* text-red-500 */
+  font-weight: 500;
+  font-size: 1.05rem; /* 12px */
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  gap: 0.25rem;
 }
 
 .dash-stat-trend i {

@@ -4,6 +4,7 @@ import { rentAPI } from "../../services/api";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { selectAuth, fetchUserBalance } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
+import jsPDF from "jspdf";
 import "./PayRent.css";
 
 const PayRent = () => {
@@ -19,24 +20,24 @@ const PayRent = () => {
 
   useEffect(() => {
     let mounted = true;
-    
+
     const loadData = async () => {
       if (!mounted) return;
-      
+
       try {
         await fetchRentData();
-        
+
         // Fetch latest user balance
         if (user && mounted) {
           dispatch(fetchUserBalance());
         }
       } catch (error) {
-        console.error('Error loading rent data:', error);
+        console.error("Error loading rent data:", error);
       }
     };
-    
+
     loadData();
-    
+
     return () => {
       mounted = false;
     };
@@ -71,7 +72,7 @@ const PayRent = () => {
 
   const handlePayRent = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedRent) return;
 
     // Check if user has sufficient balance
@@ -86,7 +87,7 @@ const PayRent = () => {
     try {
       setProcessing(true);
       const response = await rentAPI.payRent(selectedRent._id, paymentMethod);
-      
+
       if (response.data.success) {
         toast.success("Rent payment successful!");
         closePaymentModal();
@@ -96,11 +97,178 @@ const PayRent = () => {
       }
     } catch (error) {
       console.error("Error paying rent:", error);
-      const errorMessage = error.response?.data?.message || "Failed to process payment";
+      const errorMessage =
+        error.response?.data?.message || "Failed to process payment";
       toast.error(errorMessage);
     } finally {
       setProcessing(false);
     }
+  };
+
+  const generateInvoice = (rent, propertyTitle) => {
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(102, 126, 234);
+    doc.text("Rent Payment Invoice", 105, 20, { align: "center" });
+
+    // Company Info
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Real Estate Management System", 105, 30, { align: "center" });
+    doc.text("www.realestate.com | support@realestate.com", 105, 35, {
+      align: "center",
+    });
+
+    // Line
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 40, 190, 40);
+
+    // Invoice Details
+    doc.setFontSize(12);
+    doc.text("Invoice Details", 20, 50);
+    doc.setFontSize(10);
+    doc.text(
+      `Invoice No: RENT-${rent._id.substring(0, 8).toUpperCase()}`,
+      20,
+      58
+    );
+    doc.text(`Date: ${new Date().toLocaleDateString("en-US")}`, 20, 64);
+    doc.text(
+      `Payment Date: ${formatDate(rent.paidDate || rent.paymentDate)}`,
+      20,
+      70
+    );
+
+    // Tenant Details
+    doc.setFontSize(12);
+    doc.text("Tenant Details", 20, 85);
+    doc.setFontSize(10);
+    doc.text(`Name: ${user?.name || "N/A"}`, 20, 93);
+    doc.text(`Email: ${user?.email || "N/A"}`, 20, 99);
+    doc.text(
+      `Phone: ${
+        user?.phone ||
+        user?.phoneNumber ||
+        user?.contactNumber ||
+        "Not Provided"
+      }`,
+      20,
+      105
+    );
+
+    // Property Details
+    doc.setFontSize(12);
+    doc.text("Property Details", 20, 120);
+    doc.setFontSize(10);
+    doc.text(`Property: ${propertyTitle}`, 20, 128);
+    doc.text(`Due Date: ${formatDate(rent.dueDate)}`, 20, 134);
+    doc.text(`Status: ${rent.status.toUpperCase()}`, 20, 140);
+
+    // Payment Breakdown
+    doc.setFontSize(12);
+    doc.text("Payment Breakdown", 20, 161);
+
+    // Table
+    const tableY = 170;
+    doc.setFontSize(10);
+    doc.setFillColor(102, 126, 234);
+    doc.setTextColor(255, 255, 255);
+    doc.rect(20, tableY, 170, 8, "F");
+    doc.text("Description", 25, tableY + 5);
+    doc.text("Amount", 160, tableY + 5);
+
+    doc.setTextColor(0, 0, 0);
+    let currentY = tableY + 15;
+
+    doc.text("Monthly Rent", 25, currentY);
+    doc.text(
+      `$${parseFloat(rent.amount).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`,
+      160,
+      currentY
+    );
+    currentY += 8;
+
+    if (rent.lateFee && rent.lateFee > 0) {
+      doc.text("Late Payment Fee", 25, currentY);
+      doc.text(
+        `$${parseFloat(rent.lateFee).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+        160,
+        currentY
+      );
+      currentY += 8;
+    }
+
+    // Total
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, currentY, 190, currentY);
+    currentY += 8;
+
+    doc.setFontSize(12);
+    doc.setFont(undefined, "bold");
+    doc.text("Total Amount", 25, currentY);
+    const totalAmount = (rent.amount || 0) + (rent.lateFee || 0);
+    doc.text(
+      `$${parseFloat(totalAmount).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`,
+      160,
+      currentY
+    );
+
+    // Payment Info
+    if (rent.status === "paid") {
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(10);
+      currentY += 15;
+
+      doc.setFillColor(240, 255, 240);
+      doc.rect(20, currentY - 5, 170, 30, "F");
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 128, 0);
+      doc.text("Payment Status: PAID", 25, currentY + 5);
+
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.text(
+        `Payment Date: ${formatDate(rent.paidDate || rent.paymentDate)}`,
+        25,
+        currentY + 12
+      );
+      doc.text(
+        `Payment Method: ${
+          rent.paymentMethod
+            ? rent.paymentMethod.replace("_", " ").toUpperCase()
+            : "ACCOUNT BALANCE"
+        }`,
+        25,
+        currentY + 19
+      );
+    }
+
+    // Footer
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(8);
+    doc.text("Thank you for your payment!", 105, 280, { align: "center" });
+    doc.text(
+      "This is a computer-generated invoice and does not require a signature.",
+      105,
+      285,
+      { align: "center" }
+    );
+
+    // Save
+    doc.save(`Rent-Invoice-${rent._id.substring(0, 8)}.pdf`);
+    toast.success("Invoice downloaded successfully!");
   };
 
   const formatCurrency = (amount) => {
@@ -136,7 +304,14 @@ const PayRent = () => {
     );
   }
 
-  const { properties, upcomingRents, paidRents, overdueRents, totalPaid, totalDue } = rentData;
+  const {
+    properties,
+    upcomingRents,
+    paidRents,
+    overdueRents,
+    totalPaid,
+    totalDue,
+  } = rentData;
 
   return (
     <div className="pay-rent-container">
@@ -185,7 +360,9 @@ const PayRent = () => {
           </div>
           <div className="card-content">
             <h3>Account Balance</h3>
-            <div className="amount">{formatCurrency(user?.accountBalance || 0)}</div>
+            <div className="amount">
+              {formatCurrency(user?.accountBalance || 0)}
+            </div>
           </div>
         </div>
       </div>
@@ -204,9 +381,11 @@ const PayRent = () => {
 
               return (
                 <div key={property._id} className="property-rent-card">
-                  <div className="property-image">
+                  <div className="rent-property-image">
                     <img
-                      src={property.images?.[0] || "/assets/default-property.jpg"}
+                      src={
+                        property.images?.[0] || "/assets/default-property.jpg"
+                      }
                       alt={property.title}
                     />
                     {property.hasPendingRent && (
@@ -216,7 +395,8 @@ const PayRent = () => {
                   <div className="property-info">
                     <h3>{property.title}</h3>
                     <p className="property-location">
-                      <i className="fas fa-map-marker-alt"></i> {property.location}
+                      <i className="fas fa-map-marker-alt"></i>{" "}
+                      {property.location}
                     </p>
                     <div className="property-rent-price">{property.price}</div>
                     <div className="property-actions">
@@ -229,7 +409,9 @@ const PayRent = () => {
                       {pendingRent ? (
                         <button
                           className="pay-now-btn"
-                          onClick={() => openPaymentModal(pendingRent, property.title)}
+                          onClick={() =>
+                            openPaymentModal(pendingRent, property.title)
+                          }
                         >
                           Pay Rent
                         </button>
@@ -249,7 +431,10 @@ const PayRent = () => {
             <i className="fas fa-home"></i>
             <h3>No Rental Properties</h3>
             <p>You haven't rented any properties yet.</p>
-            <button onClick={() => navigate("/properties")} className="browse-btn">
+            <button
+              onClick={() => navigate("/properties")}
+              className="browse-btn"
+            >
               Browse Properties
             </button>
           </div>
@@ -276,26 +461,34 @@ const PayRent = () => {
               <tbody>
                 {overdueRents.map((rent) => {
                   const daysOverdue = Math.floor(
-                    (new Date() - new Date(rent.dueDate)) / (1000 * 60 * 60 * 24)
+                    (new Date() - new Date(rent.dueDate)) /
+                      (1000 * 60 * 60 * 24)
                   );
                   return (
                     <tr key={rent._id} className="overdue-row">
                       <td>
                         <div className="property-cell">
                           <img
-                            src={rent.propertyImage || "/assets/default-property.jpg"}
+                            src={
+                              rent.propertyImage ||
+                              "/assets/default-property.jpg"
+                            }
                             alt={rent.propertyTitle}
                           />
                           <span>{rent.propertyTitle}</span>
                         </div>
                       </td>
-                      <td className="amount-cell">{formatCurrency(rent.amount)}</td>
+                      <td className="amount-cell">
+                        {formatCurrency(rent.amount)}
+                      </td>
                       <td>{formatDate(rent.dueDate)}</td>
                       <td className="overdue-days">{daysOverdue} days</td>
                       <td>
                         <button
                           className="pay-urgent-btn"
-                          onClick={() => openPaymentModal(rent, rent.propertyTitle)}
+                          onClick={() =>
+                            openPaymentModal(rent, rent.propertyTitle)
+                          }
                         >
                           Pay Now
                         </button>
@@ -332,21 +525,29 @@ const PayRent = () => {
                     <td>
                       <div className="property-cell">
                         <img
-                          src={rent.propertyImage || "/assets/default-property.jpg"}
+                          src={
+                            rent.propertyImage || "/assets/default-property.jpg"
+                          }
                           alt={rent.propertyTitle}
                         />
                         <span>{rent.propertyTitle}</span>
                       </div>
                     </td>
-                    <td className="amount-cell">{formatCurrency(rent.amount)}</td>
+                    <td className="amount-cell">
+                      {formatCurrency(rent.amount)}
+                    </td>
                     <td>{formatDate(rent.dueDate)}</td>
                     <td>
-                      <span className="status-badge status-pending">Pending</span>
+                      <span className="status-badge status-pending">
+                        Pending
+                      </span>
                     </td>
                     <td>
                       <button
                         className="pay-btn"
-                        onClick={() => openPaymentModal(rent, rent.propertyTitle)}
+                        onClick={() =>
+                          openPaymentModal(rent, rent.propertyTitle)
+                        }
                       >
                         Pay Now
                       </button>
@@ -374,6 +575,7 @@ const PayRent = () => {
                   <th>Due Date</th>
                   <th>Paid Date</th>
                   <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -382,17 +584,32 @@ const PayRent = () => {
                     <td>
                       <div className="property-cell">
                         <img
-                          src={rent.propertyImage || "/assets/default-property.jpg"}
+                          src={
+                            rent.propertyImage || "/assets/default-property.jpg"
+                          }
                           alt={rent.propertyTitle}
                         />
                         <span>{rent.propertyTitle}</span>
                       </div>
                     </td>
-                    <td className="amount-cell">{formatCurrency(rent.amount)}</td>
+                    <td className="amount-cell">
+                      {formatCurrency(rent.amount)}
+                    </td>
                     <td>{formatDate(rent.dueDate)}</td>
                     <td>{rent.paidDate ? formatDate(rent.paidDate) : "N/A"}</td>
                     <td>
                       <span className="status-badge status-paid">Paid</span>
+                    </td>
+                    <td>
+                      <button
+                        className="invoice-btn"
+                        onClick={() =>
+                          generateInvoice(rent, rent.propertyTitle)
+                        }
+                        title="Download Invoice"
+                      >
+                        <i className="fas fa-download"></i> Invoice
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -425,7 +642,9 @@ const PayRent = () => {
               <div className="payment-info">
                 <div className="info-row">
                   <span className="info-label">Property:</span>
-                  <span className="info-value">{selectedRent.propertyTitle}</span>
+                  <span className="info-value">
+                    {selectedRent.propertyTitle}
+                  </span>
                 </div>
                 <div className="info-row">
                   <span className="info-label">Amount Due:</span>
@@ -435,13 +654,18 @@ const PayRent = () => {
                 </div>
                 <div className="info-row">
                   <span className="info-label">Due Date:</span>
-                  <span className="info-value">{formatDate(selectedRent.dueDate)}</span>
+                  <span className="info-value">
+                    {formatDate(selectedRent.dueDate)}
+                  </span>
                 </div>
               </div>
 
               <div className="balance-info">
                 <i className="fas fa-wallet"></i>
-                <span>Your Account Balance: {formatCurrency(user?.accountBalance || 0)}</span>
+                <span>
+                  Your Account Balance:{" "}
+                  {formatCurrency(user?.accountBalance || 0)}
+                </span>
               </div>
 
               {user?.accountBalance < selectedRent.amount && (
@@ -449,7 +673,10 @@ const PayRent = () => {
                   <i className="fas fa-exclamation-triangle"></i>
                   <span>
                     Insufficient funds! You need{" "}
-                    {formatCurrency(selectedRent.amount - (user?.accountBalance || 0))} more.
+                    {formatCurrency(
+                      selectedRent.amount - (user?.accountBalance || 0)
+                    )}{" "}
+                    more.
                   </span>
                 </div>
               )}
@@ -474,7 +701,8 @@ const PayRent = () => {
                   className="confirm-payment-btn"
                   disabled={
                     processing ||
-                    (paymentMethod === "account" && user?.accountBalance < selectedRent.amount)
+                    (paymentMethod === "account" &&
+                      user?.accountBalance < selectedRent.amount)
                   }
                 >
                   {processing ? (

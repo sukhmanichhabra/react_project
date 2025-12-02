@@ -13,21 +13,23 @@ const AdvertisedPropertyCard = ({
   const getProgress = () => {
     // Check if property is sold
     if (property.status === "sold") {
-      return { 
-        width: "0%", 
-        text: "SOLD", 
+      return {
+        width: "0%",
+        text: "SOLD",
         color: "red",
-        isSold: true 
+        isSold: true,
       };
     }
 
     if (!property.adPackage || !property.adPackage.startDate) {
-        return { 
-          width: "100%", 
-          text: "Pending Approval", 
-          color: "yellow",
-          isSold: false 
-        };
+      return {
+        width: "100%",
+        text: "Pending Approval",
+        color: "yellow",
+        isSold: false,
+        isExpired: false,
+        isPending: true,
+      };
     }
 
     const start = new Date(property.adPackage.startDate).getTime();
@@ -44,23 +46,27 @@ const AdvertisedPropertyCard = ({
     const daysRemaining = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
     let text = `${daysRemaining} days remaining`;
     let color = "green";
+    let isExpired = false;
 
     if (daysRemaining <= 0) {
       text = "Expired";
       color = "red";
+      isExpired = true;
     } else if (daysRemaining <= 7) {
       color = "yellow";
     }
 
-    return { 
-      width: `${100 - percentage}%`, 
-      text, 
+    return {
+      width: `${100 - percentage}%`,
+      text,
       color,
-      isSold: false 
+      isSold: false,
+      isExpired,
+      isPending: false,
     };
   };
 
-  const { width, text, color, isSold } = getProgress();
+  const { width, text, color, isSold, isExpired, isPending } = getProgress();
 
   return (
     <div className="dash-property-card">
@@ -94,7 +100,8 @@ const AdvertisedPropertyCard = ({
             <i className="fas fa-bath"></i> {property.features?.baths || 0}
           </span>
           <span>
-            <i className="fas fa-ruler-combined"></i> {property.features?.sqft || 0}
+            <i className="fas fa-ruler-combined"></i>{" "}
+            {property.features?.sqft || 0}
             sqft
           </span>
         </div>
@@ -142,13 +149,18 @@ const AdvertisedPropertyCard = ({
                 <i className="fas fa-times"></i> Reject
               </button>
             </div>
-          ) : !isSold && (
-            <button
-              onClick={() => onCancel(property._id)}
-              className="dash-cancel-package-btn"
-            >
-              <i className="fas fa-times-circle"></i> Cancel Package
-            </button>
+          ) : (
+            !isSold &&
+            !isExpired &&
+            !isPending &&
+            property.adPackage?._id && (
+              <button
+                onClick={() => onCancel(property.adPackage._id)}
+                className="dash-cancel-package-btn"
+              >
+                <i className="fas fa-times-circle"></i> Cancel Package
+              </button>
+            )
           )}
         </div>
       </div>

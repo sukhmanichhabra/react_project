@@ -130,7 +130,7 @@ const Advertising = () => {
   };
 
   const activeProperties = sellerProperties.filter(
-    (p) => p.status === "active"
+    (p) => p.status === "active" && p.approvalStatus === "approved"
   );
   // const propertiesWithoutAds = activeProperties.filter((p) => !p.advertising);
   const showNoPropertiesMessage = activeProperties.every((p) => p.advertising);
@@ -198,7 +198,7 @@ const Advertising = () => {
                       className="property-card"
                       data-property-id={property._id}
                     >
-                      <div className="property-image">
+                      <div className="adv-property-image">
                         <img
                           src={getPropertyImageUrl(property.images?.[0])}
                           alt={property.title}
@@ -225,7 +225,7 @@ const Advertising = () => {
                           <i className="fas fa-map-marker-alt"></i>{" "}
                           {property.location}
                         </p>
-                        <p className="property-price">{property.price}</p>
+                        <p className="adv-property-price">{property.price}</p>
                         <div className="property-features">
                           <span>
                             <i className="fas fa-bed"></i>{" "}

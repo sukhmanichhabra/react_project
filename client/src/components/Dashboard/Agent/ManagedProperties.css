@@ -172,7 +172,7 @@
 }
 
 /* Property Card */
-.property-card {
+.agt-property-card {
   background: white;
   border: none;
   border-radius: 20px;
@@ -182,7 +182,7 @@
   position: relative;
 }
 
-.property-card:hover {
+.agt-property-card:hover {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   transform: translateY(-8px) scale(1.02);
 }
@@ -203,7 +203,7 @@
   transition: transform 0.3s ease;
 }
 
-.property-card:hover .property-image {
+.agt-property-card:hover .property-image {
   transform: scale(1.05);
 }
 

@@ -200,7 +200,8 @@ exports.getAllAgents = async (req, res) => {
           total: pagination.totalAgents,
         },
       },
-    });  } catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching agents:", error);
     res.status(500).json({
       success: false,
@@ -218,14 +219,15 @@ exports.getCurrentAgentProfile = async (req, res) => {
     }
 
     // Find the agent profile associated with the current user
-    const agent = await AgentModel.Agent.findOne({ userId: req.user._id })
-      .populate("userId", "name email phone location profileImage");
+    const agent = await AgentModel.Agent.findOne({
+      userId: req.user._id,
+    }).populate("userId", "name email phone location profileImage");
 
     if (!agent) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         message: "Agent profile not found",
-        agentProfile: null 
+        agentProfile: null,
       });
     }
 
@@ -407,10 +409,15 @@ exports.uploadDocuments = async (req, res) => {
 
     if (missingFields.length > 0) {
       // Check if request is from API (JSON) or traditional form
-      if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      if (
+        req.headers.accept &&
+        req.headers.accept.includes("application/json")
+      ) {
         return res.status(400).json({
-          error: `Please complete your profile before submitting documents. Missing: ${missingFields.join(", ")}`,
-          missingFields: missingFields
+          error: `Please complete your profile before submitting documents. Missing: ${missingFields.join(
+            ", "
+          )}`,
+          missingFields: missingFields,
         });
       } else {
         return res
@@ -421,7 +428,7 @@ exports.uploadDocuments = async (req, res) => {
             )}`
           );
       }
-    }    // Process uploaded files
+    } // Process uploaded files
     const documents = {};
     const uploadDate = new Date();
 
@@ -450,7 +457,8 @@ exports.uploadDocuments = async (req, res) => {
         mimeType: req.files.businessProof[0].mimetype,
         uploadedAt: uploadDate,
       };
-    }    if (req.files.profilePhoto && req.files.profilePhoto[0]) {
+    }
+    if (req.files.profilePhoto && req.files.profilePhoto[0]) {
       documents.profilePhoto = {
         path: req.files.profilePhoto[0].path, // Cloudinary URL
         originalName: req.files.profilePhoto[0].originalname,
@@ -480,9 +488,12 @@ exports.uploadDocuments = async (req, res) => {
 
     if (!updatedAgent) {
       // Check if request is from API (JSON) or traditional form
-      if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      if (
+        req.headers.accept &&
+        req.headers.accept.includes("application/json")
+      ) {
         return res.status(500).json({
-          error: "Failed to update agent documents"
+          error: "Failed to update agent documents",
         });
       } else {
         return res
@@ -491,18 +502,19 @@ exports.uploadDocuments = async (req, res) => {
             "/dashboard?section=verification&error=Failed to update agent documents"
           );
       }
-    }    // Set verification status to pending and update submission date
-    updatedAgent.verificationStatus = 'pending';
-    updatedAgent.verificationMessage = 'Your documents have been submitted and are being reviewed. This process typically takes 1-2 business days.';
+    } // Set verification status to pending and update submission date
+    updatedAgent.verificationStatus = "pending";
+    updatedAgent.verificationMessage =
+      "Your documents have been submitted and are being reviewed. This process typically takes 1-2 business days.";
     updatedAgent.documentsSubmittedAt = uploadDate;
     await updatedAgent.save();
 
     // Check if request is from API (JSON) or traditional form
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
       return res.status(200).json({
         success: true,
         message: "Documents uploaded successfully!",
-        agent: updatedAgent
+        agent: updatedAgent,
       });
     } else {
       // Redirect back to dashboard with success message
@@ -512,12 +524,12 @@ exports.uploadDocuments = async (req, res) => {
     }
   } catch (error) {
     console.error("Error uploading agent documents:", error);
-    
+
     // Check if request is from API (JSON) or traditional form
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
       return res.status(500).json({
         error: "Failed to upload documents. Please try again.",
-        details: error.message
+        details: error.message,
       });
     } else {
       res
@@ -526,6 +538,98 @@ exports.uploadDocuments = async (req, res) => {
           "/dashboard?section=verification&error=Failed to upload documents. Please try again."
         );
     }
+  }
+};
+
+// Get unassigned properties (admin only)
+exports.getUnassignedProperties = async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        error: "Unauthorized: Admin access required",
+      });
+    }
+
+    const unassignedProperties = await AgentModel.getUnassignedProperties();
+
+    res.json({
+      success: true,
+      message: `Found ${unassignedProperties.length} unassigned properties`,
+      data: {
+        count: unassignedProperties.length,
+        properties: unassignedProperties,
+        timestamp: new Date(),
+      },
+    });
+  } catch (error) {
+    console.error("Error getting unassigned properties:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get unassigned properties",
+      details: error.message,
+    });
+  }
+};
+
+// Reassign all properties based on proximity (admin only)
+exports.reassignPropertiesByProximity = async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        error: "Unauthorized: Admin access required",
+      });
+    }
+
+    console.log(
+      `Admin ${req.user.name} initiated proximity-based property reassignment`
+    );
+
+    // Perform the reassignment
+    const result = await AgentModel.reassignAllPropertiesByProximity();
+
+    if (result.success) {
+      // Track admin activity
+      trackActivity(req, {
+        userId: req.user._id,
+        userName: req.user.name,
+        userRole: req.user.role,
+        actionType: "property_reassignment",
+        targetType: "system",
+        targetId: "all_properties",
+        targetName: "Property Reassignment",
+        details: `Reassigned ${result.reassigned} properties based on proximity`,
+      });
+
+      res.json({
+        success: true,
+        message: "Property reassignment completed successfully",
+        data: {
+          totalProperties: result.total,
+          reassigned: result.reassigned,
+          unassigned: result.unassigned,
+          skippedNoCoords: result.skippedNoCoords,
+          failed: result.failed,
+          timestamp: new Date(),
+        },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: "Reassignment failed",
+        details: result.error,
+      });
+    }
+  } catch (error) {
+    console.error("Error in proximity-based reassignment endpoint:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error during reassignment",
+      details: error.message,
+    });
   }
 };
 

@@ -61,8 +61,8 @@ const FilterSidebar = ({
             type="range"
             id="minPriceRange"
             min="500"
-            max="1000000"
-            step="500"
+            max="5000000"
+            step="10000"
             value={filters.minPrice}
             onChange={(e) =>
               onPriceUpdate(parseInt(e.target.value), filters.maxPrice)
@@ -72,8 +72,8 @@ const FilterSidebar = ({
             type="range"
             id="maxPriceRange"
             min="500"
-            max="1000000"
-            step="500"
+            max="5000000"
+            step="10000"
             value={filters.maxPrice}
             onChange={(e) =>
               onPriceUpdate(filters.minPrice, parseInt(e.target.value))

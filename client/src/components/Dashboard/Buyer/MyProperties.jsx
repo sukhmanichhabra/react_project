@@ -8,32 +8,7 @@ import {
   getAgentImageUrl,
 } from "../../../utils/imageUtils";
 
-// Mock data as requested
-const mockProperty = {
-  _id: "mock-1",
-  images: [
-    "https_images_unsplash_com_photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60", // Placeholder
-  ],
-  tag: "sale",
-  title: "Luxury Flat in Koramangala",
-  location: "Koramangala, Road no 3, Bengaluru, India.",
-  beds: 4,
-  baths: 3,
-  sqft: 1200,
-  price: 40000,
-  agent: {
-    _id: "mock-agent-1",
-    fullName: "John Doe",
-    name: "John Doe",
-    image: "/assets/agent-1.jpg",
-    profileImage: "/assets/agent-1.jpg",
-  },
-};
-
 const MyProperties = ({ properties = [] }) => {
-  // Combine mock data with API data
-  const allProperties = [mockProperty, ...properties];
-
   // Helper function to map property data for enhanced card (same as PropertyGrid)
   const mapPropertyToEnhancedCard = (property) => {
     // Validate property exists
@@ -133,8 +108,8 @@ const MyProperties = ({ properties = [] }) => {
         <p>A list of properties you have purchased.</p>
       </div>
       <div className="my-properties-grid enhanced-dashboard-grid">
-        {allProperties.length > 0 ? (
-          allProperties.map((prop) => {
+        {properties.length > 0 ? (
+          properties.map((prop) => {
             const mappedProperty = mapPropertyToEnhancedCard(prop);
             return mappedProperty ? (
               <PropertyCard

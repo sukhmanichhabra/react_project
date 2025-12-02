@@ -44,6 +44,55 @@
   margin-bottom: 40px;
 }
 
+/* Validation Styles */
+.form-group.has-error input,
+.form-group.has-error textarea,
+.form-group.has-error select,
+.upload-group.has-error input[type="file"] {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2;
+}
+
+.form-group input.error,
+.form-group textarea.error,
+.form-group select.error,
+.upload-group input.error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2;
+}
+
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.375rem;
+  color: #dc2626;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.field-error i {
+  color: #ef4444;
+  font-size: 1rem;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.required {
+  color: #ef4444;
+  font-weight: 600;
+}
+
 .category-card {
   background: white;
   padding: 30px;
@@ -340,8 +389,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .checking-loan-status p {

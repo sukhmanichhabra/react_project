@@ -29,16 +29,16 @@ const SellerRentedPropertyCard = ({ property }) => {
 
   const handleGenerateRent = async () => {
     if (!confirm("Generate next rent payment for this property?")) return;
-    
+
     try {
       setIsGeneratingRent(true);
       const response = await fetch(`/api/rent/generate/${property._id}`, {
         method: "POST",
         credentials: "include",
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         alert("Rent payment generated successfully!");
         // Optionally refresh the component
@@ -55,10 +55,17 @@ const SellerRentedPropertyCard = ({ property }) => {
   };
 
   const handleContactTenant = () => {
-    const tenantEmail = property.tenantEmail || property.buyer?.email || "tenant@example.com";
+    const tenantEmail =
+      property.tenantEmail || property.buyer?.email || "tenant@example.com";
     const subject = `Regarding your rental: ${property.title}`;
-    const body = `Hello ${property.tenantName || "Tenant"},\n\nI hope you are well. I wanted to discuss your rental property at ${property.location}.\n\nBest regards,`;
-    window.location.href = `mailto:${tenantEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const body = `Hello ${
+      property.tenantName || "Tenant"
+    },\n\nI hope you are well. I wanted to discuss your rental property at ${
+      property.location
+    }.\n\nBest regards,`;
+    window.location.href = `mailto:${tenantEmail}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
   };
 
   const formatDate = (dateString) => {
@@ -75,7 +82,7 @@ const SellerRentedPropertyCard = ({ property }) => {
         />
         <span className="seller-rented-property-card__tag">Rented Out</span>
       </figure>
-      
+
       <div className="seller-rented-property-card__content">
         <h3 className="seller-rented-property-card__title">{property.title}</h3>
         <p className="seller-rented-property-card__location">
@@ -91,24 +98,31 @@ const SellerRentedPropertyCard = ({ property }) => {
             <span>Rental Information</span>
           </h4>
           <div className="seller-rented-property-card__info-details">
-            <p><strong>Tenant:</strong> {property.tenantName || "N/A"}</p>
-            <p><strong>Rented Since:</strong> {formatDate(property.rentedSince)}</p>
-            <p><strong>Total Collected:</strong> ₹{(property.totalCollected || 0).toLocaleString()}</p>
-            <p><strong>Last Payment:</strong> {formatDate(property.lastRentDate)}</p>
+            <p>
+              <strong>Tenant:</strong> {property.tenantName || "N/A"}
+            </p>
+            <p>
+              <strong>Rented Since:</strong> {formatDate(property.rentedSince)}
+            </p>
+            <p>
+              <strong>Total Collected:</strong> ₹
+              {(property.totalCollected || 0).toLocaleString()}
+            </p>
+            <p>
+              <strong>Last Payment:</strong> {formatDate(property.lastRentDate)}
+            </p>
             {hasAgreement && (
               <>
                 <p>
                   <strong>Agreement Status:</strong> {agreementStatus}
                 </p>
                 <p>
-                  <strong>Lease Start:</strong> {formatDate(
-                    property.agreement.startDate
-                  )}
+                  <strong>Lease Start:</strong>{" "}
+                  {formatDate(property.agreement.startDate)}
                 </p>
                 <p>
-                  <strong>Lease End:</strong> {formatDate(
-                    property.agreement.endDate
-                  )}
+                  <strong>Lease End:</strong>{" "}
+                  {formatDate(property.agreement.endDate)}
                 </p>
               </>
             )}
@@ -131,8 +145,8 @@ const SellerRentedPropertyCard = ({ property }) => {
               <span>Download Agreement</span>
             </button>
           )}
-          <button 
-            onClick={handleGenerateRent} 
+          <button
+            onClick={handleGenerateRent}
             className="dash-btn green"
             disabled={isGeneratingRent}
           >
@@ -166,9 +180,9 @@ const SellerRentedProperties = ({ properties = [] }) => {
         const response = await fetch("/api/rent/seller-rented", {
           credentials: "include",
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
           setRentedProperties(result.data.properties);
           setStats({
@@ -176,7 +190,9 @@ const SellerRentedProperties = ({ properties = [] }) => {
             totalRevenue: result.data.totalRevenue || 0,
           });
         } else {
-          throw new Error(result.message || "Failed to fetch rented properties");
+          throw new Error(
+            result.message || "Failed to fetch rented properties"
+          );
         }
       } catch (err) {
         console.error("Error fetching rented properties:", err);
@@ -272,7 +288,9 @@ const SellerRentedProperties = ({ properties = [] }) => {
               <span className="stat-label">Properties Rented</span>
             </div>
             <div className="stat-item">
-              <span className="stat-value">₹{stats.totalRevenue.toLocaleString()}</span>
+              <span className="stat-value">
+                ₹{stats.totalRevenue.toLocaleString()}
+              </span>
               <span className="stat-label">Total Revenue</span>
             </div>
           </div>
@@ -321,44 +339,182 @@ const SellerRentedProperties = ({ properties = [] }) => {
           </div>
         ) : pendingAgreements.length > 0 ? (
           <div className="seller-agreements-list">
-            {pendingAgreements.map((agreement) => (
-              <div
-                key={agreement._id}
-                className="seller-agreement-card"
-              >
-                <h4>{agreement.propertyTitle}</h4>
-                <p>
-                  <strong>Tenant:</strong> {agreement.buyerName}
-                </p>
-                <p>
-                  <strong>Period:</strong>{" "}
-                  {new Date(agreement.startDate).toLocaleDateString()} -{" "}
-                  {new Date(agreement.endDate).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>Monthly Rent:</strong>{" "}
-                  ₹{(agreement.monthlyRent || 0).toLocaleString("en-IN")}
-                </p>
-                <div className="seller-agreement-card__actions">
-                  <button
-                    type="button"
-                    className="dash-btn green"
-                    onClick={() => handleApprove(agreement._id)}
-                  >
-                    <i className="fas fa-check-circle"></i>
-                    <span>Approve</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="dash-btn red"
-                    onClick={() => handleReject(agreement._id)}
-                  >
-                    <i className="fas fa-times-circle"></i>
-                    <span>Reject</span>
-                  </button>
+            {pendingAgreements.map((agreement) => {
+              const startDate = new Date(agreement.startDate);
+              const endDate = new Date(agreement.endDate);
+              const durationMonths = Math.round(
+                (endDate - startDate) / (1000 * 60 * 60 * 24 * 30)
+              );
+              const totalContractValue =
+                (agreement.monthlyRent || 0) * durationMonths;
+              const submittedDate = agreement.createdAt
+                ? new Date(agreement.createdAt).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : "N/A";
+
+              return (
+                <div key={agreement._id} className="seller-agreement-card">
+                  <div className="seller-agreement-card__header">
+                    <div className="seller-agreement-card__title-section">
+                      <h4 className="seller-agreement-card__property-title">
+                        <i className="fas fa-home"></i>
+                        {agreement.propertyTitle}
+                      </h4>
+                      <span className="seller-agreement-card__status-badge pending">
+                        <i className="fas fa-clock"></i>
+                        Pending Your Approval
+                      </span>
+                    </div>
+                    <div className="seller-agreement-card__submitted-date">
+                      <small>Submitted: {submittedDate}</small>
+                    </div>
+                  </div>
+
+                  <div className="seller-agreement-card__body">
+                    <div className="seller-agreement-card__info-grid">
+                      <div className="seller-agreement-info-item">
+                        <i className="fas fa-user"></i>
+                        <div className="info-content">
+                          <span className="info-label">Tenant</span>
+                          <span className="info-value">
+                            {agreement.buyerName}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="seller-agreement-info-item">
+                        <i className="fas fa-envelope"></i>
+                        <div className="info-content">
+                          <span className="info-label">Email</span>
+                          <span className="info-value">
+                            {agreement.buyerEmail || "N/A"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="seller-agreement-info-item">
+                        <i className="fas fa-phone"></i>
+                        <div className="info-content">
+                          <span className="info-label">Phone</span>
+                          <span className="info-value">
+                            {agreement.buyerPhone || "N/A"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="seller-agreement-info-item">
+                        <i className="fas fa-calendar-alt"></i>
+                        <div className="info-content">
+                          <span className="info-label">Lease Period</span>
+                          <span className="info-value">
+                            {startDate.toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                            {" - "}
+                            {endDate.toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="seller-agreement-info-item">
+                        <i className="fas fa-hourglass-half"></i>
+                        <div className="info-content">
+                          <span className="info-label">Duration</span>
+                          <span className="info-value">
+                            {durationMonths} months
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="seller-agreement-info-item highlight">
+                        <i className="fas fa-rupee-sign"></i>
+                        <div className="info-content">
+                          <span className="info-label">Monthly Rent</span>
+                          <span className="info-value">
+                            ₹
+                            {(agreement.monthlyRent || 0).toLocaleString(
+                              "en-IN"
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="seller-agreement-info-item highlight">
+                        <i className="fas fa-shield-alt"></i>
+                        <div className="info-content">
+                          <span className="info-label">Security Deposit</span>
+                          <span className="info-value">
+                            ₹
+                            {(agreement.securityDeposit || 0).toLocaleString(
+                              "en-IN"
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="seller-agreement-info-item highlight">
+                        <i className="fas fa-chart-line"></i>
+                        <div className="info-content">
+                          <span className="info-label">
+                            Total Contract Value
+                          </span>
+                          <span className="info-value">
+                            ₹{totalContractValue.toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {agreement.specialTerms && (
+                      <div className="seller-agreement-card__special-terms">
+                        <h5>
+                          <i className="fas fa-file-contract"></i>
+                          Special Terms & Conditions
+                        </h5>
+                        <p>{agreement.specialTerms}</p>
+                      </div>
+                    )}
+
+                    <div className="seller-agreement-card__notice">
+                      <i className="fas fa-info-circle"></i>
+                      <p>
+                        Please review all details carefully before approving.
+                        Once approved, the tenant will be notified and the rent
+                        payment schedule will be activated.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="seller-agreement-card__actions">
+                    <button
+                      type="button"
+                      className="dash-btn green"
+                      onClick={() => handleApprove(agreement._id)}
+                    >
+                      <i className="fas fa-check-circle"></i>
+                      <span>Approve Agreement</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="dash-btn red"
+                      onClick={() => handleReject(agreement._id)}
+                    >
+                      <i className="fas fa-times-circle"></i>
+                      <span>Reject Agreement</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <p className="seller-no-pending-agreements">

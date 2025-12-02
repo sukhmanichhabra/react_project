@@ -128,146 +128,282 @@ const PayEMI = () => {
   const generateInvoice = (emi, loanInfo) => {
     const doc = new jsPDF();
 
-    // Header
-    doc.setFontSize(20);
-    doc.setTextColor(102, 126, 234);
-    doc.text("EMI Payment Invoice", 105, 20, { align: "center" });
+    // Header Background
+    doc.setFillColor(102, 126, 234);
+    doc.rect(0, 0, 210, 45, "F");
+
+    // Header Title
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont(undefined, "bold");
+    doc.text("EMI PAYMENT INVOICE", 105, 20, { align: "center" });
 
     // Company Info
     doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, "normal");
     doc.text("Real Estate Management System", 105, 30, { align: "center" });
-    doc.text("www.realestate.com | support@realestate.com", 105, 35, {
-      align: "center",
-    });
+    doc.text(
+      "www.realestate.com | support@realestate.com | +91-1800-123-4567",
+      105,
+      36,
+      {
+        align: "center",
+      }
+    );
 
-    // Line
+    // Reset text color for body
+    doc.setTextColor(0, 0, 0);
+
+    // Invoice Details Box
+    doc.setFillColor(245, 245, 245);
+    doc.rect(20, 55, 85, 35, "F");
     doc.setDrawColor(200, 200, 200);
-    doc.line(20, 40, 190, 40);
+    doc.rect(20, 55, 85, 35, "S");
 
-    // Invoice Details
-    doc.setFontSize(12);
-    doc.text("Invoice Details", 20, 50);
-    doc.setFontSize(10);
+    doc.setFontSize(11);
+    doc.setFont(undefined, "bold");
+    doc.text("Invoice Details", 25, 63);
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(9);
     doc.text(
-      `Invoice No: INV-${emi._id.substring(0, 8).toUpperCase()}`,
-      20,
-      58
+      `Invoice No: INV-${emi._id.substring(0, 10).toUpperCase()}`,
+      25,
+      70
     );
-    doc.text(`Date: ${new Date().toLocaleDateString("en-IN")}`, 20, 64);
-    doc.text(`EMI Number: ${emi.emiNumber || 1}`, 20, 70);
-
-    // Customer Details
-    doc.setFontSize(12);
-    doc.text("Customer Details", 20, 85);
-    doc.setFontSize(10);
-    doc.text(`Name: ${user?.name || "N/A"}`, 20, 93);
-    doc.text(`Email: ${user?.email || "N/A"}`, 20, 99);
-    doc.text(`Phone: ${user?.phone || "N/A"}`, 20, 105);
-
-    // Loan Details
-    doc.setFontSize(12);
-    doc.text("Loan Details", 20, 120);
-    doc.setFontSize(10);
     doc.text(
-      `Loan Type: ${
-        loanInfo?.loanType?.replace("_", " ").toUpperCase() || "Home Loan"
+      `Invoice Date: ${new Date().toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })}`,
+      25,
+      76
+    );
+    doc.text(`EMI Number: ${emi.emiNumber || 1}`, 25, 82);
+    doc.text(`Due Date: ${formatDate(emi.dueDate)}`, 25, 88);
+
+    // Customer Details Box
+    doc.setFillColor(245, 245, 245);
+    doc.rect(110, 55, 80, 35, "F");
+    doc.rect(110, 55, 80, 35, "S");
+
+    doc.setFontSize(11);
+    doc.setFont(undefined, "bold");
+    doc.text("Customer Details", 115, 63);
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(9);
+    doc.text(`Name: ${user?.name || "N/A"}`, 115, 70);
+    doc.text(`Email: ${user?.email || "N/A"}`, 115, 76);
+    doc.text(
+      `Phone: ${
+        user?.phone ||
+        user?.phoneNumber ||
+        user?.contactNumber ||
+        "Not Provided"
       }`,
-      20,
-      128
+      115,
+      82
     );
-    doc.text(
-      `Loan Amount: ₹${loanInfo?.loanAmount?.toLocaleString("en-IN") || "0"}`,
-      20,
-      134
-    );
-    doc.text(`Interest Rate: ${loanInfo?.interestRate || 0}%`, 20, 140);
-    doc.text(`Tenure: ${loanInfo?.tenure || 0} years`, 20, 146);
 
-    // Payment Breakdown
+    // Loan Details Section
     doc.setFontSize(12);
-    doc.text("Payment Breakdown", 20, 161);
-
-    // Table
-    const tableY = 170;
-    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
     doc.setFillColor(102, 126, 234);
     doc.setTextColor(255, 255, 255);
-    doc.rect(20, tableY, 170, 8, "F");
-    doc.text("Description", 25, tableY + 5);
-    doc.text("Amount", 160, tableY + 5);
+    doc.rect(20, 100, 170, 8, "F");
+    doc.text("Loan Information", 25, 105);
 
     doc.setTextColor(0, 0, 0);
-    let currentY = tableY + 15;
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(9);
+    let yPos = 113;
 
-    doc.text("Principal Amount", 25, currentY);
     doc.text(
-      `₹${(emi.principalAmount || 0).toLocaleString("en-IN")}`,
-      160,
-      currentY
+      `Loan Type: ${
+        loanInfo?.loanType?.replace("_", " ").toUpperCase() || "HOME LOAN"
+      }`,
+      25,
+      yPos
     );
-    currentY += 8;
-
-    doc.text("Interest Amount", 25, currentY);
     doc.text(
-      `₹${(emi.interestAmount || 0).toLocaleString("en-IN")}`,
-      160,
-      currentY
+      `Loan ID: ${
+        loanInfo?.loanId?.substring(0, 12).toUpperCase() ||
+        emi.loanId?._id?.substring(0, 12).toUpperCase() ||
+        "N/A"
+      }`,
+      120,
+      yPos
     );
-    currentY += 8;
+    yPos += 7;
+    doc.text(
+      `Loan Amount: ₹${(loanInfo?.loanAmount || 0).toLocaleString("en-IN")}`,
+      25,
+      yPos
+    );
+    doc.text(
+      `Interest Rate: ${loanInfo?.interestRate || 0}% per annum`,
+      120,
+      yPos
+    );
+    yPos += 7;
+    doc.text(
+      `Tenure: ${loanInfo?.tenure || 0} years (${
+        (loanInfo?.tenure || 0) * 12
+      } months)`,
+      25,
+      yPos
+    );
 
+    // Payment Breakdown Table
+    yPos += 15;
+    doc.setFontSize(12);
+    doc.setFont(undefined, "bold");
+    doc.setFillColor(102, 126, 234);
+    doc.setTextColor(255, 255, 255);
+    doc.rect(20, yPos, 170, 8, "F");
+    doc.text("Payment Breakdown", 25, yPos + 5);
+
+    // Table Header
+    yPos += 8;
+    doc.setFillColor(240, 240, 240);
+    doc.rect(20, yPos, 170, 8, "F");
+    doc.setDrawColor(200, 200, 200);
+    doc.rect(20, yPos, 170, 8, "S");
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.setFont(undefined, "bold");
+    doc.text("Description", 25, yPos + 5);
+    doc.text("Amount (₹)", 160, yPos + 5, { align: "right" });
+
+    // Table Rows
+    doc.setFont(undefined, "normal");
+    yPos += 8;
+
+    // Principal
+    doc.rect(20, yPos, 170, 7, "S");
+    doc.text("Principal Amount", 25, yPos + 5);
+    doc.text(
+      (emi.principalAmount || 0).toLocaleString("en-IN"),
+      160,
+      yPos + 5,
+      { align: "right" }
+    );
+    yPos += 7;
+
+    // Interest
+    doc.rect(20, yPos, 170, 7, "S");
+    doc.text("Interest Amount", 25, yPos + 5);
+    doc.text((emi.interestAmount || 0).toLocaleString("en-IN"), 160, yPos + 5, {
+      align: "right",
+    });
+    yPos += 7;
+
+    // Late Fee if applicable
     if (emi.latePaymentFee && emi.latePaymentFee > 0) {
-      doc.text("Late Payment Fee", 25, currentY);
-      doc.text(`₹${emi.latePaymentFee.toLocaleString("en-IN")}`, 160, currentY);
-      currentY += 8;
+      doc.rect(20, yPos, 170, 7, "S");
+      doc.setTextColor(244, 67, 54);
+      doc.text("Late Payment Fee", 25, yPos + 5);
+      doc.text(emi.latePaymentFee.toLocaleString("en-IN"), 160, yPos + 5, {
+        align: "right",
+      });
+      doc.setTextColor(0, 0, 0);
+      yPos += 7;
     }
 
     // Total
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, currentY, 190, currentY);
-    currentY += 8;
-
-    doc.setFontSize(12);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(20, yPos, 170, 10, "F");
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.5);
+    doc.rect(20, yPos, 170, 10, "S");
+    doc.setLineWidth(0.2);
+    doc.setFontSize(11);
     doc.setFont(undefined, "bold");
-    doc.text("Total Amount", 25, currentY);
     const totalAmount = (emi.amount || 0) + (emi.latePaymentFee || 0);
-    doc.text(`₹${totalAmount.toLocaleString("en-IN")}`, 160, currentY);
+    doc.text("Total Amount Paid", 25, yPos + 7);
+    doc.text(`₹${totalAmount.toLocaleString("en-IN")}`, 160, yPos + 7, {
+      align: "right",
+    });
+    yPos += 10;
 
-    // Payment Info
+    // Payment Information (only for paid EMIs)
     if (emi.status === "paid" || emi.status === "late") {
-      currentY += 15;
+      yPos += 8;
+      doc.setFillColor(232, 245, 233);
+      doc.rect(20, yPos, 170, 35, "F");
+      doc.setDrawColor(76, 175, 80);
+      doc.rect(20, yPos, 170, 35, "S");
+
+      doc.setFontSize(11);
+      doc.setFont(undefined, "bold");
+      doc.setTextColor(46, 125, 50);
+      doc.text("✓ PAYMENT CONFIRMED", 25, yPos + 7);
+
+      doc.setTextColor(0, 0, 0);
       doc.setFont(undefined, "normal");
-      doc.setFontSize(10);
-      doc.text("Payment Information", 20, currentY);
-      currentY += 8;
+      doc.setFontSize(9);
+      yPos += 14;
       doc.text(
         `Payment Date: ${
           emi.paymentDate
-            ? new Date(emi.paymentDate).toLocaleDateString("en-IN")
+            ? new Date(emi.paymentDate).toLocaleDateString("en-IN", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
             : "N/A"
         }`,
-        20,
-        currentY
+        25,
+        yPos
       );
-      currentY += 6;
-      doc.text(`Payment Method: ${emi.paymentMethod || "N/A"}`, 20, currentY);
-      currentY += 6;
-      doc.text(`Transaction ID: ${emi.transactionId || "N/A"}`, 20, currentY);
-      currentY += 6;
-      doc.setTextColor(76, 175, 80);
-      doc.text("Status: PAID", 20, currentY);
+      yPos += 7;
+      doc.text(
+        `Payment Method: ${
+          emi.paymentMethod
+            ? emi.paymentMethod.replace("_", " ").toUpperCase()
+            : "ONLINE PAYMENT"
+        }`,
+        25,
+        yPos
+      );
+      yPos += 7;
+      doc.text(
+        `Transaction ID: ${
+          emi.transactionId || `TXN${emi._id.substring(0, 12).toUpperCase()}`
+        }`,
+        25,
+        yPos
+      );
+      yPos += 7;
+      doc.text(`Status: ${emi.status.toUpperCase()}`, 25, yPos);
     }
 
     // Footer
-    doc.setTextColor(150, 150, 150);
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 270, 190, 270);
+    doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
-    doc.text("Thank you for your payment!", 105, 280, { align: "center" });
+    doc.setFont(undefined, "italic");
     doc.text(
-      "This is a computer-generated invoice and does not require a signature.",
+      "Thank you for your payment! This invoice is computer-generated and does not require a signature.",
       105,
-      285,
+      276,
       { align: "center" }
     );
+    doc.text(
+      "For any queries, please contact us at support@realestate.com or call +91-1800-123-4567",
+      105,
+      282,
+      { align: "center" }
+    );
+
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(7);
+    doc.text(`Generated on: ${new Date().toLocaleString("en-IN")}`, 105, 288, {
+      align: "center",
+    });
 
     // Save
     doc.save(`EMI-Invoice-${emi._id.substring(0, 8)}.pdf`);
@@ -698,12 +834,6 @@ const PayEMI = () => {
                                 onClick={() => openPaymentModal(payment)}
                               >
                                 Pay Now
-                              </button>
-                              <button
-                                className="invoice-btn"
-                                onClick={() => generateInvoice(payment, loan)}
-                              >
-                                Invoice
                               </button>
                             </td>
                           </tr>

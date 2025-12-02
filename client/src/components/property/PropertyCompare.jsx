@@ -436,7 +436,7 @@ const PropertyCompare = () => {
   return (
     <div className="property-compare-container">
       <div className="compare-header">
-        <h1 className="page-title">Compare Properties</h1>
+        {/* <h1 className="page-title">Compare Properties</h1> */}
         <p className="page-subtitle">
           Find and compare up to 4 properties side by side to make the best
           decision

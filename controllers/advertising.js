@@ -32,9 +32,10 @@ exports.getAdvertisingPage = async (req, res) => {
         req.user._id
       );
 
-      // Filter out sold properties
+      // Filter out sold properties and only show approved properties
       const activeProperties = allProperties.filter(
-        (property) => property.status !== "sold"
+        (property) =>
+          property.status !== "sold" && property.approvalStatus === "approved"
       );
 
       // For each property, check if it has an active advertising package
@@ -260,7 +261,9 @@ exports.getAdvertisedProperties = async (req, res) => {
           _id: property._id,
           adPackage: {
             _id: pkg._id,
-            name: pkg.packageType.charAt(0).toUpperCase() + pkg.packageType.slice(1),
+            name:
+              pkg.packageType.charAt(0).toUpperCase() +
+              pkg.packageType.slice(1),
             type: pkg.packageType,
             startDate: pkg.startDate,
             endDate: pkg.endDate,
@@ -274,7 +277,7 @@ exports.getAdvertisedProperties = async (req, res) => {
     );
 
     // Filter out null values
-    const validProperties = advertisedProperties.filter(p => p !== null);
+    const validProperties = advertisedProperties.filter((p) => p !== null);
 
     res.json({
       success: true,

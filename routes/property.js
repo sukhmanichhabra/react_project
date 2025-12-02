@@ -865,12 +865,10 @@ router.post(
               "You can only cancel agreements for properties you have rented",
           });
         }
-        return res
-          .status(403)
-          .render("error", {
-            message:
-              "You can only cancel agreements for properties you have rented",
-          });
+        return res.status(403).render("error", {
+          message:
+            "You can only cancel agreements for properties you have rented",
+        });
       }
 
       // Wrap the cancellation in a try-catch to handle timeouts and other errors
@@ -1243,11 +1241,177 @@ router.post(
 router.post("/:id/delete", requireAuth, requireSeller, async (req, res) => {
   try {
     await PropertyModel.deleteProperty(req.params.id, req.user._id);
-    res.redirect("/property/my-properties");
+
+    // Check if this is an API request (JSON) or traditional form submission
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
+      // API response for React frontend
+      return res.json({
+        success: true,
+        message: "Property deleted successfully",
+      });
+    } else {
+      // Traditional form submission - redirect
+      res.redirect("/property/my-properties");
+    }
   } catch (error) {
-    res.status(400).render("error", { message: error.message });
+    console.error("Error deleting property:", error);
+
+    // Check if this is an API request (JSON) or traditional form submission
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
+      // API error response for React frontend
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to delete property",
+      });
+    } else {
+      // Traditional form submission - render error page
+      res.status(400).render("error", { message: error.message });
+    }
   }
 });
+
+// API endpoint for updating property (seller only) - for React frontend
+router.put(
+  "/:id",
+  requireAuth,
+  requireSeller,
+  propertyUpload.array("images", 10),
+  async (req, res) => {
+    try {
+      console.log("Property update request received");
+      console.log("Property ID:", req.params.id);
+      console.log("Update data:", req.body);
+
+      const {
+        title,
+        type,
+        tag,
+        price,
+        location,
+        sqft,
+        beds,
+        baths,
+        kitchen,
+        description,
+        latitude,
+        longitude,
+        address,
+        yearBuilt,
+        furnishing,
+        parking,
+        floor,
+        totalFloors,
+        facing,
+        propertyId,
+        reraId,
+        documentSummary,
+      } = req.body;
+
+      // Handle amenities which might come as amenities[] or amenities
+      let amenities = req.body["amenities[]"] || req.body.amenities || [];
+
+      // Process amenities properly - flatten any nested arrays and ensure strings only
+      let processedAmenities = [];
+      if (amenities) {
+        const flattenAmenities = (arr) => {
+          const result = [];
+          if (Array.isArray(arr)) {
+            arr.forEach((item) => {
+              if (typeof item === "string" && item.trim() !== "") {
+                result.push(item.trim());
+              } else if (Array.isArray(item)) {
+                result.push(...flattenAmenities(item));
+              }
+            });
+          } else if (typeof arr === "string" && arr.trim() !== "") {
+            result.push(arr.trim());
+          }
+          return result;
+        };
+
+        processedAmenities = flattenAmenities(amenities);
+        // Remove duplicates
+        processedAmenities = [...new Set(processedAmenities)];
+      }
+
+      // Process uploaded images from Cloudinary
+      const images =
+        req.files && Array.isArray(req.files)
+          ? req.files.map((file) => file.path)
+          : [];
+
+      // Create update data object
+      const updateData = {
+        title,
+        description,
+        type,
+        tag,
+        price: tag === "sale" ? `$${price}` : `$${price}/month`,
+        estPayment:
+          tag === "sale"
+            ? `$${(price * 0.05).toFixed(2)}/mo*`
+            : `$${price}/mo*`,
+        location,
+        features: {
+          sqft,
+          beds: String(beds).padStart(2, "0"),
+          baths: String(baths).padStart(2, "0"),
+          kitchen: String(kitchen).padStart(2, "0"),
+          type,
+          yearBuilt,
+          furnishing,
+          parking,
+          floor,
+          totalFloors,
+          facing,
+        },
+        amenities: processedAmenities,
+        legal: {
+          propertyId,
+          reraId,
+          documentSummary,
+        },
+      };
+
+      // Only update images if new ones were uploaded
+      if (images.length > 0) {
+        updateData.images = images;
+      }
+
+      // Handle geolocation update if provided
+      if (latitude && longitude) {
+        updateData.geolocation = {
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+          address: address || location,
+        };
+      }
+
+      // Update the property
+      const updatedProperty = await PropertyModel.updateProperty(
+        req.params.id,
+        updateData,
+        req.user._id
+      );
+
+      console.log("Property updated successfully");
+
+      // Return JSON response for API requests
+      return res.json({
+        success: true,
+        message: "Property updated successfully",
+        data: updatedProperty,
+      });
+    } catch (error) {
+      console.error("Error updating property:", error);
+
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to update property",
+      });
+    }
+  }
+);
 
 // Add contact form submission handler
 router.post("/:id/contact", async (req, res) => {
@@ -1806,6 +1970,40 @@ router.post(
   }
 );
 
+// Get all properties for admin management
+router.get(
+  "/admin/all-properties",
+  requireAuth,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const properties = await PropertyModel.getAllProperties();
+      
+      // Map properties to include only needed fields and ensure proper structure
+      const formattedProperties = properties.map(property => ({
+        _id: property._id,
+        title: property.title,
+        location: property.location,
+        geolocation: property.geolocation,
+        agent: property.agent
+      }));
+
+      res.json({
+        success: true,
+        properties: formattedProperties,
+        count: formattedProperties.length,
+      });
+    } catch (error) {
+      console.error("Error fetching all properties:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to fetch all properties",
+        error: error.message,
+      });
+    }
+  }
+);
+
 // Get properties without geolocation data
 router.get(
   "/admin/missing-geolocation",
@@ -1813,19 +2011,28 @@ router.get(
   requireAdmin,
   async (req, res) => {
     try {
-      const properties = await PropertyModel.Property.find({
-        $or: [
-          { "geolocation.latitude": { $exists: false } },
-          { "geolocation.longitude": { $exists: false } },
-          { "geolocation.latitude": null },
-          { "geolocation.longitude": null },
-        ],
-      }).select("_id title location");
+      const allProperties = await PropertyModel.getAllProperties();
+      
+      // Filter properties that don't have proper geolocation data
+      const missingGeoProperties = allProperties.filter(property => {
+        return !property.geolocation || 
+               !property.geolocation.latitude || 
+               !property.geolocation.longitude ||
+               property.geolocation.latitude === null ||
+               property.geolocation.longitude === null;
+      });
+      
+      // Format the response
+      const formattedProperties = missingGeoProperties.map(property => ({
+        _id: property._id,
+        title: property.title,
+        location: property.location
+      }));
 
       res.json({
         success: true,
-        properties: properties,
-        count: properties.length,
+        properties: formattedProperties,
+        count: formattedProperties.length,
       });
     } catch (error) {
       console.error("Error fetching properties without geolocation:", error);
@@ -1904,8 +2111,9 @@ router.get(
 
       const propertiesWithDistance = Array.isArray(properties)
         ? properties.map((property) => {
-            const propertyObj =
-              property.toObject ? property.toObject() : property;
+            const propertyObj = property.toObject
+              ? property.toObject()
+              : property;
 
             let distanceKm = null;
             let withinServiceRadius = false;

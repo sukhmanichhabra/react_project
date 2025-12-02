@@ -211,31 +211,59 @@ async function initializePropertyAssignments() {
       Array.isArray(allProperties) &&
       allProperties.length > 0
     ) {
-      // Assign properties to agents in a round-robin fashion
+      // Assign properties to agents based on proximity and service radius
       for (const property of allProperties) {
-        // Find the agent with the least number of properties
-        let minPropertyCount = Infinity;
         let selectedAgentId = null;
 
-        // First try to find a verified agent with the least properties
-        for (const agent of sortedAgents) {
-          const agentIdStr = agent._id.toString();
-          if (
-            agent.verified &&
-            agentPropertyCounts[agentIdStr] < minPropertyCount
-          ) {
-            minPropertyCount = agentPropertyCounts[agentIdStr];
-            selectedAgentId = agent._id; // Use ObjectId directly
+        // Try to find the best agent based on geolocation if property has coordinates
+        if (
+          property.geolocation &&
+          property.geolocation.latitude &&
+          property.geolocation.longitude
+        ) {
+          const bestAgent = await findBestAgentForProperty(
+            property.geolocation.latitude,
+            property.geolocation.longitude
+          );
+
+          if (bestAgent) {
+            selectedAgentId = bestAgent._id;
+            console.log(
+              `Assigned property ${property._id} to nearest agent ${bestAgent.name} (${selectedAgentId})`
+            );
+          } else {
+            console.log(
+              `No agent within service radius found for property ${property._id} at ${property.geolocation.latitude}, ${property.geolocation.longitude}`
+            );
+            // Property will remain unassigned rather than being forced to a distant agent
           }
         }
 
-        // If no verified agent is available or all have reached capacity, try unverified agents
+        // Fallback to round-robin if no geolocation-based assignment possible
         if (selectedAgentId === null) {
+          // Find the agent with the least number of properties
+          let minPropertyCount = Infinity;
+
+          // First try to find a verified agent with the least properties
           for (const agent of sortedAgents) {
             const agentIdStr = agent._id.toString();
-            if (agentPropertyCounts[agentIdStr] < minPropertyCount) {
+            if (
+              agent.verified &&
+              agentPropertyCounts[agentIdStr] < minPropertyCount
+            ) {
               minPropertyCount = agentPropertyCounts[agentIdStr];
               selectedAgentId = agent._id; // Use ObjectId directly
+            }
+          }
+
+          // If no verified agent is available, try unverified agents
+          if (selectedAgentId === null) {
+            for (const agent of sortedAgents) {
+              const agentIdStr = agent._id.toString();
+              if (agentPropertyCounts[agentIdStr] < minPropertyCount) {
+                minPropertyCount = agentPropertyCounts[agentIdStr];
+                selectedAgentId = agent._id; // Use ObjectId directly
+              }
             }
           }
         }
@@ -942,7 +970,8 @@ async function findBestAgentForProperty(propertyLatitude, propertyLongitude) {
     }
 
     // Calculate distance and workload for each agent
-    const agentScores = [];
+    const withinRadiusAgents = [];
+    const fallbackAgents = [];
 
     for (const agent of availableAgents) {
       let distance = Infinity;
@@ -971,67 +1000,93 @@ async function findBestAgentForProperty(propertyLatitude, propertyLongitude) {
       // Current workload (how many properties already assigned)
       const workload = agent.listingCount || 0;
 
-      agentScores.push({
+      const agentScore = {
         agent,
         distance,
         workload,
         withinServiceRadius,
         verified: !!agent.verified,
-      });
+      };
+
+      // Separate agents within radius vs fallback candidates
+      if (withinServiceRadius) {
+        withinRadiusAgents.push(agentScore);
+      } else if (distance !== Infinity) {
+        fallbackAgents.push(agentScore);
+      }
     }
 
-    // Sort using distance as primary, workload as secondary, verification as tie-breaker
-    agentScores.sort((a, b) => {
-      const aHasDistance = a.distance !== Infinity;
-      const bHasDistance = b.distance !== Infinity;
+    // Priority 1: Use agents within service radius if available
+    let selectedAgents = withinRadiusAgents;
+    let assignmentType = "within-radius";
 
-      // Prefer agents where we know the distance
-      if (aHasDistance !== bHasDistance) {
-        return aHasDistance ? -1 : 1;
+    // Priority 2: Fallback to closest agent if no agents within radius
+    if (selectedAgents.length === 0 && fallbackAgents.length > 0) {
+      selectedAgents = fallbackAgents;
+      assignmentType = "closest-fallback";
+      console.log(
+        `No agents within service radius, using closest agent fallback for property at ${propertyLatitude}, ${propertyLongitude}`
+      );
+    }
+
+    // If no suitable agents found
+    if (selectedAgents.length === 0) {
+      console.log(
+        `No suitable agents found for property at ${propertyLatitude}, ${propertyLongitude}`
+      );
+      return null;
+    }
+
+    // Sort selected agents by priority
+    selectedAgents.sort((a, b) => {
+      // First priority: verified agents
+      if (a.verified !== b.verified) {
+        return a.verified ? -1 : 1;
       }
 
-      // Prefer agents where the property is within their service radius
-      if (a.withinServiceRadius !== b.withinServiceRadius) {
-        return a.withinServiceRadius ? -1 : 1;
-      }
-
-      // Primary: smaller distance first
+      // Second priority: closest distance
       if (a.distance !== b.distance) {
         return a.distance - b.distance;
       }
 
-      // Secondary: lower workload (more equal distribution)
+      // Third priority: lower workload
       if (a.workload !== b.workload) {
         return a.workload - b.workload;
-      }
-
-      // Final tie-breaker: prefer verified agents
-      if (a.verified !== b.verified) {
-        return a.verified ? -1 : 1;
       }
 
       return 0;
     });
 
-    // Log top candidates for debugging
-    console.log("Top 3 agent candidates (sorted by distance, then workload):");
-    agentScores.slice(0, 3).forEach((candidate, index) => {
-      const distanceLabel =
-        candidate.distance === Infinity
-          ? "N/A"
-          : `${candidate.distance.toFixed(2)}km`;
-      console.log(
-        `${index + 1}. Agent: ${
-          candidate.agent.name
-        }, Distance: ${distanceLabel}, Workload: ${
-          candidate.workload
-        }, Verified: ${candidate.verified}, Within radius: ${
-          candidate.withinServiceRadius
-        }`
-      );
-    });
+    const selectedAgent = selectedAgents[0];
 
-    return agentScores[0].agent;
+    // Log selection details
+    console.log(`Selected agent via ${assignmentType}:`);
+    console.log(`- Agent: ${selectedAgent.agent.name}`);
+    console.log(`- Distance: ${selectedAgent.distance.toFixed(2)}km`);
+    console.log(
+      `- Service Radius: ${
+        selectedAgent.agent.geolocation?.serviceRadius || 50
+      }km`
+    );
+    console.log(
+      `- Within Radius: ${selectedAgent.withinServiceRadius ? "Yes" : "No"}`
+    );
+    console.log(`- Verified: ${selectedAgent.verified ? "Yes" : "No"}`);
+    console.log(`- Current Workload: ${selectedAgent.workload}`);
+
+    // Log other candidates for debugging
+    if (selectedAgents.length > 1) {
+      console.log("\nOther candidates considered:");
+      selectedAgents.slice(1, 4).forEach((candidate, index) => {
+        console.log(
+          `${index + 2}. ${candidate.agent.name}: ${candidate.distance.toFixed(
+            2
+          )}km, workload: ${candidate.workload}`
+        );
+      });
+    }
+
+    return selectedAgent.agent;
   } catch (error) {
     console.error("Error finding best agent for property:", error);
 
@@ -1051,9 +1106,7 @@ async function assignAgentByGeolocation(
 ) {
   try {
     console.log(
-      `Assigning agent for property ${propertyId} at coordinates: ${
-        (propertyLatitude, propertyLongitude)
-      }`
+      `Assigning agent for property ${propertyId} at coordinates: ${propertyLatitude}, ${propertyLongitude}`
     );
 
     const bestAgent = await findBestAgentForProperty(
@@ -1083,6 +1136,181 @@ async function assignAgentByGeolocation(
   }
 }
 
+// Get properties that are not assigned to any agent within service radius
+async function getUnassignedProperties() {
+  try {
+    const allProperties = await PropertyModel.getAllProperties();
+    const unassignedProperties = [];
+
+    for (const property of allProperties) {
+      if (
+        property.geolocation &&
+        property.geolocation.latitude &&
+        property.geolocation.longitude
+      ) {
+        const assignedAgent = await getPropertyAgent(property._id);
+
+        if (!assignedAgent) {
+          unassignedProperties.push({
+            ...(property.toObject ? property.toObject() : property),
+            reason: "No agent assigned",
+          });
+        } else if (
+          !assignedAgent.geolocation ||
+          !assignedAgent.geolocation.latitude
+        ) {
+          unassignedProperties.push({
+            ...(property.toObject ? property.toObject() : property),
+            assignedAgent: assignedAgent.name,
+            reason: "Assigned agent has no geolocation data",
+          });
+        } else {
+          // Check if assigned agent is within service radius
+          const distance = calculateDistance(
+            property.geolocation.latitude,
+            property.geolocation.longitude,
+            assignedAgent.geolocation.latitude,
+            assignedAgent.geolocation.longitude
+          );
+
+          const serviceRadius = assignedAgent.geolocation.serviceRadius || 50;
+
+          // Only report as problematic if it's a very poor assignment
+          // (Allow fallback assignments to closest agents outside radius)
+          if (distance > serviceRadius * 2) {
+            // Only report if more than 2x the service radius
+            unassignedProperties.push({
+              ...(property.toObject ? property.toObject() : property),
+              assignedAgent: assignedAgent.name,
+              distance: distance.toFixed(2),
+              serviceRadius: serviceRadius,
+              reason: `Assigned agent is very far (${distance.toFixed(2)}km > ${
+                serviceRadius * 2
+              }km threshold)`,
+            });
+          }
+        }
+      }
+    }
+
+    return unassignedProperties;
+  } catch (error) {
+    console.error("Error getting unassigned properties:", error);
+    return [];
+  }
+}
+
+// Reassign all properties based on proximity (admin function)
+async function reassignAllPropertiesByProximity() {
+  try {
+    console.log("Starting proximity-based reassignment of all properties...");
+
+    // Get all properties
+    const allProperties = await PropertyModel.getAllProperties();
+
+    if (!Array.isArray(allProperties) || allProperties.length === 0) {
+      console.log("No properties found for reassignment");
+      return { success: true, reassigned: 0, failed: 0 };
+    }
+
+    let reassigned = 0;
+    let failed = 0;
+    let unassigned = 0;
+    let skippedNoCoords = 0;
+
+    // Process each property
+    for (const property of allProperties) {
+      try {
+        // Only reassign if property has geolocation
+        if (
+          property.geolocation &&
+          property.geolocation.latitude &&
+          property.geolocation.longitude
+        ) {
+          const bestAgent = await findBestAgentForProperty(
+            property.geolocation.latitude,
+            property.geolocation.longitude
+          );
+
+          if (bestAgent) {
+            // Check if assignment is different from current
+            const currentAgent = await getPropertyAgent(property._id);
+
+            if (
+              !currentAgent ||
+              currentAgent._id.toString() !== bestAgent._id.toString()
+            ) {
+              // Update property assignment
+              if (PropertyModel && PropertyModel.updatePropertyAgent) {
+                await PropertyModel.updatePropertyAgent(
+                  property._id,
+                  bestAgent._id
+                );
+              }
+
+              // Update in-memory map
+              propertyAgentMap[property._id.toString()] =
+                bestAgent._id.toString();
+
+              console.log(
+                `Reassigned property ${property._id} to agent ${bestAgent.name}`
+              );
+              reassigned++;
+            }
+          } else {
+            // Truly no suitable agents found (rare case)
+            console.log(
+              `No suitable agents found for property ${property._id} at ${property.geolocation.latitude}, ${property.geolocation.longitude}`
+            );
+
+            // Remove from property-agent assignments
+            if (PropertyModel && PropertyModel.updatePropertyAgent) {
+              await PropertyModel.updatePropertyAgent(property._id, null);
+            }
+
+            // Remove from in-memory map
+            delete propertyAgentMap[property._id.toString()];
+
+            unassigned++;
+          }
+        } else {
+          console.log(
+            `Property ${property._id} has no geolocation, skipping proximity assignment`
+          );
+          skippedNoCoords++;
+        }
+      } catch (propertyError) {
+        console.error(
+          `Error reassigning property ${property._id}:`,
+          propertyError
+        );
+        failed++;
+      }
+    }
+
+    // Update all agent listing counts
+    const allAgents = await getAllAgents();
+    for (const agent of allAgents) {
+      await updateAgentListingCount(agent._id);
+    }
+
+    console.log(
+      `Proximity-based reassignment completed: ${reassigned} reassigned, ${unassigned} unassigned, ${skippedNoCoords} skipped (no coordinates), ${failed} failed`
+    );
+    return {
+      success: true,
+      reassigned,
+      unassigned,
+      skippedNoCoords,
+      failed,
+      total: allProperties.length,
+    };
+  } catch (error) {
+    console.error("Error in proximity-based reassignment:", error);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   getAllAgents,
   getAgentById,
@@ -1104,6 +1332,8 @@ module.exports = {
   getAgentByUserId,
   findBestAgentForProperty,
   assignAgentByGeolocation,
+  reassignAllPropertiesByProximity,
+  getUnassignedProperties,
   calculateDistance,
   geocodeAgentLocation,
   Agent, // Export the Mongoose model

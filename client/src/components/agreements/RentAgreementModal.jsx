@@ -203,7 +203,9 @@ const RentAgreementModal = ({ property, isOpen, onClose, onCreated }) => {
               </div>
 
               <div className="rent-agreement-form-group">
-                <label htmlFor="maintenance">Monthly Maintenance (optional)</label>
+                <label htmlFor="maintenance">
+                  Monthly Maintenance (optional)
+                </label>
                 <input
                   id="maintenance"
                   name="maintenance"
@@ -217,7 +219,7 @@ const RentAgreementModal = ({ property, isOpen, onClose, onCreated }) => {
               </div>
             </div>
 
-            <div className="rent-agreement-terms">
+            {/* <div className="rent-agreement-terms">
               <h4>Key Terms</h4>
               <ul>
                 <li>
@@ -233,7 +235,7 @@ const RentAgreementModal = ({ property, isOpen, onClose, onCreated }) => {
                   clear audit trail.
                 </li>
               </ul>
-            </div>
+            </div> */}
 
             <div className="rent-agreement-modal-footer">
               <button

@@ -147,7 +147,10 @@ const NavBar = () => {
               <Link to="/" className="nav-link admin-link">
                 <i className="fas fa-home"></i> Home
               </Link>
-              <Link to="/approve-property" className="nav-link admin-link">
+              <Link
+                to="/dashboard#property-approval"
+                className="nav-link admin-link"
+              >
                 <i className="fas fa-check-circle"></i> Property Approvals
               </Link>
               <Link to="/blog/add" className="nav-link admin-link">
@@ -353,7 +356,7 @@ const NavBar = () => {
                       <div className="dropdown-grid">
                         <div className="dropdown-column">
                           <h3>Properties</h3>
-                          <Link to="/properties/listing">List Property</Link>
+                          <Link to="/dashboard#add-listing">List Property</Link>
                         </div>
                       </div>
                     </div>
@@ -491,7 +494,7 @@ const NavBar = () => {
                   </span>
                 </Link>
                 <Link
-                  to="/approve-property"
+                  to="/dashboard#property-approval"
                   className="mobile-nav-link"
                   onClick={closeMobileMenu}
                 >
@@ -675,7 +678,7 @@ const NavBar = () => {
                           <span>My Properties</span>
                         </Link>
                         <Link
-                          to="/properties/listing"
+                          to="/dashboard#add-listingg"
                           className="mobile-nav-link"
                           onClick={closeMobileMenu}
                         >

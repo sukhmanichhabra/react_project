@@ -130,9 +130,15 @@
   transition: width 0.5s ease;
 }
 
-.dash-progress-green { background-color: #22c55e; }
-.dash-progress-yellow { background-color: #f59e0b; }
-.dash-progress-red { background-color: #ef4444; }
+.dash-progress-green {
+  background-color: #22c55e;
+}
+.dash-progress-yellow {
+  background-color: #f59e0b;
+}
+.dash-progress-red {
+  background-color: #ef4444;
+}
 
 .dash-sold-badge-container {
   margin-bottom: 1rem;

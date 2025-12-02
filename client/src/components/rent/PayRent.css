@@ -150,6 +150,9 @@
   overflow: hidden;
   border: 1px solid #e0e0e0;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .property-rent-card:hover {
@@ -157,20 +160,23 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.property-image {
+.rent-property-image {
   position: relative;
+  width: 100%;
   height: 200px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
-.property-image img {
+.rent-property-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  display: block;
 }
 
-.property-rent-card:hover .property-image img {
+.property-rent-card:hover .rent-property-image img {
   transform: scale(1.05);
 }
 
@@ -189,12 +195,16 @@
 
 .property-info {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .property-info h3 {
   font-size: 18px;
   margin: 0 0 10px 0;
   color: #1a1a1a;
+  line-height: 1.4;
 }
 
 .property-location {
@@ -216,6 +226,7 @@
 .property-actions {
   display: flex;
   gap: 10px;
+  margin-top: auto;
 }
 
 .property-actions button {
@@ -336,7 +347,8 @@
 }
 
 .pay-btn,
-.pay-urgent-btn {
+.pay-urgent-btn,
+.invoice-btn {
   padding: 8px 16px;
   border: none;
   border-radius: 6px;
@@ -362,6 +374,24 @@
 
 .pay-urgent-btn:hover {
   background-color: #d32f2f;
+}
+
+.invoice-btn {
+  background-color: #2196f3;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.invoice-btn:hover {
+  background-color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.invoice-btn i {
+  font-size: 12px;
 }
 
 /* Payment Modal */

@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = '/api/advertising';
+const API_URL = "/api/advertising";
 
 const advertisingAPI = {
   // Get advertising page data
@@ -35,7 +35,9 @@ const advertisingAPI = {
 
   // Track advertisement click
   trackClick: async (id, destination) => {
-    const response = await axios.post(`${API_URL}/click/${id}`, { destination });
+    const response = await axios.post(`${API_URL}/click/${id}`, {
+      destination,
+    });
     return response.data;
   },
 };

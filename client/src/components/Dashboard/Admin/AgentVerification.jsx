@@ -3,34 +3,82 @@ import { agentAPI } from "../../../services/api";
 import "./AgentVerification.css";
 
 // Child component for each agent card
-const AgentCard = ({ agent, onApprove, onReject, onOpenRejectModal, isProcessing }) => {
+const AgentCard = ({
+  agent,
+  onApprove,
+  onReject,
+  onOpenRejectModal,
+  isProcessing,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Debug logging for agent data
+  console.log("Agent data:", {
+    name: agent.name,
+    userId: agent.userId,
+    documents: agent.documents,
+    profileImageFromUser: agent.userId?.profileImage,
+    profilePhotoFromDocs: agent.documents?.profilePhoto,
+  });
+
+  // Helper function to convert file path to proper URL
+  const getDocumentUrl = (document) => {
+    if (!document?.path) {
+      console.log("No document path provided:", document);
+      return null;
+    }
+
+    console.log("Processing document path:", document.path);
+
+    // If path already starts with http/https (Cloudinary URL), return as is
+    if (document.path.startsWith("http")) {
+      console.log("Found Cloudinary URL:", document.path);
+      return document.path;
+    }
+
+    // If path starts with /uploads, return as is (server will serve it)
+    if (document.path.startsWith("/uploads")) {
+      console.log("Found uploads path:", document.path);
+      return document.path;
+    }
+
+    // If it's a relative path, prepend /uploads/
+    if (!document.path.startsWith("/")) {
+      const url = `/uploads/${document.path}`;
+      console.log("Created uploads URL:", url);
+      return url;
+    }
+
+    // Otherwise return as is
+    console.log("Returning path as is:", document.path);
+    return document.path;
+  };
 
   // Get documents from agent data
   const documents = [
-    { 
-      name: "ID Proof", 
-      icon: "fa-id-card", 
-      url: agent.documents?.idProof?.path,
-      available: !!agent.documents?.idProof 
+    {
+      name: "ID Proof",
+      icon: "fa-id-card",
+      url: getDocumentUrl(agent.documents?.idProof),
+      available: !!agent.documents?.idProof,
     },
     {
       name: "Real Estate License",
       icon: "fa-file-contract",
-      url: agent.documents?.license?.path,
-      available: !!agent.documents?.license
+      url: getDocumentUrl(agent.documents?.license),
+      available: !!agent.documents?.license,
     },
     {
       name: "Business Verification",
       icon: "fa-briefcase",
-      url: agent.documents?.businessProof?.path,
-      available: !!agent.documents?.businessProof
+      url: getDocumentUrl(agent.documents?.businessProof),
+      available: !!agent.documents?.businessProof,
     },
-    { 
-      name: "Professional Photo", 
-      icon: "fa-user-tie", 
-      url: agent.documents?.profilePhoto?.path,
-      available: !!agent.documents?.profilePhoto
+    {
+      name: "Professional Photo",
+      icon: "fa-user-tie",
+      url: getDocumentUrl(agent.documents?.profilePhoto),
+      available: !!agent.documents?.profilePhoto,
     },
   ];
 
@@ -39,25 +87,41 @@ const AgentCard = ({ agent, onApprove, onReject, onOpenRejectModal, isProcessing
       <div
         className="av-card-header"
         onClick={() => setIsExpanded(!isExpanded)}
-      >        <img
-          src={agent.userId?.profileImage || "/images/default-avatar.png"}
+      >
+        {" "}
+        <img
+          src={
+            agent.userId?.profileImage ||
+            getDocumentUrl(agent.documents?.profilePhoto) ||
+            "/images/default-avatar.png"
+          }
           alt={agent.name}
           className="av-card-avatar"
+          onError={(e) => {
+            console.error("Failed to load avatar image:", e.target.src);
+            if (e.target.src !== "/images/default-avatar.png") {
+              e.target.src = "/images/default-avatar.png";
+            }
+          }}
+          onLoad={(e) => {
+            console.log("Successfully loaded avatar:", e.target.src);
+          }}
         />
         <div className="av-card-agent-info">
           <h3>{agent.name}</h3>
           <p>{agent.userId?.email}</p>
-        </div>        <span className="av-card-submitted">
-          Submitted: {agent.documentsSubmittedAt 
-            ? new Date(agent.documentsSubmittedAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+        </div>{" "}
+        <span className="av-card-submitted">
+          Submitted:{" "}
+          {agent.documentsSubmittedAt
+            ? new Date(agent.documentsSubmittedAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
               })
-            : 'Not yet submitted'
-          }
+            : "Not yet submitted"}
         </span>
         <i
           className={`fas fa-chevron-down av-card-toggle ${
@@ -68,24 +132,33 @@ const AgentCard = ({ agent, onApprove, onReject, onOpenRejectModal, isProcessing
 
       {isExpanded && (
         <div className="av-card-body">
-          <div className="av-card-info-grid">            <div className="av-card-info-item">
+          <div className="av-card-info-grid">
+            {" "}
+            <div className="av-card-info-item">
               <h4>Phone Number</h4>
               <p>{agent.phone || agent.userId?.phone || "Not provided"}</p>
             </div>
             <div className="av-card-info-item">
               <h4>Location</h4>
-              <p>{agent.location || agent.userId?.location || "Not provided"}</p>
+              <p>
+                {agent.location || agent.userId?.location || "Not provided"}
+              </p>
             </div>
             <div className="av-card-info-item">
               <h4>Qualification</h4>
               <p>{agent.qualification || "Not specified"}</p>
             </div>
           </div>
-
           <div className="av-card-docs">
-            <h4>Submitted Documents</h4>            <div className="av-doc-grid">
+            <h4>Submitted Documents</h4>{" "}
+            <div className="av-doc-grid">
               {documents.map((doc) => (
-                <div className={`av-doc-item ${!doc.available ? 'unavailable' : ''}`} key={doc.name}>
+                <div
+                  className={`av-doc-item ${
+                    !doc.available ? "unavailable" : ""
+                  }`}
+                  key={doc.name}
+                >
                   <i className={`fas ${doc.icon}`}></i>
                   <p>{doc.name}</p>
                   {doc.available && doc.url ? (
@@ -98,15 +171,17 @@ const AgentCard = ({ agent, onApprove, onReject, onOpenRejectModal, isProcessing
                 </div>
               ))}
             </div>
-          </div>          <div className="av-card-actions">
-            {agent.verificationStatus === 'pending' && (
+          </div>{" "}
+          <div className="av-card-actions">
+            {agent.verificationStatus === "pending" && (
               <>
                 <button
                   className="av-action-btn approve"
                   onClick={() => onApprove(agent._id)}
                   disabled={isProcessing}
                 >
-                  <i className="fas fa-check"></i> {isProcessing ? 'Processing...' : 'Approve'}
+                  <i className="fas fa-check"></i>{" "}
+                  {isProcessing ? "Processing..." : "Approve"}
                 </button>
                 <button
                   className="av-action-btn reject"
@@ -117,12 +192,12 @@ const AgentCard = ({ agent, onApprove, onReject, onOpenRejectModal, isProcessing
                 </button>
               </>
             )}
-            {agent.verificationStatus === 'verified' && (
+            {agent.verificationStatus === "verified" && (
               <div className="av-status-badge verified">
                 <i className="fas fa-check-circle"></i> Verified
               </div>
             )}
-            {agent.verificationStatus === 'rejected' && (
+            {agent.verificationStatus === "rejected" && (
               <div className="av-status-badge rejected">
                 <i className="fas fa-times-circle"></i> Rejected
               </div>
@@ -144,7 +219,7 @@ const AgentVerification = ({ pendingAgents = [] }) => {
   const [filter, setFilter] = useState("pending");
   const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [statusMessage, setStatusMessage] = useState({ type: '', text: '' });
+  const [statusMessage, setStatusMessage] = useState({ type: "", text: "" });
 
   // Fetch agents on component mount and when filter changes
   useEffect(() => {
@@ -154,18 +229,18 @@ const AgentVerification = ({ pendingAgents = [] }) => {
   const fetchAgents = async () => {
     try {
       setLoading(true);
-      const response = await agentAPI.getPendingVerifications({ 
-        status: filter === 'all' ? undefined : filter 
+      const response = await agentAPI.getPendingVerifications({
+        status: filter === "all" ? undefined : filter,
       });
-      
+
       if (response.data.success) {
         setAgents(response.data.agents);
       }
     } catch (error) {
       console.error("Error fetching agents:", error);
       setStatusMessage({
-        type: 'error',
-        text: 'Failed to fetch agent verification requests'
+        type: "error",
+        text: "Failed to fetch agent verification requests",
       });
     } finally {
       setLoading(false);
@@ -175,28 +250,29 @@ const AgentVerification = ({ pendingAgents = [] }) => {
     try {
       setIsProcessing(true);
       const response = await agentAPI.updateVerificationStatus(agentId, {
-        status: 'verified',
-        message: 'Your agent account has been verified. You can now access all agent features.'
+        status: "verified",
+        message:
+          "Your agent account has been verified. You can now access all agent features.",
       });
 
       if (response.data.success) {
         // Remove the agent from the list immediately
-        setAgents(prevAgents => prevAgents.filter(a => a._id !== agentId));
+        setAgents((prevAgents) => prevAgents.filter((a) => a._id !== agentId));
         setStatusMessage({
-          type: 'success',
-          text: 'Agent verified successfully!'
+          type: "success",
+          text: "Agent verified successfully!",
         });
-        
+
         // Clear the message after 3 seconds
         setTimeout(() => {
-          setStatusMessage({ type: '', text: '' });
+          setStatusMessage({ type: "", text: "" });
         }, 3000);
       }
     } catch (error) {
       console.error("Error approving agent:", error);
       setStatusMessage({
-        type: 'error',
-        text: 'Failed to approve agent verification'
+        type: "error",
+        text: "Failed to approve agent verification",
       });
     } finally {
       setIsProcessing(false);
@@ -210,39 +286,44 @@ const AgentVerification = ({ pendingAgents = [] }) => {
   const handleReject = async () => {
     if (!rejectionMessage.trim()) {
       setStatusMessage({
-        type: 'error',
-        text: 'Please provide a rejection reason'
+        type: "error",
+        text: "Please provide a rejection reason",
       });
       return;
     }
 
     try {
       setIsProcessing(true);
-      const response = await agentAPI.updateVerificationStatus(selectedAgent._id, {
-        status: 'rejected',
-        message: rejectionMessage
-      });
+      const response = await agentAPI.updateVerificationStatus(
+        selectedAgent._id,
+        {
+          status: "rejected",
+          message: rejectionMessage,
+        }
+      );
 
       if (response.data.success) {
         // Remove the agent from the list immediately
-        setAgents(prevAgents => prevAgents.filter(a => a._id !== selectedAgent._id));
+        setAgents((prevAgents) =>
+          prevAgents.filter((a) => a._id !== selectedAgent._id)
+        );
         setModalOpen(false);
         setRejectionMessage("");
         setStatusMessage({
-          type: 'success',
-          text: 'Agent verification rejected'
+          type: "success",
+          text: "Agent verification rejected",
         });
-        
+
         // Clear the message after 3 seconds
         setTimeout(() => {
-          setStatusMessage({ type: '', text: '' });
+          setStatusMessage({ type: "", text: "" });
         }, 3000);
       }
     } catch (error) {
       console.error("Error rejecting agent:", error);
       setStatusMessage({
-        type: 'error',
-        text: 'Failed to reject agent verification'
+        type: "error",
+        text: "Failed to reject agent verification",
       });
     } finally {
       setIsProcessing(false);
@@ -250,9 +331,10 @@ const AgentVerification = ({ pendingAgents = [] }) => {
   };
 
   // Filter agents based on search query
-  const filteredAgents = agents.filter(agent => 
-    agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    agent.userId?.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAgents = agents.filter(
+    (agent) =>
+      agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      agent.userId?.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
   return (
     <section id="agent-verification">
@@ -264,10 +346,16 @@ const AgentVerification = ({ pendingAgents = [] }) => {
       {/* Status Message */}
       {statusMessage.text && (
         <div className={`dash-alert dash-alert-${statusMessage.type}`}>
-          <i className={`fas ${statusMessage.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}`}></i>
+          <i
+            className={`fas ${
+              statusMessage.type === "success"
+                ? "fa-check-circle"
+                : "fa-exclamation-triangle"
+            }`}
+          ></i>
           {statusMessage.text}
-          <button 
-            onClick={() => setStatusMessage({ type: '', text: '' })}
+          <button
+            onClick={() => setStatusMessage({ type: "", text: "" })}
             className="dash-alert-close"
           >
             <i className="fas fa-times"></i>
@@ -278,9 +366,9 @@ const AgentVerification = ({ pendingAgents = [] }) => {
       <div className="av-header">
         <div className="av-filters">
           <label htmlFor="filter-status">Filter by:</label>
-          <select 
-            id="filter-status" 
-            value={filter} 
+          <select
+            id="filter-status"
+            value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
             <option value="pending">Pending</option>
@@ -290,9 +378,9 @@ const AgentVerification = ({ pendingAgents = [] }) => {
           </select>
         </div>
         <div className="av-search">
-          <input 
-            type="text" 
-            placeholder="Search by name or email" 
+          <input
+            type="text"
+            placeholder="Search by name or email"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -322,12 +410,11 @@ const AgentVerification = ({ pendingAgents = [] }) => {
           ) : (
             <div className="dash-empty-state">
               <i className="fas fa-user-check"></i>
-              <h3>No {filter === 'all' ? '' : filter} Verifications</h3>
+              <h3>No {filter === "all" ? "" : filter} Verifications</h3>
               <p>
-                {filter === 'pending' 
-                  ? 'All agent applications have been reviewed.' 
-                  : `No ${filter} agent verifications found.`
-                }
+                {filter === "pending"
+                  ? "All agent applications have been reviewed."
+                  : `No ${filter} agent verifications found.`}
               </p>
             </div>
           )}
