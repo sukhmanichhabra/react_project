@@ -1978,14 +1978,14 @@ router.get(
   async (req, res) => {
     try {
       const properties = await PropertyModel.getAllProperties();
-      
+
       // Map properties to include only needed fields and ensure proper structure
-      const formattedProperties = properties.map(property => ({
+      const formattedProperties = properties.map((property) => ({
         _id: property._id,
         title: property.title,
         location: property.location,
         geolocation: property.geolocation,
-        agent: property.agent
+        agent: property.agent,
       }));
 
       res.json({
@@ -2012,21 +2012,23 @@ router.get(
   async (req, res) => {
     try {
       const allProperties = await PropertyModel.getAllProperties();
-      
+
       // Filter properties that don't have proper geolocation data
-      const missingGeoProperties = allProperties.filter(property => {
-        return !property.geolocation || 
-               !property.geolocation.latitude || 
-               !property.geolocation.longitude ||
-               property.geolocation.latitude === null ||
-               property.geolocation.longitude === null;
+      const missingGeoProperties = allProperties.filter((property) => {
+        return (
+          !property.geolocation ||
+          !property.geolocation.latitude ||
+          !property.geolocation.longitude ||
+          property.geolocation.latitude === null ||
+          property.geolocation.longitude === null
+        );
       });
-      
+
       // Format the response
-      const formattedProperties = missingGeoProperties.map(property => ({
+      const formattedProperties = missingGeoProperties.map((property) => ({
         _id: property._id,
         title: property.title,
-        location: property.location
+        location: property.location,
       }));
 
       res.json({

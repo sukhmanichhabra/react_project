@@ -42,7 +42,7 @@ const GeolocationManager = () => {
         }
       );
       const allPropertiesData = await allPropertiesResponse.json();
-      
+
       console.log("All Properties Response:", allPropertiesData);
 
       // Fetch properties without geolocation
@@ -53,7 +53,7 @@ const GeolocationManager = () => {
         }
       );
       const propertiesData = await propertiesResponse.json();
-      
+
       console.log("Missing Geo Properties Response:", propertiesData);
 
       // Fetch agents geolocation info
@@ -64,21 +64,30 @@ const GeolocationManager = () => {
         }
       );
       const agentsData = await agentsResponse.json();
-      
+
       console.log("Agents Response:", agentsData);
 
       if (allPropertiesData.success) {
         setProperties(allPropertiesData.properties || []);
-        console.log("Set properties:", allPropertiesData.properties?.length || 0);
+        console.log(
+          "Set properties:",
+          allPropertiesData.properties?.length || 0
+        );
       } else {
         console.error("Failed to fetch all properties:", allPropertiesData);
       }
 
       if (propertiesData.success) {
         setMissingGeoProperties(propertiesData.properties || []);
-        console.log("Set missing geo properties:", propertiesData.properties?.length || 0);
+        console.log(
+          "Set missing geo properties:",
+          propertiesData.properties?.length || 0
+        );
       } else {
-        console.error("Failed to fetch missing geo properties:", propertiesData);
+        console.error(
+          "Failed to fetch missing geo properties:",
+          propertiesData
+        );
       }
 
       if (agentsData.success) {
